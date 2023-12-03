@@ -1,7 +1,9 @@
 import Phaser from "phaser";
-import { FloorTexture } from "./floor-texture";
+import { GroundType } from "./ground";
 import { map } from "./map";
-import { Audio, AudioFiles } from "./audio";
+import { AudioAsset, AudioAssets } from "./audio";
+import { ImageAsset, ImageAssets } from "./image";
+import { SpriteAsset, SpriteAssets } from "./sprite";
 
 export class Scene extends Phaser.Scene {
   cursors!: Phaser.Types.Input.Keyboard.CursorKeys;
@@ -15,21 +17,15 @@ export class Scene extends Phaser.Scene {
   }
 
   preload() {
-    for (const [key, path] of Object.entries(AudioFiles)) {
+    for (const [key, path] of Object.entries(AudioAssets)) {
       this.load.audio(key, path);
     }
-    this.load.image(FloorTexture.Grass, "assets/grass.png");
-    this.load.image(FloorTexture.Sand, "assets/sand.png");
-    this.load.image(FloorTexture.Water, "assets/water.png");
-    this.load.image("boat", "assets/boat.png");
-    this.load.spritesheet("castle", "assets/castle.png", {
-      frameWidth: 168,
-      frameHeight: 139,
-    });
-    this.load.spritesheet("friend", "assets/friend.png", {
-      frameWidth: 32,
-      frameHeight: 48,
-    });
+    for (const [key, path] of Object.entries(ImageAssets)) {
+      this.load.image(key, path);
+    }
+    for (const [key, config] of Object.entries(SpriteAssets)) {
+      this.load.spritesheet(key, config.path, config.frameConfig);
+    }
   }
 
   update() {
@@ -53,56 +49,56 @@ export class Scene extends Phaser.Scene {
     const newFriendX = this.friend.x + deltaX;
     const newFriendY = this.friend.y + deltaY;
     if (!this.isInWater) {
-      const floorTexture = this.floorTextureAt(newFriendX, newFriendY);
-      if (floorTexture === FloorTexture.Sand) {
+      const groundType = this.groundTypeAt(newFriendX, newFriendY);
+      if (groundType === ImageAsset.Sand) {
         this.friend.x = newFriendX;
         this.friend.y = newFriendY;
-        this.sound.play(Audio.SandStep);
+        this.sound.play(AudioAsset.SandStep);
       } else if (
-        floorTexture === FloorTexture.Water &&
+        groundType === ImageAsset.Water &&
         this.boatAt(newFriendX, newFriendY)
       ) {
         this.isInWater = true;
         this.friend.x = newFriendX;
         this.friend.y = newFriendY - 15;
       } else {
-        this.sound.play(Audio.Thump);
+        this.sound.play(AudioAsset.Thump);
       }
     } else if (this.isInWater) {
-      const floorTexture = this.floorTextureAt(newFriendX, newFriendY + 15);
-      if (floorTexture === FloorTexture.Water) {
-        this.sound.play(Audio.Splash);
+      const groundType = this.groundTypeAt(newFriendX, newFriendY + 15);
+      if (groundType === ImageAsset.Water) {
+        this.sound.play(AudioAsset.Splash);
         this.friend.x = newFriendX;
         this.friend.y = newFriendY;
         this.boat.x = this.boat.x + deltaX;
         this.boat.y = this.boat.y + deltaY;
-      } else if (floorTexture === FloorTexture.Sand) {
-        this.sound.play(Audio.SandStep);
+      } else if (groundType === ImageAsset.Sand) {
+        this.sound.play(AudioAsset.SandStep);
         this.isInWater = false;
         this.friend.x = newFriendX;
         this.friend.y = newFriendY + 15;
       } else if (newFriendX === 225 && newFriendY === 310) {
         this.castle.anims.play("open");
         this.friend.setVisible(false);
-        this.sound.play(Audio.Tada);
+        this.sound.play(AudioAsset.Tada);
         this.levelOver = true;
       } else {
-        this.sound.play(Audio.Thump);
+        this.sound.play(AudioAsset.Thump);
       }
     }
   }
 
   create() {
     map.forEach((row, y) => {
-      row.forEach((floorTexture, x) => {
-        this.add.image(x * 50 + 25, y * 50 + 25, floorTexture);
+      row.forEach((groundType, x) => {
+        this.add.image(x * 50 + 25, y * 50 + 25, groundType);
       });
     });
     this.cursors = this.input.keyboard!.createCursorKeys();
-    this.castle = this.add.sprite(225, 280, "castle", 0);
+    this.castle = this.add.sprite(225, 280, SpriteAsset.Castle, 0);
     this.anims.create({
       key: "open",
-      frames: this.anims.generateFrameNumbers("castle", {
+      frames: this.anims.generateFrameNumbers(SpriteAsset.Castle, {
         start: 0,
         end: 3,
       }),
@@ -111,7 +107,7 @@ export class Scene extends Phaser.Scene {
     });
     this.anims.create({
       key: "close",
-      frames: this.anims.generateFrameNumbers("castle", {
+      frames: this.anims.generateFrameNumbers(SpriteAsset.Castle, {
         start: 3,
         end: 0,
       }),
@@ -120,14 +116,14 @@ export class Scene extends Phaser.Scene {
     });
     this.castle.on("animationstart", (anim: any) => {
       if (anim.key === "open") {
-        this.sound.play(Audio.CastleOpen);
+        this.sound.play(AudioAsset.CastleOpen);
       }
     });
-    this.boat = this.add.image(725, 540, "boat");
-    this.friend = this.add.sprite(25, 25, "friend", 4);
+    this.boat = this.add.image(725, 540, ImageAsset.Boat);
+    this.friend = this.add.sprite(25, 25, SpriteAsset.Friend, 4);
   }
 
-  private floorTextureAt(x: number, y: number): FloorTexture | null {
+  private groundTypeAt(x: number, y: number): GroundType | null {
     const index = (xOrY: number) => {
       if (xOrY === 25) {
         return 0;
