@@ -100,6 +100,7 @@ export class Level1 extends Phaser.Scene {
   }
 
   create() {
+    this.resetLevel1();
     map.forEach((row, y) => {
       row.forEach((groundType, x) => {
         this.add.image(x * 50 + 25, y * 50 + 25, groundType);
@@ -107,24 +108,26 @@ export class Level1 extends Phaser.Scene {
     });
     this.cursors = this.input.keyboard!.createCursorKeys();
     this.castle = this.add.sprite(225, 280, SpriteAsset.Castle, 0);
-    this.anims.create({
-      key: "open",
-      frames: this.anims.generateFrameNumbers(SpriteAsset.Castle, {
-        start: 0,
-        end: 3,
-      }),
-      frameRate: 10,
-      repeat: 0,
-    });
-    this.anims.create({
-      key: "close",
-      frames: this.anims.generateFrameNumbers(SpriteAsset.Castle, {
-        start: 3,
-        end: 0,
-      }),
-      frameRate: 10,
-      repeat: 0,
-    });
+    if (!this.anims.exists("open")) {
+      this.anims.create({
+        key: "open",
+        frames: this.anims.generateFrameNumbers(SpriteAsset.Castle, {
+          start: 0,
+          end: 3,
+        }),
+        frameRate: 10,
+        repeat: 0,
+      });
+      this.anims.create({
+        key: "close",
+        frames: this.anims.generateFrameNumbers(SpriteAsset.Castle, {
+          start: 3,
+          end: 0,
+        }),
+        frameRate: 10,
+        repeat: 0,
+      });
+    }
     this.castle.on("animationstart", (anim: any) => {
       if (anim.key === "open") {
         this.sound.play(AudioAsset.CastleOpen);
@@ -147,5 +150,10 @@ export class Level1 extends Phaser.Scene {
 
   private boatAt(x: number, y: number): boolean {
     return this.boat.x === x && this.boat.y === y + 15;
+  }
+
+  private resetLevel1() {
+    this.isInWater = false;
+    this.levelOver = false;
   }
 }

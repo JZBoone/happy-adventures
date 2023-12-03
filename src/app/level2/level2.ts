@@ -61,6 +61,7 @@ export class Level2 extends Phaser.Scene {
   }
 
   private fallIntoBlackHole() {
+    this.sound.play(AudioAsset.Fall);
     this.tweens.add({
       targets: this.friend,
       scaleX: 0, // Scale horizontally to 0
