@@ -13,5 +13,5 @@ export default new Phaser.Game({
       debug: false,
     },
   },
-  scene: [Level1, Level2],
+  scene: [Level2],
 });

@@ -57,6 +57,8 @@ export class Level2 extends Phaser.Scene {
     });
     this.cursors = this.input.keyboard!.createCursorKeys();
     this.friend = this.add.sprite(25, 25, SpriteAsset.Friend, 4);
+    const monster = this.add.image(650, 540, ImageAsset.Monster);
+    const portal = this.add.image(750, 540, ImageAsset.Portal);
     showLevelStartText(this, 2);
   }
 

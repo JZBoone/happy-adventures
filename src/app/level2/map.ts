@@ -24,7 +24,9 @@ const blackHoleCoordinates: [y: number, x: number][] = [
   [6, 10],
   [9, 3],
   [9, 12],
-  [9, 12],
+  [9, 13],
+  [9, 14],
+  [9, 15],
   [10, 8],
 ];
 
