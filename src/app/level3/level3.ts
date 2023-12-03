@@ -6,6 +6,7 @@ import { ImageAsset, ImageAssets } from "../image";
 import { SpriteAsset, SpriteAssets } from "../sprite";
 import { Level } from "../level";
 import { showLevelStartText } from "../level-text";
+import { Level2Data } from "../level2/data";
 
 export class Level3 extends Phaser.Scene {
   private cursors!: Phaser.Types.Input.Keyboard.CursorKeys;
@@ -121,8 +122,18 @@ export class Level3 extends Phaser.Scene {
       this.sound.play(AudioAsset.Explosion);
       this.heart.setVisible(false);
       this.bomb.setVisible(false);
-
       this.disappearFriend();
+      this.time.addEvent({
+        delay: 2_000,
+        callback: () => this.sound.play(AudioAsset.Tada),
+        loop: false,
+      });
+      const data: Level2Data = { monsterIsDead: true };
+      this.time.addEvent({
+        delay: 4_000,
+        callback: () => this.scene.start(Level.Level2, data),
+        loop: false,
+      });
     }
     switch (groundType) {
       case ImageAsset.Goo:

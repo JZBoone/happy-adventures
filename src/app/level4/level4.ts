@@ -6,20 +6,13 @@ import { ImageAsset, ImageAssets } from "../image";
 import { SpriteAsset, SpriteAssets } from "../sprite";
 import { Level } from "../level";
 import { showLevelStartText } from "../level-text";
-import { Level2Data } from "./data";
 
-export class Level2 extends Phaser.Scene {
-  cursors!: Phaser.Types.Input.Keyboard.CursorKeys;
-  friend!: Phaser.GameObjects.Sprite;
-  monsterIsDead = false;
+export class Level4 extends Phaser.Scene {
+  private cursors!: Phaser.Types.Input.Keyboard.CursorKeys;
+  private friend!: Phaser.GameObjects.Sprite;
+
   constructor() {
-    super({ key: Level.Level2 });
-  }
-
-  init(data: Level2Data) {
-    if (data.monsterIsDead) {
-      this.monsterIsDead = true;
-    }
+    super({ key: Level.Level4 });
   }
 
   preload() {
@@ -65,11 +58,17 @@ export class Level2 extends Phaser.Scene {
     });
     this.cursors = this.input.keyboard!.createCursorKeys();
     this.friend = this.add.sprite(25, 25, SpriteAsset.Friend, 4);
-    if (!this.monsterIsDead) {
-      this.add.image(650, 540, ImageAsset.Monster);
-    }
-    this.add.image(750, 540, ImageAsset.Portal);
-    showLevelStartText(this, 2);
+    showLevelStartText(this, 4);
+  }
+
+  private groundTypeAt(x: number, y: number): GroundType | null {
+    const index = (xOrY: number) => {
+      if (xOrY === 25) {
+        return 0;
+      }
+      return (xOrY - 25) / 50;
+    };
+    return map[index(y)]?.[index(x)];
   }
 
   private disappearFriend() {
@@ -85,58 +84,8 @@ export class Level2 extends Phaser.Scene {
     });
   }
 
-  private groundTypeAt(x: number, y: number): GroundType | null {
-    const index = (xOrY: number) => {
-      if (xOrY === 25) {
-        return 0;
-      }
-      return (xOrY - 25) / 50;
-    };
-    return map[index(y)]?.[index(x)] || null;
-  }
-
   private moveFriend(x: number, y: number, groundType: GroundType) {
-    if (this.monsterIsDead && x === 725 && [525, 575].includes(y)) {
-      this.sound.play(AudioAsset.Tada);
-      this.time.addEvent({
-        delay: 2_000,
-        callback: () => this.scene.start(Level.Level4),
-        loop: false,
-      });
-      this.friend.x = x;
-      this.friend.y = y;
-      this.disappearFriend();
-      return;
-    }
-    if (!this.monsterIsDead && x === 625 && [525, 575].includes(y)) {
-      this.friend.x = x;
-      this.friend.y = y;
-      this.sound.play(AudioAsset.Chomp);
-      this.disappearFriend();
-      this.time.addEvent({
-        delay: 2_000,
-        callback: () => this.scene.start(Level.Level3),
-        loop: false,
-      });
-      return;
-    }
-    switch (groundType) {
-      case ImageAsset.Stone:
-        this.friend.x = x;
-        this.friend.y = y;
-        this.sound.play(AudioAsset.Stomp);
-        break;
-      case ImageAsset.BlackHole:
-        this.friend.x = x;
-        this.friend.y = y;
-        this.sound.play(AudioAsset.Fall);
-        this.disappearFriend();
-        this.time.addEvent({
-          delay: 2_000,
-          callback: () => this.scene.start(Level.Level1),
-          loop: false,
-        });
-        break;
-    }
+    this.friend.x = x;
+    this.friend.y = y;
   }
 }
