@@ -37,6 +37,17 @@ export const boneCoordinates: [y: number, x: number][] = [
   [11, 11],
 ];
 
+export const heartCoordinates: [y: number, x: number][] = [
+  [0, 11],
+  [0, 12],
+  [1, 11],
+  [1, 12],
+  [2, 11],
+  [2, 12],
+  [3, 11],
+  [3, 12],
+];
+
 export const map: GroundType[][] = (() => {
   const _map: GroundType[][] = [
     [
