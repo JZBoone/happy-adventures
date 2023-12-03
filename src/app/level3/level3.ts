@@ -7,11 +7,11 @@ import { SpriteAsset, SpriteAssets } from "../sprite";
 import { Level } from "../level";
 import { showLevelStartText } from "../level-text";
 
-export class Level2 extends Phaser.Scene {
+export class Level3 extends Phaser.Scene {
   cursors!: Phaser.Types.Input.Keyboard.CursorKeys;
   friend!: Phaser.GameObjects.Sprite;
   constructor() {
-    super({ key: Level.Level2 });
+    super({ key: Level.Level3 });
   }
 
   preload() {
@@ -57,9 +57,7 @@ export class Level2 extends Phaser.Scene {
     });
     this.cursors = this.input.keyboard!.createCursorKeys();
     this.friend = this.add.sprite(25, 25, SpriteAsset.Friend, 4);
-    const monster = this.add.image(650, 540, ImageAsset.Monster);
-    const portal = this.add.image(750, 540, ImageAsset.Portal);
-    showLevelStartText(this, 2);
+    showLevelStartText(this, 3);
   }
 
   private disappearFriend() {
@@ -86,34 +84,11 @@ export class Level2 extends Phaser.Scene {
   }
 
   private moveFriend(x: number, y: number, groundType: GroundType) {
-    if (x === 625 && [525, 575].includes(y)) {
-      this.friend.x = x;
-      this.friend.y = y;
-      this.sound.play(AudioAsset.Chomp);
-      this.disappearFriend();
-      this.time.addEvent({
-        delay: 2_000,
-        callback: () => this.scene.start(Level.Level3),
-        loop: false,
-      });
-      return;
-    }
     switch (groundType) {
-      case ImageAsset.Stone:
+      case ImageAsset.Goo:
         this.friend.x = x;
         this.friend.y = y;
-        this.sound.play(AudioAsset.Stomp);
-        break;
-      case ImageAsset.BlackHole:
-        this.friend.x = x;
-        this.friend.y = y;
-        this.sound.play(AudioAsset.Fall);
-        this.disappearFriend();
-        this.time.addEvent({
-          delay: 2_000,
-          callback: () => this.scene.start(Level.Level1),
-          loop: false,
-        });
+        this.sound.play(AudioAsset.Splat);
         break;
     }
   }

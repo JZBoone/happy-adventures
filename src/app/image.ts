@@ -14,6 +14,7 @@ export enum ImageAsset {
   BlackHole = "black-hole",
   Monster = "monster",
   Portal = "portal",
+  Goo = "goo",
 }
 
 export const ImageAssets: Record<ImageAsset, string> = {
@@ -32,4 +33,5 @@ export const ImageAssets: Record<ImageAsset, string> = {
   [ImageAsset.BlackHole]: "assets/image/black-hole.png",
   [ImageAsset.Monster]: "assets/image/monster.png",
   [ImageAsset.Portal]: "assets/image/portal.png",
+  [ImageAsset.Goo]: "assets/image/goo.png",
 };
