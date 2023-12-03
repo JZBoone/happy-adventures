@@ -11,6 +11,7 @@ export enum AudioAsset {
   Crunch = "Crunch",
   Grunt = "Grunt",
   Explosion = "Explosion",
+  BoardBoat = "BoardBoat",
 }
 
 export const AudioAssets: Record<AudioAsset, string> = {
@@ -26,4 +27,5 @@ export const AudioAssets: Record<AudioAsset, string> = {
   [AudioAsset.Crunch]: "assets/audio/crunch.mp3",
   [AudioAsset.Grunt]: "assets/audio/grunt.mp3",
   [AudioAsset.Explosion]: "assets/audio/explosion.mp3",
+  [AudioAsset.BoardBoat]: "assets/audio/board-boat.mp3",
 };

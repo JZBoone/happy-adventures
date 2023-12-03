@@ -63,6 +63,7 @@ export class Level1 extends Phaser.Scene {
         this.isInWater = true;
         this.friend.x = newFriendX;
         this.friend.y = newFriendY - 15;
+        this.sound.play(AudioAsset.BoardBoat);
       } else {
         this.sound.play(AudioAsset.Thump);
       }
@@ -75,7 +76,7 @@ export class Level1 extends Phaser.Scene {
         this.boat.x = this.boat.x + deltaX;
         this.boat.y = this.boat.y + deltaY;
       } else if (groundType === ImageAsset.Sand) {
-        this.sound.play(AudioAsset.SandStep);
+        this.sound.play(AudioAsset.BoardBoat);
         this.isInWater = false;
         this.friend.x = newFriendX;
         this.friend.y = newFriendY + 15;

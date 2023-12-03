@@ -19,6 +19,7 @@ export enum ImageAsset {
   Elasmosaurus = "elasmosaurus",
   SmallElasmosaurus = "small-elasmosaurus",
   Bones = "bones",
+  Forest = "forest",
 }
 
 export const ImageAssets: Record<ImageAsset, string> = {
@@ -42,4 +43,5 @@ export const ImageAssets: Record<ImageAsset, string> = {
   [ImageAsset.SmallElasmosaurus]: "assets/image/small-elasmosaurus.png",
   [ImageAsset.Elasmosaurus]: "assets/image/elasmosaurus.png",
   [ImageAsset.Bones]: "assets/image/bones.png",
+  [ImageAsset.Forest]: "assets/image/forest.png",
 };
