@@ -5,6 +5,7 @@ export class Scene extends Phaser.Scene {
   friend!: Phaser.Types.Physics.Arcade.SpriteWithDynamicBody;
   cursors!: Phaser.Types.Input.Keyboard.CursorKeys;
   stars!: Phaser.Physics.Arcade.Group;
+  starsMaximum = 200;
   score = 0;
   scoreText!: Phaser.GameObjects.Text;
   gameOver = false;
@@ -17,8 +18,8 @@ export class Scene extends Phaser.Scene {
     this.load.image("sky", "assets/sky.png");
     this.load.image("cloud", "assets/cloud.png");
     this.load.image("ground", "assets/platform.png");
-    this.load.image("star", "assets/star.png");
-    this.load.image("bomb", "assets/bomb.png");
+    this.load.image("star", "assets/heart.png");
+    this.load.image("bomb", "assets/new-bomb.png");
     this.load.spritesheet("friend", "assets/friend.png", {
       frameWidth: 32,
       frameHeight: 48,
@@ -84,16 +85,18 @@ export class Scene extends Phaser.Scene {
     this.stars.children.iterate((child) => {
       const sprite = child as Phaser.Physics.Arcade.Sprite;
       sprite.setBounceY(Phaser.Math.FloatBetween(0.4, 0.8));
+      sprite.setCollideWorldBounds(true);
       return true;
     });
 
     this.bombs = this.physics.add.group();
 
     this.physics.add.collider(this.friend, this.platforms);
+    this.physics.add.collider(this.friend, this.bombs);
     this.physics.add.collider(this.stars, this.platforms);
     this.physics.add.collider(this.bombs, this.platforms);
     this.physics.add.collider(
-      this.friend,
+      this.stars,
       this.bombs,
       this.hitBomb as Phaser.Types.Physics.Arcade.ArcadePhysicsCallback,
       undefined,
@@ -110,16 +113,20 @@ export class Scene extends Phaser.Scene {
   }
 
   hitBomb(
-    friend: Phaser.Types.Physics.Arcade.SpriteWithDynamicBody,
+    star: Phaser.Types.Physics.Arcade.GameObjectWithBody,
     bomb: Phaser.Types.Physics.Arcade.GameObjectWithBody
   ) {
-    this.physics.pause();
+    for (let i = 0; i < 11; i++) {
+      let x = 12 + i * Phaser.Math.FloatBetween(65, 80);
+      let y = 0;
 
-    friend.setTint(0xff0000);
+      if (this.stars.countActive(true) < this.starsMaximum) {
+        const newStar = this.stars.create(x, y, "star");
 
-    friend.anims.play("turn");
-
-    this.gameOver = true;
+        newStar.setBounceY(Phaser.Math.FloatBetween(0.4, 0.8));
+        newStar.setCollideWorldBounds(true);
+      }
+    }
   }
 
   update() {
