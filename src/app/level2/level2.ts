@@ -5,6 +5,7 @@ import { AudioAsset, AudioAssets } from "../audio";
 import { ImageAsset, ImageAssets } from "../image";
 import { SpriteAsset, SpriteAssets } from "../sprite";
 import { Level } from "../level";
+import { showLevelStartText } from "../level-text";
 
 export class Level2 extends Phaser.Scene {
   cursors!: Phaser.Types.Input.Keyboard.CursorKeys;
@@ -44,8 +45,7 @@ export class Level2 extends Phaser.Scene {
     const newFriendY = this.friend.y + deltaY;
     const groundType = this.groundTypeAt(newFriendX, newFriendY);
     if (groundType === ImageAsset.Stone) {
-      this.friend.x = newFriendX;
-      this.friend.y = newFriendY;
+      this.moveFriend(newFriendX, newFriendY, groundType);
     }
   }
 
@@ -57,6 +57,7 @@ export class Level2 extends Phaser.Scene {
     });
     this.cursors = this.input.keyboard!.createCursorKeys();
     this.friend = this.add.sprite(25, 25, SpriteAsset.Friend, 4);
+    showLevelStartText(this, 2);
   }
 
   private groundTypeAt(x: number, y: number): GroundType | null {
@@ -67,5 +68,15 @@ export class Level2 extends Phaser.Scene {
       return (xOrY - 25) / 50;
     };
     return map[index(y)]?.[index(x)] || null;
+  }
+
+  private moveFriend(x: number, y: number, groundType: GroundType) {
+    this.friend.x = x;
+    this.friend.y = y;
+    switch (groundType) {
+      case ImageAsset.Stone:
+        this.sound.play(AudioAsset.Stomp);
+        break;
+    }
   }
 }

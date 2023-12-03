@@ -5,6 +5,7 @@ import { AudioAsset, AudioAssets } from "../audio";
 import { ImageAsset, ImageAssets } from "../image";
 import { SpriteAsset, SpriteAssets } from "../sprite";
 import { Level } from "../level";
+import { showLevelStartText } from "../level-text";
 
 export class Level1 extends Phaser.Scene {
   cursors!: Phaser.Types.Input.Keyboard.CursorKeys;
@@ -79,11 +80,19 @@ export class Level1 extends Phaser.Scene {
         this.friend.x = newFriendX;
         this.friend.y = newFriendY + 15;
       } else if (newFriendX === 225 && newFriendY === 310) {
-        this.castle.anims.play("open");
-        this.friend.setVisible(false);
-        this.sound.play(AudioAsset.Tada);
         this.levelOver = true;
-        this.scene.start(Level.Level2);
+        this.friend.setVisible(false);
+        this.castle.anims.play("open");
+        this.time.addEvent({
+          delay: 1_500,
+          callback: () => this.sound.play(AudioAsset.Tada),
+          loop: false,
+        });
+        this.time.addEvent({
+          delay: 3_000,
+          callback: () => this.scene.start(Level.Level2),
+          loop: false,
+        });
       } else {
         this.sound.play(AudioAsset.Thump);
       }
@@ -123,6 +132,7 @@ export class Level1 extends Phaser.Scene {
     });
     this.boat = this.add.image(725, 540, ImageAsset.Boat);
     this.friend = this.add.sprite(25, 25, SpriteAsset.Friend, 4);
+    showLevelStartText(this, 1);
   }
 
   private groundTypeAt(x: number, y: number): GroundType | null {
