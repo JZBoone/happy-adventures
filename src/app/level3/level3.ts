@@ -1,6 +1,6 @@
 import Phaser from "phaser";
 import { GroundType } from "../ground";
-import { map } from "./map";
+import { boneCoordinates, map } from "./map";
 import { AudioAsset, AudioAssets } from "../audio";
 import { ImageAsset, ImageAssets } from "../image";
 import { SpriteAsset, SpriteAssets } from "../sprite";
@@ -43,9 +43,9 @@ export class Level3 extends Phaser.Scene {
     }
     const newFriendX = this.friend.x + deltaX;
     const newFriendY = this.friend.y + deltaY;
-    const groundType = this.groundTypeAt(newFriendX, newFriendY);
+    const [groundType, isBones] = this.groundTypeAt(newFriendX, newFriendY);
     if (groundType) {
-      this.moveFriend(newFriendX, newFriendY, groundType);
+      this.moveFriend(newFriendX, newFriendY, groundType, isBones);
     }
   }
 
@@ -56,8 +56,12 @@ export class Level3 extends Phaser.Scene {
       });
     });
     this.cursors = this.input.keyboard!.createCursorKeys();
-    const heart = this.add.image(600, 100, ImageAsset.Heart);
-    const lungs = this.add.image(250, 130, ImageAsset.Lungs);
+    this.add.image(600, 100, ImageAsset.Heart);
+    this.add.image(250, 130, ImageAsset.Lungs);
+    this.add.image(150, 430, ImageAsset.Bones);
+    this.add.image(570, 330, ImageAsset.Bones);
+    this.add.image(500, 430, ImageAsset.Elasmosaurus);
+    this.add.image(500, 570, ImageAsset.SmallElasmosaurus);
     this.friend = this.add.sprite(25, 25, SpriteAsset.Friend, 4);
     showLevelStartText(this, 3);
   }
@@ -75,22 +79,37 @@ export class Level3 extends Phaser.Scene {
     });
   }
 
-  private groundTypeAt(x: number, y: number): GroundType | null {
+  private groundTypeAt(
+    x: number,
+    y: number
+  ): [GroundType | null, isBones: boolean] {
     const index = (xOrY: number) => {
       if (xOrY === 25) {
         return 0;
       }
       return (xOrY - 25) / 50;
     };
-    return map[index(y)]?.[index(x)] || null;
+    const isBones = boneCoordinates.some(
+      ([_y, _x]) => index(y) === _y && index(x) === _x
+    );
+    return [map[index(y)]?.[index(x)] || null, isBones];
   }
 
-  private moveFriend(x: number, y: number, groundType: GroundType) {
+  private moveFriend(
+    x: number,
+    y: number,
+    groundType: GroundType,
+    isBones: boolean
+  ) {
     switch (groundType) {
       case ImageAsset.Goo:
         this.friend.x = x;
         this.friend.y = y;
-        this.sound.play(AudioAsset.Splat);
+        if (isBones) {
+          this.sound.play(AudioAsset.Crunch);
+        } else {
+          this.sound.play(AudioAsset.Splat);
+        }
         break;
     }
   }

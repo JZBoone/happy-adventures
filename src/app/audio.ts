@@ -8,6 +8,7 @@ export enum AudioAsset {
   Fall = "Fall",
   Chomp = "Chomp",
   Splat = "Splat",
+  Crunch = "Crunch",
 }
 
 export const AudioAssets: Record<AudioAsset, string> = {
@@ -20,4 +21,5 @@ export const AudioAssets: Record<AudioAsset, string> = {
   [AudioAsset.Fall]: "assets/audio/fall.mp3",
   [AudioAsset.Chomp]: "assets/audio/chomp.mp3",
   [AudioAsset.Splat]: "assets/audio/splat.mp3",
+  [AudioAsset.Crunch]: "assets/audio/crunch.mp3",
 };
