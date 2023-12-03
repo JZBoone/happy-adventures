@@ -1,180 +1,143 @@
 import Phaser from "phaser";
+import { FloorTexture } from "./floor-texture";
+import { map } from "./map";
+import { Audio, AudioFiles } from "./audio";
 
 export class Scene extends Phaser.Scene {
-  platforms!: Phaser.Physics.Arcade.StaticGroup;
-  friend!: Phaser.Types.Physics.Arcade.SpriteWithDynamicBody;
   cursors!: Phaser.Types.Input.Keyboard.CursorKeys;
-  stars!: Phaser.Physics.Arcade.Group;
-  starsMaximum = 200;
-  score = 0;
-  scoreText!: Phaser.GameObjects.Text;
-  gameOver = false;
-  bombs!: Phaser.Physics.Arcade.Group;
+  friend!: Phaser.GameObjects.Sprite;
+  castle!: Phaser.GameObjects.Sprite;
+  boat!: Phaser.GameObjects.Image;
+  isInWater = false;
+  levelOver = false;
   constructor() {
     super({ key: "scene" });
   }
 
   preload() {
-    this.load.image("sky", "assets/sky.png");
-    this.load.image("cloud", "assets/cloud.png");
-    this.load.image("ground", "assets/platform.png");
-    this.load.image("star", "assets/heart.png");
-    this.load.image("bomb", "assets/new-bomb.png");
+    for (const [key, path] of Object.entries(AudioFiles)) {
+      this.load.audio(key, path);
+    }
+    this.load.image(FloorTexture.Grass, "assets/grass.png");
+    this.load.image(FloorTexture.Sand, "assets/sand.png");
+    this.load.image(FloorTexture.Water, "assets/water.png");
+    this.load.image("boat", "assets/boat.png");
+    this.load.spritesheet("castle", "assets/castle.png", {
+      frameWidth: 168,
+      frameHeight: 139,
+    });
     this.load.spritesheet("friend", "assets/friend.png", {
       frameWidth: 32,
       frameHeight: 48,
     });
   }
 
-  create() {
-    this.add.image(400, 300, "sky");
-    this.add.image(100, 100, "cloud");
-    this.add.image(300, 80, "cloud");
-    this.add.image(475, 150, "cloud");
-    this.scoreText = this.add.text(16, 16, "score: 0", {
-      fontSize: "32px",
-    });
-
-    this.platforms = this.physics.add.staticGroup();
-
-    this.platforms.create(400, 568, "ground").setScale(2).refreshBody();
-
-    this.platforms.create(600, 400, "ground");
-    this.platforms.create(50, 250, "ground");
-    this.platforms.create(750, 220, "ground");
-
-    this.friend = this.physics.add.sprite(100, 350, "friend");
-    this.friend.body.setGravityY(200);
-    this.friend.setBounce(0.2);
-    this.friend.setCollideWorldBounds(true);
-
-    this.anims.create({
-      key: "left",
-      frames: this.anims.generateFrameNumbers("friend", {
-        start: 0,
-        end: 3,
-      }),
-      frameRate: 10,
-      repeat: -1,
-    });
-
-    this.anims.create({
-      key: "turn",
-      frames: [{ key: "friend", frame: 4 }],
-      frameRate: 20,
-    });
-
-    this.anims.create({
-      key: "right",
-      frames: this.anims.generateFrameNumbers("friend", {
-        start: 5,
-        end: 8,
-      }),
-      frameRate: 10,
-      repeat: -1,
-    });
-
-    this.cursors = this.input.keyboard!.createCursorKeys();
-
-    this.stars = this.physics.add.group({
-      key: "star",
-      repeat: 11,
-      setXY: { x: 12, y: 0, stepX: 70 },
-    });
-
-    this.stars.children.iterate((child) => {
-      const sprite = child as Phaser.Physics.Arcade.Sprite;
-      sprite.setBounceY(Phaser.Math.FloatBetween(0.4, 0.8));
-      sprite.setCollideWorldBounds(true);
-      return true;
-    });
-
-    this.bombs = this.physics.add.group();
-
-    this.physics.add.collider(this.friend, this.platforms);
-    this.physics.add.collider(this.friend, this.bombs);
-    this.physics.add.collider(this.stars, this.platforms);
-    this.physics.add.collider(this.bombs, this.platforms);
-    this.physics.add.collider(
-      this.stars,
-      this.bombs,
-      this.hitBomb as Phaser.Types.Physics.Arcade.ArcadePhysicsCallback,
-      undefined,
-      this
-    );
-
-    this.physics.add.overlap(
-      this.friend,
-      this.stars,
-      this.collectStar as Phaser.Types.Physics.Arcade.ArcadePhysicsCallback,
-      undefined,
-      this
-    );
-  }
-
-  hitBomb(
-    star: Phaser.Types.Physics.Arcade.GameObjectWithBody,
-    bomb: Phaser.Types.Physics.Arcade.GameObjectWithBody
-  ) {
-    for (let i = 0; i < 11; i++) {
-      let x = 12 + i * Phaser.Math.FloatBetween(65, 80);
-      let y = 0;
-
-      if (this.stars.countActive(true) < this.starsMaximum) {
-        const newStar = this.stars.create(x, y, "star");
-
-        newStar.setBounceY(Phaser.Math.FloatBetween(0.4, 0.8));
-        newStar.setCollideWorldBounds(true);
+  update() {
+    if (this.levelOver) {
+      return;
+    }
+    let deltaX: number = 0;
+    let deltaY: number = 0;
+    if (Phaser.Input.Keyboard.JustDown(this.cursors.down)) {
+      deltaY = 50;
+    } else if (Phaser.Input.Keyboard.JustDown(this.cursors.right)) {
+      deltaX = 50;
+    } else if (Phaser.Input.Keyboard.JustDown(this.cursors.up)) {
+      deltaY = -50;
+    } else if (Phaser.Input.Keyboard.JustDown(this.cursors.left)) {
+      deltaX = -50;
+    }
+    if (deltaX === 0 && deltaY === 0) {
+      return;
+    }
+    const newFriendX = this.friend.x + deltaX;
+    const newFriendY = this.friend.y + deltaY;
+    if (!this.isInWater) {
+      const floorTexture = this.floorTextureAt(newFriendX, newFriendY);
+      if (floorTexture === FloorTexture.Sand) {
+        this.friend.x = newFriendX;
+        this.friend.y = newFriendY;
+        this.sound.play(Audio.SandStep);
+      } else if (
+        floorTexture === FloorTexture.Water &&
+        this.boatAt(newFriendX, newFriendY)
+      ) {
+        this.isInWater = true;
+        this.friend.x = newFriendX;
+        this.friend.y = newFriendY - 15;
+      } else {
+        this.sound.play(Audio.Thump);
+      }
+    } else if (this.isInWater) {
+      const floorTexture = this.floorTextureAt(newFriendX, newFriendY + 15);
+      if (floorTexture === FloorTexture.Water) {
+        this.sound.play(Audio.Splash);
+        this.friend.x = newFriendX;
+        this.friend.y = newFriendY;
+        this.boat.x = this.boat.x + deltaX;
+        this.boat.y = this.boat.y + deltaY;
+      } else if (floorTexture === FloorTexture.Sand) {
+        this.sound.play(Audio.SandStep);
+        this.isInWater = false;
+        this.friend.x = newFriendX;
+        this.friend.y = newFriendY + 15;
+      } else if (newFriendX === 225 && newFriendY === 310) {
+        this.castle.anims.play("open");
+        this.friend.setVisible(false);
+        this.sound.play(Audio.Tada);
+        this.levelOver = true;
+      } else {
+        this.sound.play(Audio.Thump);
       }
     }
   }
 
-  update() {
-    if (this.gameOver) {
-      return;
-    }
-    if (this.cursors.left.isDown) {
-      this.friend.setVelocityX(-160);
-
-      this.friend.anims.play("left", true);
-    } else if (this.cursors.right.isDown) {
-      this.friend.setVelocityX(160);
-
-      this.friend.anims.play("right", true);
-    } else {
-      this.friend.setVelocityX(0);
-
-      this.friend.anims.play("turn");
-    }
-
-    if (this.cursors.up.isDown && this.friend.body.touching.down) {
-      this.friend.setVelocityY(-430);
-    }
+  create() {
+    map.forEach((row, y) => {
+      row.forEach((floorTexture, x) => {
+        this.add.image(x * 50 + 25, y * 50 + 25, floorTexture);
+      });
+    });
+    this.cursors = this.input.keyboard!.createCursorKeys();
+    this.castle = this.add.sprite(225, 280, "castle", 0);
+    this.anims.create({
+      key: "open",
+      frames: this.anims.generateFrameNumbers("castle", {
+        start: 0,
+        end: 3,
+      }),
+      frameRate: 10,
+      repeat: 0,
+    });
+    this.anims.create({
+      key: "close",
+      frames: this.anims.generateFrameNumbers("castle", {
+        start: 3,
+        end: 0,
+      }),
+      frameRate: 10,
+      repeat: 0,
+    });
+    this.castle.on("animationstart", (anim: any) => {
+      if (anim.key === "open") {
+        this.sound.play(Audio.CastleOpen);
+      }
+    });
+    this.boat = this.add.image(725, 540, "boat");
+    this.friend = this.add.sprite(25, 25, "friend", 4);
   }
 
-  collectStar(
-    friend: Phaser.Types.Physics.Arcade.SpriteWithDynamicBody,
-    star: Phaser.Physics.Arcade.Sprite
-  ) {
-    star.disableBody(true, true);
-    this.score += 10;
-    this.scoreText.setText("Score: " + this.score);
-    if (this.stars.countActive(true) === 0) {
-      this.stars.children.iterate((child) => {
-        const sprite = child as Phaser.Physics.Arcade.Sprite;
-        sprite.enableBody(true, sprite.x, 0, true, true);
-        return true;
-      });
+  private floorTextureAt(x: number, y: number): FloorTexture | null {
+    const index = (xOrY: number) => {
+      if (xOrY === 25) {
+        return 0;
+      }
+      return (xOrY - 25) / 50;
+    };
+    return map[index(y)]?.[index(x)] || null;
+  }
 
-      const x =
-        friend.x < 400
-          ? Phaser.Math.Between(400, 800)
-          : Phaser.Math.Between(0, 400);
-
-      const bomb = this.bombs.create(x, 16, "bomb");
-      bomb.setBounce(1);
-      bomb.setCollideWorldBounds(true);
-      bomb.setVelocity(Phaser.Math.Between(-200, 200), 20);
-    }
+  private boatAt(x: number, y: number): boolean {
+    return this.boat.x === x && this.boat.y === y + 15;
   }
 }
