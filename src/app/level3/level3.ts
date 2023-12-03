@@ -56,6 +56,8 @@ export class Level3 extends Phaser.Scene {
       });
     });
     this.cursors = this.input.keyboard!.createCursorKeys();
+    const heart = this.add.image(600, 100, ImageAsset.Heart);
+    const lungs = this.add.image(250, 130, ImageAsset.Lungs);
     this.friend = this.add.sprite(25, 25, SpriteAsset.Friend, 4);
     showLevelStartText(this, 3);
   }
