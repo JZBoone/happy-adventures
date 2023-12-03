@@ -44,7 +44,7 @@ export class Level2 extends Phaser.Scene {
     const newFriendX = this.friend.x + deltaX;
     const newFriendY = this.friend.y + deltaY;
     const groundType = this.groundTypeAt(newFriendX, newFriendY);
-    if (groundType === ImageAsset.Stone) {
+    if (groundType) {
       this.moveFriend(newFriendX, newFriendY, groundType);
     }
   }
@@ -60,6 +60,19 @@ export class Level2 extends Phaser.Scene {
     showLevelStartText(this, 2);
   }
 
+  private fallIntoBlackHole() {
+    this.tweens.add({
+      targets: this.friend,
+      scaleX: 0, // Scale horizontally to 0
+      scaleY: 0, // Scale vertically to 0
+      ease: "Linear", // Use a linear easing
+      duration: 2000, // Duration of the tween in milliseconds
+      onComplete: () => {
+        this.friend.setVisible(false); // Hide the sprite after scaling down
+      },
+    });
+  }
+
   private groundTypeAt(x: number, y: number): GroundType | null {
     const index = (xOrY: number) => {
       if (xOrY === 25) {
@@ -71,11 +84,21 @@ export class Level2 extends Phaser.Scene {
   }
 
   private moveFriend(x: number, y: number, groundType: GroundType) {
-    this.friend.x = x;
-    this.friend.y = y;
     switch (groundType) {
       case ImageAsset.Stone:
+        this.friend.x = x;
+        this.friend.y = y;
         this.sound.play(AudioAsset.Stomp);
+        break;
+      case ImageAsset.BlackHole:
+        this.friend.x = x;
+        this.friend.y = y;
+        this.fallIntoBlackHole();
+        this.time.addEvent({
+          delay: 2_000,
+          callback: () => this.scene.start(Level.Level1),
+          loop: false,
+        });
         break;
     }
   }

@@ -4,4 +4,5 @@ export type GroundType =
   | ImageAsset.Grass
   | ImageAsset.Sand
   | ImageAsset.Water
-  | ImageAsset.Stone;
+  | ImageAsset.Stone
+  | ImageAsset.BlackHole;
