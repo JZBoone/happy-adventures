@@ -1,5 +1,8 @@
 import Phaser from "phaser";
-import { Scene } from "./scene";
+import { Level1 } from "./level1/level1";
+import { Level2 } from "./level2/level2";
+import { Level3 } from "./level3/level3";
+import { Level4 } from "./level4/level4";
 
 export default new Phaser.Game({
   type: Phaser.AUTO,
@@ -12,5 +15,5 @@ export default new Phaser.Game({
       debug: false,
     },
   },
-  scene: Scene,
+  scene: [Level1, Level2, Level3, Level4],
 });
