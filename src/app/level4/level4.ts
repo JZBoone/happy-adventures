@@ -5,7 +5,8 @@ import { Level } from "../common/level";
 import { showLevelStartText } from "../common/helpers";
 import { withAssets } from "../mixins/with-assets";
 import { withMap } from "../mixins/with-map";
-import { mapCoordinates, moveCoordinates, worldPosition } from "../common/map";
+import { moveCoordinates } from "../common/map";
+import { Movable } from "../common/movable";
 
 export class Level4 extends withMap(
   withAssets(Phaser.Scene, {
@@ -13,7 +14,7 @@ export class Level4 extends withMap(
   }),
   map
 ) {
-  private friend!: Phaser.GameObjects.Image;
+  private friend!: Movable<Phaser.GameObjects.Image>;
 
   constructor() {
     super({ key: Level.Level4 });
@@ -21,10 +22,11 @@ export class Level4 extends withMap(
 
   create() {
     super.create();
-    this.friend = this.createImage(
-      ...worldPosition({ row: 0, position: 0 }),
-      ImageAsset.Friend
-    );
+    this.friend = this.createMovable({
+      row: 0,
+      position: 0,
+      asset: ImageAsset.Friend,
+    });
     this.createImage(50, 50, ImageAsset.Tree);
     this.createImage(100, 100, ImageAsset.Tree);
     showLevelStartText(this, 4);
@@ -35,18 +37,14 @@ export class Level4 extends withMap(
     if (!move) {
       return;
     }
-    const [row, position] = mapCoordinates({
-      x: this.friend.x,
-      y: this.friend.y,
-    });
-    const [newRow, newPosition] = moveCoordinates(move, row, position);
+    const [newRow, newPosition] = moveCoordinates(
+      move,
+      ...this.friend.coordinates()
+    );
     if (this.moveIsOutOfBounds(newRow, newPosition)) {
       this.handleInvalidMove();
       return;
     }
-    this.move(this, this.friend, {
-      row: newRow,
-      position: newPosition,
-    });
+    this.friend.move(newRow, newPosition);
   }
 }

@@ -7,7 +7,8 @@ import { Level } from "../common/level";
 import { disappearFriend, showLevelStartText } from "../common/helpers";
 import { withAssets } from "../mixins/with-assets";
 import { withMap } from "../mixins/with-map";
-import { mapCoordinates, moveCoordinates, worldPosition } from "../common/map";
+import { moveCoordinates } from "../common/map";
+import { Movable } from "../common/movable";
 
 export class Level1 extends withMap(
   withAssets(Phaser.Scene, {
@@ -29,11 +30,10 @@ export class Level1 extends withMap(
   }),
   map
 ) {
-  private friend!: Phaser.GameObjects.Image;
+  private friend!: Movable<Phaser.GameObjects.Image>;
   private castle!: Phaser.GameObjects.Sprite;
-  private boat!: Phaser.GameObjects.Image;
+  private boat!: Movable<Phaser.GameObjects.Image>;
   private levelCompleted = false;
-  private boatYOffset = 15;
 
   private readonly WINNING_POSITION: [row: number, position: number] = [6, 4];
 
@@ -45,18 +45,18 @@ export class Level1 extends withMap(
     super.create();
     this.resetLevel1();
     this.castle = this.createSprite(225, 280, SpriteAsset.Castle, 0);
-    this.boat = this.createImage(
-      ...worldPosition({
-        row: 10,
-        position: 14,
-        yOffset: this.boatYOffset * -1,
-      }),
-      ImageAsset.Boat
-    );
-    this.friend = this.createImage(
-      ...worldPosition({ row: 0, position: 0 }),
-      ImageAsset.Friend
-    );
+    this.boat = this.createMovable({
+      row: 10,
+      position: 14,
+      offsetY: -15,
+      asset: ImageAsset.Boat,
+    });
+
+    this.friend = this.createMovable({
+      row: 0,
+      position: 0,
+      asset: ImageAsset.Friend,
+    });
     showLevelStartText(this, 1);
   }
 
@@ -68,12 +68,10 @@ export class Level1 extends withMap(
     if (!move) {
       return;
     }
-    const [row, position] = mapCoordinates({
-      x: this.friend.x,
-      y: this.friend.y,
-      yOffset: this.isInWater() ? this.boatYOffset : 0,
-    });
-    const [newRow, newPosition] = moveCoordinates(move, row, position);
+    const [newRow, newPosition] = moveCoordinates(
+      move,
+      ...this.friend.coordinates()
+    );
     if (this.moveIsOutOfBounds(newRow, newPosition)) {
       this.handleInvalidMove();
       return;
@@ -95,23 +93,13 @@ export class Level1 extends withMap(
   private handleInWaterMove(row: number, position: number) {
     const groundType = map[row][position];
     if (groundType === ImageAsset.Water) {
-      this.move(this, this.friend, {
-        row,
-        position,
-        yOffset: this.boatYOffset,
-      });
-      this.move(this, this.boat, {
-        row,
-        position,
-        yOffset: this.boatYOffset * -1,
-      });
+      this.friend.move(row, position);
+      this.boat.move(row, position);
       this.playAudio(AudioAsset.Splash);
     } else if (groundType === ImageAsset.Sand) {
       this.playAudio(AudioAsset.BoardBoat);
-      this.move(this, this.friend, {
-        row,
-        position,
-      });
+      this.friend.setOffsetY(0);
+      this.friend.move(row, position);
     } else {
       this.handleInvalidMove();
     }
@@ -120,17 +108,14 @@ export class Level1 extends withMap(
   private handleOutOfWaterMove(row: number, position: number) {
     const groundType = map[row][position];
     if (groundType === ImageAsset.Sand) {
-      this.move(this, this.friend, {
-        row,
-        position,
-      });
+      this.friend.move(row, position);
       this.playAudio(AudioAsset.SandStep);
-    } else if (groundType === ImageAsset.Water && this.boatAt(row, position)) {
-      this.move(this, this.friend, {
-        row,
-        position,
-        yOffset: this.boatYOffset,
-      });
+    } else if (
+      groundType === ImageAsset.Water &&
+      this.boat.isAt(row, position)
+    ) {
+      this.friend.setOffsetY(this.boat.offsetY * -1);
+      this.friend.move(row, position);
       this.playAudio(AudioAsset.BoardBoat);
     } else {
       this.handleInvalidMove();
@@ -138,16 +123,7 @@ export class Level1 extends withMap(
   }
 
   private isInWater() {
-    return this.friend.y + this.boatYOffset * 2 === this.boat.y;
-  }
-
-  private boatAt(row: number, position: number): boolean {
-    const [boatRow, boatPosition] = mapCoordinates({
-      x: this.boat.x,
-      y: this.boat.y,
-      yOffset: this.boatYOffset * -1,
-    });
-    return row === boatRow && position === boatPosition;
+    return this.friend.isAt(...this.boat.coordinates());
   }
 
   private resetLevel1() {
@@ -160,18 +136,12 @@ export class Level1 extends withMap(
     this.castle.anims.play(CastleAnimation.Open);
     this.time.addEvent({
       delay: 500,
-      callback: () =>
-        this.move(this, this.friend, {
-          row,
-          position,
-          // get it right on the open door
-          yOffset: 10,
-        }),
+      callback: () => this.friend.move(row, position),
       loop: false,
     });
     this.time.addEvent({
       delay: 1_000,
-      callback: () => disappearFriend(this, this.friend),
+      callback: () => disappearFriend(this, this.friend.movable),
       loop: false,
     });
     this.time.addEvent({

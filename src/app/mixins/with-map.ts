@@ -1,23 +1,48 @@
 import Phaser from "phaser";
-import { SceneClass } from "./common";
 import { ImageAsset } from "../common/image";
 import { AudioAsset } from "../common/audio";
 import { loadMap, worldPosition } from "../common/map";
+import { Movable } from "../common/movable";
+import { SpriteAsset } from "../common/sprite";
+import { ISceneWithAssets } from "./with-assets";
+import { Constructor } from "./common";
 
 export type Move = "up" | "down" | "left" | "right";
 
-export function withMap<TBase extends SceneClass>(
-  Base: TBase,
+interface IWithMap<
+  SceneAudioAsset extends AudioAsset,
+  SceneImageAsset extends ImageAsset,
+  SceneSpriteAsset extends SpriteAsset,
+> extends ISceneWithAssets<
+    SceneAudioAsset,
+    SceneImageAsset,
+    SceneSpriteAsset
+  > {}
+
+export function withMap<
+  SceneAudioAsset extends AudioAsset,
+  SceneImageAsset extends ImageAsset,
+  SceneSpriteAsset extends SpriteAsset,
+>(
+  Base: Constructor<
+    ISceneWithAssets<SceneAudioAsset, SceneImageAsset, SceneSpriteAsset>
+  >,
   map: ImageAsset[][]
 ) {
-  return class SceneWithMap extends Base {
+  return class SceneWithMap
+    extends Base
+    implements IWithMap<SceneAudioAsset, SceneImageAsset, SceneSpriteAsset>
+  {
     cursors!: Phaser.Types.Input.Keyboard.CursorKeys;
-    private __tweens = new Map<Phaser.GameObjects.Image, Phaser.Tweens.Tween>();
+    private movables: Movable<
+      Phaser.GameObjects.Image | Phaser.GameObjects.Sprite
+    >[] = [];
 
     create() {
       loadMap(this, map);
       this.cursors = this.input.keyboard!.createCursorKeys();
     }
+
     moveIsOutOfBounds(newRow: number, newPosition: number): boolean {
       return (
         newRow < 0 ||
@@ -26,37 +51,14 @@ export function withMap<TBase extends SceneClass>(
         newPosition > map[0].length - 1
       );
     }
+
     handleInvalidMove() {
       this.sound.play(AudioAsset.Thump);
     }
-    move(
-      scene: Phaser.Scene,
-      object: Phaser.GameObjects.Image,
-      place: {
-        row: number;
-        position: number;
-        xOffset?: number;
-        yOffset?: number;
-      }
-    ) {
-      const { row, position, xOffset, yOffset } = place;
-      const [x, y] = worldPosition({ row, position, xOffset, yOffset });
-      this.__tweens.set(
-        object,
-        scene.tweens.add({
-          targets: object,
-          x,
-          y,
-          ease: "Linear",
-          duration: 200,
-          repeat: 0,
-          yoyo: false,
-        })
-      );
-    }
+
     getMove(): Move | null {
-      for (const tween of this.__tweens.values()) {
-        if (tween.isPlaying()) {
+      for (const movable of this.movables) {
+        if (movable.isMoving()) {
           return null;
         }
       }
@@ -70,6 +72,30 @@ export function withMap<TBase extends SceneClass>(
         return "left";
       }
       return null;
+    }
+
+    createMovable(params: {
+      asset: SceneImageAsset | SceneSpriteAsset;
+      row: number;
+      position: number;
+      offsetX?: number;
+      offsetY?: number;
+    }): Movable<Phaser.GameObjects.Image | Phaser.GameObjects.Sprite> {
+      const { asset, row, position, offsetX, offsetY } = params;
+      const isImage = this.images.includes(asset as SceneImageAsset);
+      const isSprite = this.sprites.includes(asset as SceneSpriteAsset);
+      if (!isImage && !isSprite) {
+        throw new Error(
+          `Movable asset not loaded. Did you forget to load ${asset}?`
+        );
+      }
+      const [x, y] = worldPosition({ row, position, offsetX, offsetY });
+      const createdAsset = isImage
+        ? this.createImage(x, y, asset as ImageAsset)
+        : this.createSprite(x, y, asset as SpriteAsset);
+      const movable = new Movable(this, createdAsset, { offsetX, offsetY });
+      this.movables.push(movable);
+      return movable;
     }
   };
 }

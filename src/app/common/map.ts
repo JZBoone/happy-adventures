@@ -24,12 +24,12 @@ export function loadMap(scene: Phaser.Scene, map: ImageAsset[][]) {
 export function mapCoordinates(params: {
   x: number;
   y: number;
-  xOffset?: number;
-  yOffset?: number;
+  offsetX?: number;
+  offsetY?: number;
 }): [row: number, position: number] {
-  const { x, y, xOffset, yOffset } = params;
-  const xNormalized = x + (xOffset ?? 0);
-  const yNormalized = y + (yOffset ?? 0);
+  const { x, y, offsetX, offsetY } = params;
+  const xNormalized = x + (offsetX ?? 0);
+  const yNormalized = y + (offsetY ?? 0);
   const index = (normalizedXorY: number) => {
     if (normalizedXorY === halfMapTileSizePx) {
       return 0;
@@ -59,12 +59,12 @@ export function moveCoordinates(
 export function worldPosition(params: {
   row: number;
   position: number;
-  xOffset?: number;
-  yOffset?: number;
+  offsetX?: number;
+  offsetY?: number;
 }): [x: number, y: number] {
-  const { row, position, xOffset, yOffset } = params;
+  const { row, position, offsetX, offsetY } = params;
   return [
-    position * mapTileSizePx + halfMapTileSizePx - (xOffset ?? 0),
-    row * mapTileSizePx + halfMapTileSizePx - (yOffset ?? 0),
+    position * mapTileSizePx + halfMapTileSizePx - (offsetX ?? 0),
+    row * mapTileSizePx + halfMapTileSizePx - (offsetY ?? 0),
   ];
 }

@@ -7,7 +7,8 @@ import { disappearFriend, showLevelStartText } from "../common/helpers";
 import { Level2Data } from "../level2/data";
 import { withAssets } from "../mixins/with-assets";
 import { withMap } from "../mixins/with-map";
-import { mapCoordinates, moveCoordinates, worldPosition } from "../common/map";
+import { moveCoordinates } from "../common/map";
+import { Movable } from "../common/movable";
 
 export class Level3 extends withMap(
   withAssets(Phaser.Scene, {
@@ -31,12 +32,12 @@ export class Level3 extends withMap(
   }),
   map
 ) {
-  private friend!: Phaser.GameObjects.Image;
-  private bomb!: Phaser.GameObjects.Image;
+  private friend!: Movable<Phaser.GameObjects.Image>;
+  private bomb!: Movable<Phaser.GameObjects.Image>;
   private heart!: Phaser.GameObjects.Image;
 
-  private readonly bombYOffset = 25;
-  private readonly hoistedBombYOffset = 30;
+  private readonly bomboffsetY = 25;
+  private readonly hoistedBomboffsetY = 30;
   private readonly BOMB_HOIST_COORDINATES: [row: number, position: number] = [
     11, 1,
   ];
@@ -62,18 +63,17 @@ export class Level3 extends withMap(
     this.createImage(570, 330, ImageAsset.Bones);
     this.createImage(500, 430, ImageAsset.Elasmosaurus);
     this.createImage(500, 570, ImageAsset.SmallElasmosaurus);
-    this.friend = this.createImage(
-      ...worldPosition({ row: 0, position: 0 }),
-      ImageAsset.Friend
-    );
-    this.bomb = this.createImage(
-      ...worldPosition({
-        row: 11,
-        position: 1,
-        yOffset: this.bombYOffset,
-      }),
-      ImageAsset.Bomb
-    );
+    this.friend = this.createMovable({
+      row: 0,
+      position: 0,
+      asset: ImageAsset.Friend,
+    });
+    this.bomb = this.createMovable({
+      row: 11,
+      position: 1,
+      asset: ImageAsset.Bomb,
+      offsetY: this.bomboffsetY,
+    });
     showLevelStartText(this, 3);
   }
 
@@ -82,11 +82,10 @@ export class Level3 extends withMap(
     if (!move) {
       return;
     }
-    const [row, position] = mapCoordinates({
-      x: this.friend.x,
-      y: this.friend.y,
-    });
-    const [newRow, newPosition] = moveCoordinates(move, row, position);
+    const [newRow, newPosition] = moveCoordinates(
+      move,
+      ...this.friend.coordinates()
+    );
     if (this.moveIsOutOfBounds(newRow, newPosition)) {
       this.handleInvalidMove();
       return;
@@ -113,14 +112,10 @@ export class Level3 extends withMap(
         : AudioAsset.Splat
     );
     if (this.isCarryingBomb()) {
-      this.move(this, this.friend, { row, position });
-      this.move(this, this.bomb, {
-        row,
-        position,
-        yOffset: this.hoistedBombYOffset + this.bombYOffset,
-      });
+      this.friend.move(row, position);
+      this.bomb.move(row, position);
     } else {
-      this.move(this, this.friend, { row, position });
+      this.friend.move(row, position);
     }
   }
 
@@ -133,30 +128,19 @@ export class Level3 extends withMap(
   }
 
   private isCarryingBomb() {
-    return (
-      this.bomb.y === this.friend.y - this.bombYOffset - this.hoistedBombYOffset
-    );
+    return this.friend.isAt(...this.bomb.coordinates());
   }
 
   private hoistBomb() {
     this.playAudio(AudioAsset.Grunt);
-    const [row, position] = mapCoordinates({
-      x: this.bomb.x,
-      y: this.bomb.y,
-      yOffset: this.bombYOffset,
-    });
-    this.move(this, this.bomb, {
-      row,
-      position,
-      yOffset: this.hoistedBombYOffset + this.bombYOffset,
-    });
+    this.bomb.setOffsetY(this.hoistedBomboffsetY + this.bomboffsetY);
   }
 
   private explodeHeartAndCompleteLevel() {
     this.playAudio(AudioAsset.Explosion);
     this.heart.setVisible(false);
-    this.bomb.setVisible(false);
-    disappearFriend(this, this.friend);
+    this.bomb.movable.setVisible(false);
+    disappearFriend(this, this.friend.movable);
     this.time.addEvent({
       delay: 2_000,
       callback: () => this.playAudio(AudioAsset.Tada),

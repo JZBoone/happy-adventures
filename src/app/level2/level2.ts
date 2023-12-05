@@ -7,7 +7,8 @@ import { disappearFriend, showLevelStartText } from "../common/helpers";
 import { Level2Data } from "./data";
 import { withAssets } from "../mixins/with-assets";
 import { withMap } from "../mixins/with-map";
-import { mapCoordinates, moveCoordinates, worldPosition } from "../common/map";
+import { moveCoordinates } from "../common/map";
+import { Movable } from "../common/movable";
 
 export class Level2 extends withMap(
   withAssets(Phaser.Scene, {
@@ -27,7 +28,7 @@ export class Level2 extends withMap(
   }),
   map
 ) {
-  friend!: Phaser.GameObjects.Image;
+  friend!: Movable<Phaser.GameObjects.Image>;
   monsterIsDead = false;
   private readonly MONSTER_COORDINATES: [row: number, position: number][] = [
     [10, 12],
@@ -53,10 +54,11 @@ export class Level2 extends withMap(
 
   create() {
     super.create();
-    this.friend = this.createImage(
-      ...worldPosition({ row: 0, position: 0 }),
-      ImageAsset.Friend
-    );
+    this.friend = this.createMovable({
+      row: 0,
+      position: 0,
+      asset: ImageAsset.Friend,
+    });
     if (!this.monsterIsDead) {
       this.createImage(650, 540, ImageAsset.Monster);
     }
@@ -69,11 +71,10 @@ export class Level2 extends withMap(
     if (!move) {
       return;
     }
-    const [row, position] = mapCoordinates({
-      x: this.friend.x,
-      y: this.friend.y,
-    });
-    const [newRow, newPosition] = moveCoordinates(move, row, position);
+    const [newRow, newPosition] = moveCoordinates(
+      move,
+      ...this.friend.coordinates()
+    );
     if (this.moveIsOutOfBounds(newRow, newPosition)) {
       this.handleInvalidMove();
       return;
@@ -99,13 +100,13 @@ export class Level2 extends withMap(
     }
     switch (map[row][position]) {
       case ImageAsset.Stone:
-        this.move(this, this.friend, { row, position });
+        this.friend.move(row, position);
         this.playAudio(AudioAsset.Stomp);
         break;
       case ImageAsset.BlackHole:
-        this.move(this, this.friend, { row, position });
+        this.friend.move(row, position);
         this.playAudio(AudioAsset.Fall);
-        disappearFriend(this, this.friend);
+        disappearFriend(this, this.friend.movable);
         this.time.addEvent({
           delay: 2_000,
           callback: () => this.scene.start(Level.Level1),
@@ -122,14 +123,14 @@ export class Level2 extends withMap(
       callback: () => this.scene.start(Level.Level4),
       loop: false,
     });
-    this.move(this, this.friend, { row, position });
-    disappearFriend(this, this.friend);
+    this.friend.move(row, position);
+    disappearFriend(this, this.friend.movable);
   }
 
   private swallowFriend(row: number, position: number) {
-    this.move(this, this.friend, { row, position });
+    this.friend.move(row, position);
     this.playAudio(AudioAsset.Chomp);
-    disappearFriend(this, this.friend);
+    disappearFriend(this, this.friend.movable);
     this.time.addEvent({
       delay: 2_000,
       callback: () => this.scene.start(Level.Level3),
