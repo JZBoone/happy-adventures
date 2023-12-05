@@ -47,8 +47,10 @@ export const heartCoordinates: [y: number, x: number][] = [
   [3, 12],
 ];
 
-export const map: ImageAsset.Goo[][] = (() => {
-  const _map: ImageAsset.Goo[][] = [
+export type GroundType = ImageAsset.Goo;
+
+export const map: GroundType[][] = (() => {
+  const _map: GroundType[][] = [
     [
       ImageAsset.Goo,
       ImageAsset.Goo,

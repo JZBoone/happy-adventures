@@ -1,6 +1,5 @@
 import Phaser from "phaser";
-import { GroundType } from "../ground";
-import { map } from "./map";
+import { GroundType, map } from "./map";
 import { AudioAsset } from "../audio";
 import { ImageAsset } from "../image";
 import { CastleAnimation, SpriteAsset } from "../sprite";

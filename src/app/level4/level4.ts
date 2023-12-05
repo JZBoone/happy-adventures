@@ -1,6 +1,5 @@
 import Phaser from "phaser";
-import { GroundType } from "../ground";
-import { map } from "./map";
+import { GroundType, map } from "./map";
 import { ImageAsset } from "../image";
 import { Level } from "../level";
 import { showLevelStartText } from "../helpers";

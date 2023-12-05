@@ -1,6 +1,5 @@
 import Phaser from "phaser";
-import { GroundType } from "../ground";
-import { boneCoordinates, heartCoordinates, map } from "./map";
+import { GroundType, boneCoordinates, heartCoordinates, map } from "./map";
 import { AudioAsset } from "../audio";
 import { ImageAsset } from "../image";
 import { Level } from "../level";
