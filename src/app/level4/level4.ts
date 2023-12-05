@@ -1,67 +1,58 @@
 import Phaser from "phaser";
-import { GroundType, map } from "./map";
+import { map } from "./map";
 import { ImageAsset } from "../image";
 import { Level } from "../level";
-import { showLevelStartText } from "../helpers";
+import {
+  mapCoordinates,
+  moveCoordinates,
+  showLevelStartText,
+  worldPosition,
+} from "../helpers";
 import { withAssets } from "../mixins/with-assets";
+import { withMap } from "../mixins/with-map";
 
-export class Level4 extends withAssets(Phaser.Scene, {
-  images: [ImageAsset.Friend, ImageAsset.Forest, ImageAsset.Tree],
-}) {
-  private cursors!: Phaser.Types.Input.Keyboard.CursorKeys;
+export class Level4 extends withMap(
+  withAssets(Phaser.Scene, {
+    images: [ImageAsset.Friend, ImageAsset.Forest, ImageAsset.Tree],
+  }),
+  map
+) {
   private friend!: Phaser.GameObjects.Image;
 
   constructor() {
     super({ key: Level.Level4 });
   }
 
-  update() {
-    let deltaX: number = 0;
-    let deltaY: number = 0;
-    if (Phaser.Input.Keyboard.JustDown(this.cursors.down)) {
-      deltaY = 50;
-    } else if (Phaser.Input.Keyboard.JustDown(this.cursors.right)) {
-      deltaX = 50;
-    } else if (Phaser.Input.Keyboard.JustDown(this.cursors.up)) {
-      deltaY = -50;
-    } else if (Phaser.Input.Keyboard.JustDown(this.cursors.left)) {
-      deltaX = -50;
-    }
-    if (deltaX === 0 && deltaY === 0) {
-      return;
-    }
-    const newFriendX = this.friend.x + deltaX;
-    const newFriendY = this.friend.y + deltaY;
-    const groundType = this.groundTypeAt(newFriendX, newFriendY);
-    if (groundType) {
-      this.moveFriend(newFriendX, newFriendY, groundType);
-    }
-  }
-
   create() {
-    map.forEach((row, y) => {
-      row.forEach((groundType, x) => {
-        this.createImage(x * 50 + 25, y * 50 + 25, groundType);
-      });
-    });
-    this.cursors = this.input.keyboard!.createCursorKeys();
-    this.friend = this.createImage(25, 25, ImageAsset.Friend);
+    super.create();
+    this.friend = this.createImage(
+      ...worldPosition({ row: 0, position: 0 }),
+      ImageAsset.Friend
+    );
     this.createImage(50, 50, ImageAsset.Tree);
     this.createImage(100, 100, ImageAsset.Tree);
     showLevelStartText(this, 4);
   }
 
-  private groundTypeAt(x: number, y: number): GroundType | null {
-    const index = (xOrY: number) => {
-      if (xOrY === 25) {
-        return 0;
-      }
-      return (xOrY - 25) / 50;
-    };
-    return map[index(y)]?.[index(x)];
+  update() {
+    const move = this.getMove();
+    if (!move) {
+      return;
+    }
+    const [row, position] = mapCoordinates({
+      x: this.friend.x,
+      y: this.friend.y,
+    });
+    const [newRow, newPosition] = moveCoordinates(move, row, position);
+    if (this.moveIsOutOfBounds(newRow, newPosition)) {
+      this.handleInvalidMove();
+      return;
+    }
+    this.handleMove(newRow, newPosition);
   }
 
-  private moveFriend(x: number, y: number, groundType: GroundType) {
+  private handleMove(row: number, position: number) {
+    const [x, y] = worldPosition({ row, position });
     this.friend.x = x;
     this.friend.y = y;
   }

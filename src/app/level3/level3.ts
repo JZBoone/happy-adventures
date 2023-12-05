@@ -50,23 +50,6 @@ export class Level3 extends withMap(
     super({ key: Level.Level3 });
   }
 
-  update() {
-    const move = this.getMove();
-    if (!move) {
-      return;
-    }
-    const [row, position] = mapCoordinates({
-      x: this.friend.x,
-      y: this.friend.y,
-    });
-    const [newRow, newPosition] = moveCoordinates(move, row, position);
-    if (this.moveIsOutOfBounds(newRow, newPosition)) {
-      this.handleInvalidMove();
-      return;
-    }
-    this.handleMove(newRow, newPosition);
-  }
-
   create() {
     super.create();
     this.heart = this.createImage(600, 100, ImageAsset.Heart);
@@ -88,6 +71,23 @@ export class Level3 extends withMap(
       ImageAsset.Bomb
     );
     showLevelStartText(this, 3);
+  }
+
+  update() {
+    const move = this.getMove();
+    if (!move) {
+      return;
+    }
+    const [row, position] = mapCoordinates({
+      x: this.friend.x,
+      y: this.friend.y,
+    });
+    const [newRow, newPosition] = moveCoordinates(move, row, position);
+    if (this.moveIsOutOfBounds(newRow, newPosition)) {
+      this.handleInvalidMove();
+      return;
+    }
+    this.handleMove(newRow, newPosition);
   }
 
   private handleMove(row: number, position: number) {
