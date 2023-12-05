@@ -10,7 +10,7 @@ import { Level2Data } from "./data";
 
 export class Level2 extends Phaser.Scene {
   cursors!: Phaser.Types.Input.Keyboard.CursorKeys;
-  friend!: Phaser.GameObjects.Sprite;
+  friend!: Phaser.GameObjects.Image;
   monsterIsDead = false;
   constructor() {
     super({ key: Level.Level2 });
@@ -64,7 +64,7 @@ export class Level2 extends Phaser.Scene {
       });
     });
     this.cursors = this.input.keyboard!.createCursorKeys();
-    this.friend = this.add.sprite(25, 25, SpriteAsset.Friend, 4);
+    this.friend = this.add.image(25, 25, ImageAsset.Friend);
     if (!this.monsterIsDead) {
       this.add.image(650, 540, ImageAsset.Monster);
     }

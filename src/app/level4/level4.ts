@@ -9,7 +9,7 @@ import { showLevelStartText } from "../level-text";
 
 export class Level4 extends Phaser.Scene {
   private cursors!: Phaser.Types.Input.Keyboard.CursorKeys;
-  private friend!: Phaser.GameObjects.Sprite;
+  private friend!: Phaser.GameObjects.Image;
 
   constructor() {
     super({ key: Level.Level4 });
@@ -57,7 +57,7 @@ export class Level4 extends Phaser.Scene {
       });
     });
     this.cursors = this.input.keyboard!.createCursorKeys();
-    this.friend = this.add.sprite(25, 25, SpriteAsset.Friend, 4);
+    this.friend = this.add.image(25, 25, ImageAsset.Friend);
     showLevelStartText(this, 4);
   }
 

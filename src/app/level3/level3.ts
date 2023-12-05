@@ -10,7 +10,7 @@ import { Level2Data } from "../level2/data";
 
 export class Level3 extends Phaser.Scene {
   private cursors!: Phaser.Types.Input.Keyboard.CursorKeys;
-  private friend!: Phaser.GameObjects.Sprite;
+  private friend!: Phaser.GameObjects.Image;
   private bomb!: Phaser.GameObjects.Image;
   private heart!: Phaser.GameObjects.Image;
   private isCarryingBomb = false;
@@ -67,7 +67,7 @@ export class Level3 extends Phaser.Scene {
     this.add.image(570, 330, ImageAsset.Bones);
     this.add.image(500, 430, ImageAsset.Elasmosaurus);
     this.add.image(500, 570, ImageAsset.SmallElasmosaurus);
-    this.friend = this.add.sprite(25, 25, SpriteAsset.Friend, 4);
+    this.friend = this.add.image(25, 25, ImageAsset.Friend);
     this.bomb = this.add.image(75, 550, ImageAsset.Bomb);
     showLevelStartText(this, 3);
   }

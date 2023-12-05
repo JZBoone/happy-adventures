@@ -2,7 +2,6 @@ import Phaser from "phaser";
 
 export enum SpriteAsset {
   Castle = "castle",
-  Friend = "friend",
 }
 
 export const SpriteAssets: Record<
@@ -12,15 +11,8 @@ export const SpriteAssets: Record<
   [SpriteAsset.Castle]: {
     path: "assets/image/castle.png",
     frameConfig: {
-      frameWidth: 168,
+      frameWidth: 170,
       frameHeight: 139,
-    },
-  },
-  [SpriteAsset.Friend]: {
-    path: "assets/image/friend.png",
-    frameConfig: {
-      frameWidth: 32,
-      frameHeight: 48,
     },
   },
 };

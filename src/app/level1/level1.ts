@@ -9,7 +9,7 @@ import { showLevelStartText } from "../level-text";
 
 export class Level1 extends Phaser.Scene {
   cursors!: Phaser.Types.Input.Keyboard.CursorKeys;
-  friend!: Phaser.GameObjects.Sprite;
+  friend!: Phaser.GameObjects.Image;
   castle!: Phaser.GameObjects.Sprite;
   boat!: Phaser.GameObjects.Image;
   isInWater = false;
@@ -114,18 +114,18 @@ export class Level1 extends Phaser.Scene {
         key: "open",
         frames: this.anims.generateFrameNumbers(SpriteAsset.Castle, {
           start: 0,
-          end: 3,
+          end: 6,
         }),
-        frameRate: 10,
+        frameRate: 15,
         repeat: 0,
       });
       this.anims.create({
         key: "close",
         frames: this.anims.generateFrameNumbers(SpriteAsset.Castle, {
-          start: 3,
+          start: 6,
           end: 0,
         }),
-        frameRate: 10,
+        frameRate: 15,
         repeat: 0,
       });
     }
@@ -135,7 +135,7 @@ export class Level1 extends Phaser.Scene {
       }
     });
     this.boat = this.add.image(725, 540, ImageAsset.Boat);
-    this.friend = this.add.sprite(25, 25, SpriteAsset.Friend, 4);
+    this.friend = this.add.image(25, 25, ImageAsset.Friend);
     showLevelStartText(this, 1);
   }
 
