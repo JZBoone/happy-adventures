@@ -1,3 +1,5 @@
+import Phaser from "phaser";
+
 export enum ImageAsset {
   Boat = "boat",
   Mine = "mine",
@@ -20,28 +22,12 @@ export enum ImageAsset {
   SmallElasmosaurus = "small-elasmosaurus",
   Bones = "bones",
   Forest = "forest",
+  Friend = "friend",
+  Tree = "tree",
 }
 
-export const ImageAssets: Record<ImageAsset, string> = {
-  [ImageAsset.Boat]: "assets/image/boat.png",
-  [ImageAsset.Mine]: "assets/image/mine.png",
-  [ImageAsset.Cloud]: "assets/image/cloud.png",
-  [ImageAsset.Grass]: "assets/image/grass.png",
-  [ImageAsset.Heart]: "assets/image/heart.png",
-  [ImageAsset.Bomb]: "assets/image/bomb.png",
-  [ImageAsset.Platform]: "assets/image/platform.png",
-  [ImageAsset.Sand]: "assets/image/sand.png",
-  [ImageAsset.Sky]: "assets/image/sky.png",
-  [ImageAsset.Star]: "assets/image/star.png",
-  [ImageAsset.Water]: "assets/image/water.png",
-  [ImageAsset.Stone]: "assets/image/stone.png",
-  [ImageAsset.BlackHole]: "assets/image/black-hole.png",
-  [ImageAsset.Monster]: "assets/image/monster.png",
-  [ImageAsset.Portal]: "assets/image/portal.png",
-  [ImageAsset.Goo]: "assets/image/goo.png",
-  [ImageAsset.Lungs]: "assets/image/lungs.png",
-  [ImageAsset.SmallElasmosaurus]: "assets/image/small-elasmosaurus.png",
-  [ImageAsset.Elasmosaurus]: "assets/image/elasmosaurus.png",
-  [ImageAsset.Bones]: "assets/image/bones.png",
-  [ImageAsset.Forest]: "assets/image/forest.png",
-};
+export function loadImages(scene: Phaser.Scene, assets: readonly ImageAsset[]) {
+  for (const asset of assets) {
+    scene.load.image(asset, `assets/image/${asset}.png`);
+  }
+}

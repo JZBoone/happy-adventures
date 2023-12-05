@@ -1,7 +1,6 @@
-import { GroundType } from "../ground";
 import { ImageAsset } from "../image";
 
-export const boneCoordinates: [y: number, x: number][] = [
+export const boneCoordinates: [row: number, position: number][] = [
   [7, 3],
   [8, 2],
   [8, 3],
@@ -37,7 +36,7 @@ export const boneCoordinates: [y: number, x: number][] = [
   [11, 11],
 ];
 
-export const heartCoordinates: [y: number, x: number][] = [
+export const heartCoordinates: [row: number, position: number][] = [
   [0, 11],
   [0, 12],
   [1, 11],
@@ -47,6 +46,8 @@ export const heartCoordinates: [y: number, x: number][] = [
   [3, 11],
   [3, 12],
 ];
+
+export type GroundType = ImageAsset.Goo;
 
 export const map: GroundType[][] = (() => {
   const _map: GroundType[][] = [

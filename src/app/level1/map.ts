@@ -1,5 +1,6 @@
-import { GroundType } from "../ground";
 import { ImageAsset } from "../image";
+
+export type GroundType = ImageAsset.Sand | ImageAsset.Water | ImageAsset.Forest;
 
 export const map: GroundType[][] = [
   [
