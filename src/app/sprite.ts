@@ -75,17 +75,3 @@ export function loadSprites(
     loadAudio(scene, SpriteAssets[asset].audioAssets || []);
   }
 }
-
-const loaded = new Map<SpriteAsset, true>();
-
-export function loadAnimations(
-  scene: Phaser.Scene,
-  asset: SpriteAsset,
-  sprite: Phaser.GameObjects.Sprite
-) {
-  const anims = SpriteAssets[asset].anims!;
-  if (!loaded.get(asset)) {
-    anims(scene, sprite);
-    loaded.set(asset, true);
-  }
-}
