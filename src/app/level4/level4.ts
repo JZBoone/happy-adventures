@@ -3,7 +3,7 @@ import { GroundType, map } from "./map";
 import { ImageAsset } from "../image";
 import { Level } from "../level";
 import { showLevelStartText } from "../helpers";
-import { withAssets } from "../mixins";
+import { withAssets } from "../mixins/with-assets";
 
 export class Level4 extends withAssets(Phaser.Scene, {
   images: [ImageAsset.Friend, ImageAsset.Forest, ImageAsset.Tree],

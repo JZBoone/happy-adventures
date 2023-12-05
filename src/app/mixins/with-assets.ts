@@ -1,19 +1,11 @@
 import Phaser from "phaser";
-import { AudioAsset, loadAudio } from "./audio";
-import { ImageAsset, loadImages } from "./image";
-import { SpriteAsset, SpriteAssets, loadSprites } from "./sprite";
-
-// To get started, we need a type which we'll use to extend
-// other classes from. The main responsibility is to declare
-// that the type being passed in is a class.
-
-type Constructor<T = {}> = new (...args: any[]) => T;
-
-// This mixin adds a scale property, with getters and setters
-// for changing it with an encapsulated private property:
+import { AudioAsset, loadAudio } from "../audio";
+import { ImageAsset, loadImages } from "../image";
+import { SpriteAsset, SpriteAssets, loadSprites } from "../sprite";
+import { SceneClass } from "./common";
 
 export function withAssets<
-  TBase extends Constructor<Phaser.Scene>,
+  TBase extends SceneClass,
   SceneAudioAsset extends AudioAsset,
   SceneImageAsset extends ImageAsset,
   SceneSpriteAsset extends SpriteAsset,

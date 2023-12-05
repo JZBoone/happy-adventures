@@ -5,7 +5,7 @@ import { ImageAsset } from "../image";
 import { Level } from "../level";
 import { disappearFriend, showLevelStartText } from "../helpers";
 import { Level2Data } from "../level2/data";
-import { withAssets } from "../mixins";
+import { withAssets } from "../mixins/with-assets";
 
 export class Level3 extends withAssets(Phaser.Scene, {
   images: [
