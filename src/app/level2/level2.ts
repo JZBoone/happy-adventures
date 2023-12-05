@@ -1,14 +1,21 @@
 import Phaser from "phaser";
-import { GroundType } from "../ground";
-import { map } from "./map";
-import { AudioAsset, AudioAssets } from "../audio";
-import { ImageAsset, ImageAssets } from "../image";
-import { SpriteAsset, SpriteAssets } from "../sprite";
+import { GroundType, groundTypes, map } from "./map";
+import { AudioAsset } from "../audio";
+import { ImageAsset } from "../image";
 import { Level } from "../level";
-import { showLevelStartText } from "../level-text";
+import { disappearFriend, showLevelStartText } from "../helpers";
 import { Level2Data } from "./data";
+import { withAssets } from "../mixins";
 
-export class Level2 extends Phaser.Scene {
+export class Level2 extends withAssets(Phaser.Scene, {
+  images: [
+    ...groundTypes,
+    ImageAsset.Monster,
+    ImageAsset.Friend,
+    ImageAsset.Portal,
+  ],
+  audio: [AudioAsset.Tada, AudioAsset.Chomp, AudioAsset.Fall, AudioAsset.Stomp],
+}) {
   cursors!: Phaser.Types.Input.Keyboard.CursorKeys;
   friend!: Phaser.GameObjects.Image;
   monsterIsDead = false;
@@ -19,18 +26,6 @@ export class Level2 extends Phaser.Scene {
   init(data: Level2Data) {
     if (data.monsterIsDead) {
       this.monsterIsDead = true;
-    }
-  }
-
-  preload() {
-    for (const [key, path] of Object.entries(AudioAssets)) {
-      this.load.audio(key, path);
-    }
-    for (const [key, path] of Object.entries(ImageAssets)) {
-      this.load.image(key, path);
-    }
-    for (const [key, config] of Object.entries(SpriteAssets)) {
-      this.load.spritesheet(key, config.path, config.frameConfig);
     }
   }
 
@@ -64,25 +59,12 @@ export class Level2 extends Phaser.Scene {
       });
     });
     this.cursors = this.input.keyboard!.createCursorKeys();
-    this.friend = this.add.image(25, 25, ImageAsset.Friend);
+    this.friend = this.createImage(25, 25, ImageAsset.Friend);
     if (!this.monsterIsDead) {
-      this.add.image(650, 540, ImageAsset.Monster);
+      this.createImage(650, 540, ImageAsset.Monster);
     }
-    this.add.image(750, 540, ImageAsset.Portal);
+    this.createImage(750, 540, ImageAsset.Portal);
     showLevelStartText(this, 2);
-  }
-
-  private disappearFriend() {
-    this.tweens.add({
-      targets: this.friend,
-      scaleX: 0, // Scale horizontally to 0
-      scaleY: 0, // Scale vertically to 0
-      ease: "Linear", // Use a linear easing
-      duration: 2000, // Duration of the tween in milliseconds
-      onComplete: () => {
-        this.friend.setVisible(false); // Hide the sprite after scaling down
-      },
-    });
   }
 
   private groundTypeAt(x: number, y: number): GroundType | null {
@@ -97,7 +79,7 @@ export class Level2 extends Phaser.Scene {
 
   private moveFriend(x: number, y: number, groundType: GroundType) {
     if (this.monsterIsDead && x === 725 && [525, 575].includes(y)) {
-      this.sound.play(AudioAsset.Tada);
+      this.playAudio(AudioAsset.Tada);
       this.time.addEvent({
         delay: 2_000,
         callback: () => this.scene.start(Level.Level4),
@@ -105,14 +87,14 @@ export class Level2 extends Phaser.Scene {
       });
       this.friend.x = x;
       this.friend.y = y;
-      this.disappearFriend();
+      disappearFriend(this, this.friend);
       return;
     }
     if (!this.monsterIsDead && x === 625 && [525, 575].includes(y)) {
       this.friend.x = x;
       this.friend.y = y;
-      this.sound.play(AudioAsset.Chomp);
-      this.disappearFriend();
+      this.playAudio(AudioAsset.Chomp);
+      disappearFriend(this, this.friend);
       this.time.addEvent({
         delay: 2_000,
         callback: () => this.scene.start(Level.Level3),
@@ -124,13 +106,13 @@ export class Level2 extends Phaser.Scene {
       case ImageAsset.Stone:
         this.friend.x = x;
         this.friend.y = y;
-        this.sound.play(AudioAsset.Stomp);
+        this.playAudio(AudioAsset.Stomp);
         break;
       case ImageAsset.BlackHole:
         this.friend.x = x;
         this.friend.y = y;
-        this.sound.play(AudioAsset.Fall);
-        this.disappearFriend();
+        this.playAudio(AudioAsset.Fall);
+        disappearFriend(this, this.friend);
         this.time.addEvent({
           delay: 2_000,
           callback: () => this.scene.start(Level.Level1),

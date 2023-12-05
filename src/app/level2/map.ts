@@ -1,4 +1,3 @@
-import { GroundType } from "../ground";
 import { ImageAsset } from "../image";
 
 const blackHoleCoordinates: [y: number, x: number][] = [
@@ -29,6 +28,10 @@ const blackHoleCoordinates: [y: number, x: number][] = [
   [9, 15],
   [10, 8],
 ];
+
+export const groundTypes = [ImageAsset.Stone, ImageAsset.BlackHole];
+
+export type GroundType = (typeof groundTypes)[number];
 
 export const map: GroundType[][] = (() => {
   const _map: GroundType[][] = [

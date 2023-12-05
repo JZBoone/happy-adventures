@@ -1,30 +1,19 @@
 import Phaser from "phaser";
 import { GroundType } from "../ground";
 import { map } from "./map";
-import { AudioAsset, AudioAssets } from "../audio";
-import { ImageAsset, ImageAssets } from "../image";
-import { SpriteAsset, SpriteAssets } from "../sprite";
+import { ImageAsset } from "../image";
 import { Level } from "../level";
-import { showLevelStartText } from "../level-text";
+import { showLevelStartText } from "../helpers";
+import { withAssets } from "../mixins";
 
-export class Level4 extends Phaser.Scene {
+export class Level4 extends withAssets(Phaser.Scene, {
+  images: [ImageAsset.Friend, ImageAsset.Forest, ImageAsset.Tree],
+}) {
   private cursors!: Phaser.Types.Input.Keyboard.CursorKeys;
   private friend!: Phaser.GameObjects.Image;
 
   constructor() {
     super({ key: Level.Level4 });
-  }
-
-  preload() {
-    for (const [key, path] of Object.entries(AudioAssets)) {
-      this.load.audio(key, path);
-    }
-    for (const [key, path] of Object.entries(ImageAssets)) {
-      this.load.image(key, path);
-    }
-    for (const [key, config] of Object.entries(SpriteAssets)) {
-      this.load.spritesheet(key, config.path, config.frameConfig);
-    }
   }
 
   update() {
@@ -53,11 +42,13 @@ export class Level4 extends Phaser.Scene {
   create() {
     map.forEach((row, y) => {
       row.forEach((groundType, x) => {
-        this.add.image(x * 50 + 25, y * 50 + 25, groundType);
+        this.createImage(x * 50 + 25, y * 50 + 25, groundType);
       });
     });
     this.cursors = this.input.keyboard!.createCursorKeys();
-    this.friend = this.add.image(25, 25, ImageAsset.Friend);
+    this.friend = this.createImage(25, 25, ImageAsset.Friend);
+    this.createImage(50, 50, ImageAsset.Tree);
+    this.createImage(100, 100, ImageAsset.Tree);
     showLevelStartText(this, 4);
   }
 
@@ -69,19 +60,6 @@ export class Level4 extends Phaser.Scene {
       return (xOrY - 25) / 50;
     };
     return map[index(y)]?.[index(x)];
-  }
-
-  private disappearFriend() {
-    this.tweens.add({
-      targets: this.friend,
-      scaleX: 0, // Scale horizontally to 0
-      scaleY: 0, // Scale vertically to 0
-      ease: "Linear", // Use a linear easing
-      duration: 2000, // Duration of the tween in milliseconds
-      onComplete: () => {
-        this.friend.setVisible(false); // Hide the sprite after scaling down
-      },
-    });
   }
 
   private moveFriend(x: number, y: number, groundType: GroundType) {

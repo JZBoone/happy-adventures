@@ -1,14 +1,32 @@
 import Phaser from "phaser";
 import { GroundType } from "../ground";
 import { boneCoordinates, heartCoordinates, map } from "./map";
-import { AudioAsset, AudioAssets } from "../audio";
-import { ImageAsset, ImageAssets } from "../image";
-import { SpriteAsset, SpriteAssets } from "../sprite";
+import { AudioAsset } from "../audio";
+import { ImageAsset } from "../image";
 import { Level } from "../level";
-import { showLevelStartText } from "../level-text";
+import { disappearFriend, showLevelStartText } from "../helpers";
 import { Level2Data } from "../level2/data";
+import { withAssets } from "../mixins";
 
-export class Level3 extends Phaser.Scene {
+export class Level3 extends withAssets(Phaser.Scene, {
+  images: [
+    ImageAsset.Goo,
+    ImageAsset.Heart,
+    ImageAsset.Lungs,
+    ImageAsset.Bones,
+    ImageAsset.Elasmosaurus,
+    ImageAsset.SmallElasmosaurus,
+    ImageAsset.Friend,
+    ImageAsset.Bomb,
+  ],
+  audio: [
+    AudioAsset.Grunt,
+    AudioAsset.Explosion,
+    AudioAsset.Tada,
+    AudioAsset.Crunch,
+    AudioAsset.Splat,
+  ],
+}) {
   private cursors!: Phaser.Types.Input.Keyboard.CursorKeys;
   private friend!: Phaser.GameObjects.Image;
   private bomb!: Phaser.GameObjects.Image;
@@ -17,18 +35,6 @@ export class Level3 extends Phaser.Scene {
 
   constructor() {
     super({ key: Level.Level3 });
-  }
-
-  preload() {
-    for (const [key, path] of Object.entries(AudioAssets)) {
-      this.load.audio(key, path);
-    }
-    for (const [key, path] of Object.entries(ImageAssets)) {
-      this.load.image(key, path);
-    }
-    for (const [key, config] of Object.entries(SpriteAssets)) {
-      this.load.spritesheet(key, config.path, config.frameConfig);
-    }
   }
 
   update() {
@@ -57,18 +63,18 @@ export class Level3 extends Phaser.Scene {
   create() {
     map.forEach((row, y) => {
       row.forEach((groundType, x) => {
-        this.add.image(x * 50 + 25, y * 50 + 25, groundType);
+        this.createImage(x * 50 + 25, y * 50 + 25, groundType);
       });
     });
     this.cursors = this.input.keyboard!.createCursorKeys();
-    this.heart = this.add.image(600, 100, ImageAsset.Heart);
-    this.add.image(250, 130, ImageAsset.Lungs);
-    this.add.image(150, 430, ImageAsset.Bones);
-    this.add.image(570, 330, ImageAsset.Bones);
-    this.add.image(500, 430, ImageAsset.Elasmosaurus);
-    this.add.image(500, 570, ImageAsset.SmallElasmosaurus);
-    this.friend = this.add.image(25, 25, ImageAsset.Friend);
-    this.bomb = this.add.image(75, 550, ImageAsset.Bomb);
+    this.heart = this.createImage(600, 100, ImageAsset.Heart);
+    this.createImage(250, 130, ImageAsset.Lungs);
+    this.createImage(150, 430, ImageAsset.Bones);
+    this.createImage(570, 330, ImageAsset.Bones);
+    this.createImage(500, 430, ImageAsset.Elasmosaurus);
+    this.createImage(500, 570, ImageAsset.SmallElasmosaurus);
+    this.friend = this.createImage(25, 25, ImageAsset.Friend);
+    this.bomb = this.createImage(75, 550, ImageAsset.Bomb);
     showLevelStartText(this, 3);
   }
 
@@ -96,19 +102,6 @@ export class Level3 extends Phaser.Scene {
     this.bomb.x = this.friend.x;
   }
 
-  private disappearFriend() {
-    this.tweens.add({
-      targets: this.friend,
-      scaleX: 0, // Scale horizontally to 0
-      scaleY: 0, // Scale vertically to 0
-      ease: "Linear", // Use a linear easing
-      duration: 2000, // Duration of the tween in milliseconds
-      onComplete: () => {
-        this.friend.setVisible(false); // Hide the sprite after scaling down
-      },
-    });
-  }
-
   private moveFriend(
     x: number,
     y: number,
@@ -117,15 +110,15 @@ export class Level3 extends Phaser.Scene {
   ) {
     if (x === 75 && y === 575 && !this.isCarryingBomb) {
       this.isCarryingBomb = true;
-      this.sound.play(AudioAsset.Grunt);
+      this.playAudio(AudioAsset.Grunt);
     } else if (this.isCarryingBomb && objects.isHeart) {
-      this.sound.play(AudioAsset.Explosion);
+      this.playAudio(AudioAsset.Explosion);
       this.heart.setVisible(false);
       this.bomb.setVisible(false);
-      this.disappearFriend();
+      disappearFriend(this, this.friend);
       this.time.addEvent({
         delay: 2_000,
-        callback: () => this.sound.play(AudioAsset.Tada),
+        callback: () => this.playAudio(AudioAsset.Tada),
         loop: false,
       });
       const data: Level2Data = { monsterIsDead: true };
@@ -140,9 +133,9 @@ export class Level3 extends Phaser.Scene {
         this.friend.x = x;
         this.friend.y = y;
         if (objects.isBones) {
-          this.sound.play(AudioAsset.Crunch);
+          this.playAudio(AudioAsset.Crunch);
         } else {
-          this.sound.play(AudioAsset.Splat);
+          this.playAudio(AudioAsset.Splat);
         }
         if (this.isCarryingBomb) {
           this.moveBomb();

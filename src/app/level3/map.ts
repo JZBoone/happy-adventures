@@ -1,4 +1,3 @@
-import { GroundType } from "../ground";
 import { ImageAsset } from "../image";
 
 export const boneCoordinates: [y: number, x: number][] = [
@@ -48,8 +47,8 @@ export const heartCoordinates: [y: number, x: number][] = [
   [3, 12],
 ];
 
-export const map: GroundType[][] = (() => {
-  const _map: GroundType[][] = [
+export const map: ImageAsset.Goo[][] = (() => {
+  const _map: ImageAsset.Goo[][] = [
     [
       ImageAsset.Goo,
       ImageAsset.Goo,
