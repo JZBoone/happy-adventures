@@ -147,7 +147,6 @@ export class Level2 extends withMap(
 
   private moveFriend(row: number, position: number) {
     const [x, y] = worldPosition({ row, position });
-    this.friend.x = x;
-    this.friend.y = y;
+    this.move(this, this.friend, x, y);
   }
 }

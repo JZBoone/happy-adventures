@@ -105,13 +105,15 @@ export class Level3 extends withMap(
     );
     const [x, y] = worldPosition({ row, position });
     if (this.isCarryingBomb()) {
-      this.friend.x = x;
-      this.friend.y = y;
-      this.bomb.y = this.friend.y - this.hoistedBombYOffset - this.bombYOffset;
-      this.bomb.x = this.friend.x;
+      this.move(this, this.friend, x, y);
+      this.move(
+        this,
+        this.bomb,
+        x,
+        y - this.hoistedBombYOffset - this.bombYOffset
+      );
     } else {
-      this.friend.x = x;
-      this.friend.y = y;
+      this.move(this, this.friend, x, y);
     }
   }
 
@@ -131,7 +133,12 @@ export class Level3 extends withMap(
 
   private hoistBomb() {
     this.playAudio(AudioAsset.Grunt);
-    this.bomb.y = this.bomb.y - this.hoistedBombYOffset;
+    this.move(
+      this,
+      this.bomb,
+      this.bomb.x,
+      this.bomb.y - this.hoistedBombYOffset
+    );
   }
 
   private explodeHeartAndCompleteLevel() {

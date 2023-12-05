@@ -4,7 +4,7 @@ import { AudioAsset } from "../common/audio";
 import { ImageAsset } from "../common/image";
 import { CastleAnimation, SpriteAsset } from "../common/sprite";
 import { Level } from "../common/level";
-import { showLevelStartText } from "../common/helpers";
+import { disappearFriend, showLevelStartText } from "../common/helpers";
 import { withAssets } from "../mixins/with-assets";
 import { withMap } from "../mixins/with-map";
 import { mapCoordinates, moveCoordinates, worldPosition } from "../common/map";
@@ -92,15 +92,12 @@ export class Level1 extends withMap(
     const groundType = map[row][position];
     const [newX, newY] = worldPosition({ row, position });
     if (groundType === ImageAsset.Water) {
-      this.friend.x = newX;
-      this.friend.y = newY - this.boatYOffset;
-      this.boat.x = newX;
-      this.boat.y = newY + this.boatYOffset;
+      this.move(this, this.friend, newX, newY - this.boatYOffset);
+      this.move(this, this.boat, newX, newY + this.boatYOffset);
       this.playAudio(AudioAsset.Splash);
     } else if (groundType === ImageAsset.Sand) {
       this.playAudio(AudioAsset.BoardBoat);
-      this.friend.x = newX;
-      this.friend.y = newY;
+      this.move(this, this.friend, newX, newY);
     } else {
       this.handleInvalidMove();
     }
@@ -110,13 +107,11 @@ export class Level1 extends withMap(
     const groundType = map[row][position];
     if (groundType === ImageAsset.Sand) {
       const [newX, newY] = worldPosition({ row, position });
-      this.friend.x = newX;
-      this.friend.y = newY;
+      this.move(this, this.friend, newX, newY);
       this.playAudio(AudioAsset.SandStep);
     } else if (groundType === ImageAsset.Water && this.boatAt(row, position)) {
       const [newX, newY] = worldPosition({ row, position });
-      this.friend.x = newX;
-      this.friend.y = newY - this.boatYOffset;
+      this.move(this, this.friend, newX, newY - this.boatYOffset);
       this.playAudio(AudioAsset.BoardBoat);
     } else {
       this.handleInvalidMove();
@@ -143,11 +138,19 @@ export class Level1 extends withMap(
   private completeLevel() {
     const [row, position] = this.WINNING_POSITION;
     const [newX, newY] = worldPosition({ row, position });
-    this.friend.x = newX;
-    this.friend.y = newY - this.boatYOffset;
     this.levelCompleted = true;
-    this.friend.setVisible(false);
     this.castle.anims.play(CastleAnimation.Open);
+    this.time.addEvent({
+      delay: 500,
+      callback: () =>
+        this.move(this, this.friend, newX, newY - this.boatYOffset),
+      loop: false,
+    });
+    this.time.addEvent({
+      delay: 1_000,
+      callback: () => disappearFriend(this, this.friend),
+      loop: false,
+    });
     this.time.addEvent({
       delay: 1_500,
       callback: () => this.playAudio(AudioAsset.Tada),

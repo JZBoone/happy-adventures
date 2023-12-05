@@ -12,6 +12,8 @@ export function withMap<TBase extends SceneClass>(
 ) {
   return class SceneWithMap extends Base {
     cursors!: Phaser.Types.Input.Keyboard.CursorKeys;
+    private __tweens = new Map<Phaser.GameObjects.Image, Phaser.Tweens.Tween>();
+
     create() {
       loadMap(this, map);
       this.cursors = this.input.keyboard!.createCursorKeys();
@@ -27,14 +29,38 @@ export function withMap<TBase extends SceneClass>(
     handleInvalidMove() {
       this.sound.play(AudioAsset.Thump);
     }
+    move(
+      scene: Phaser.Scene,
+      object: Phaser.GameObjects.Image,
+      newX: number,
+      newY: number
+    ) {
+      this.__tweens.set(
+        object,
+        scene.tweens.add({
+          targets: object,
+          x: newX, // The new x-coordinate
+          y: newY, // The new y-coordinate
+          ease: "Linear", // Type of easing (can be 'Sine.easeInOut', 'Cubic.easeOut', etc.)
+          duration: 200, // Duration in milliseconds
+          repeat: 0, // Repeat count, 0 for no repeat
+          yoyo: false, // Yoyo effect, set to true if you want it to go back and forth
+        })
+      );
+    }
     getMove(): Move | null {
-      if (Phaser.Input.Keyboard.JustDown(this.cursors.down)) {
-        return "down";
-      } else if (Phaser.Input.Keyboard.JustDown(this.cursors.right)) {
-        return "right";
-      } else if (Phaser.Input.Keyboard.JustDown(this.cursors.up)) {
+      for (const tween of this.__tweens.values()) {
+        if (tween.isPlaying()) {
+          return null;
+        }
+      }
+      if (this.cursors.up.isDown) {
         return "up";
-      } else if (Phaser.Input.Keyboard.JustDown(this.cursors.left)) {
+      } else if (this.cursors.down.isDown) {
+        return "down";
+      } else if (this.cursors.right.isDown) {
+        return "right";
+      } else if (this.cursors.left.isDown) {
         return "left";
       }
       return null;
