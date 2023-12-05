@@ -4,6 +4,7 @@ esbuild
   .build({
     entryPoints: ["./src/app/game.ts"],
     bundle: true,
+    minify: true,
     outfile: "./src/dist/bundle.js",
     sourcemap: true,
     platform: "browser",
