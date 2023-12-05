@@ -6,8 +6,8 @@ export enum SpriteAsset {
 }
 
 export enum CastleAnimation {
-  Open = "open",
-  Close = "close",
+  Open = "castle.open",
+  Close = "castle.close",
 }
 
 export type CastleFrame = 0 | 1 | 2 | 3 | 4 | 5 | 6;
@@ -29,25 +29,27 @@ export const SpriteAssets: Record<
     },
     audioAssets: [AudioAsset.CastleOpen],
     anims: (scene, sprite) => {
-      scene.anims.create({
-        key: CastleAnimation.Open,
-        frames: scene.anims.generateFrameNumbers(SpriteAsset.Castle, {
-          start: 0 satisfies CastleFrame,
-          end: 6 satisfies CastleFrame,
-        }),
-        frameRate: 15,
-        repeat: 0,
-      });
+      if (!scene.anims.exists(CastleAnimation.Open)) {
+        scene.anims.create({
+          key: CastleAnimation.Open,
+          frames: scene.anims.generateFrameNumbers(SpriteAsset.Castle, {
+            start: 0 satisfies CastleFrame,
+            end: 6 satisfies CastleFrame,
+          }),
+          frameRate: 15,
+          repeat: 0,
+        });
 
-      scene.anims.create({
-        key: CastleAnimation.Close,
-        frames: scene.anims.generateFrameNumbers(SpriteAsset.Castle, {
-          start: 6 satisfies CastleFrame,
-          end: 0 satisfies CastleFrame,
-        }),
-        frameRate: 15,
-        repeat: 0,
-      });
+        scene.anims.create({
+          key: CastleAnimation.Close,
+          frames: scene.anims.generateFrameNumbers(SpriteAsset.Castle, {
+            start: 6 satisfies CastleFrame,
+            end: 0 satisfies CastleFrame,
+          }),
+          frameRate: 15,
+          repeat: 0,
+        });
+      }
       sprite.on("animationstart", (anim: any) => {
         if (anim.key === CastleAnimation.Open) {
           scene.sound.play(AudioAsset.CastleOpen);
