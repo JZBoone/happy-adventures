@@ -48,6 +48,15 @@ export class Level3 extends withMap(
   create() {
     super.create();
     this.heart = this.createImage(600, 100, ImageAsset.Heart);
+    this.tweens.add({
+      targets: this.heart,
+      scaleX: 1.25,
+      scaleY: 1.25,
+      ease: "Sine.easeInOut",
+      duration: 600,
+      yoyo: true,
+      repeat: -1,
+    });
     this.createImage(250, 130, ImageAsset.Lungs);
     this.createImage(150, 430, ImageAsset.Bones);
     this.createImage(570, 330, ImageAsset.Bones);
@@ -61,7 +70,7 @@ export class Level3 extends withMap(
       ...worldPosition({
         row: 11,
         position: 1,
-        yOffset: this.bombYOffset * -1,
+        yOffset: this.bombYOffset,
       }),
       ImageAsset.Bomb
     );
@@ -103,17 +112,15 @@ export class Level3 extends withMap(
         ? AudioAsset.Crunch
         : AudioAsset.Splat
     );
-    const [x, y] = worldPosition({ row, position });
     if (this.isCarryingBomb()) {
-      this.move(this, this.friend, x, y);
-      this.move(
-        this,
-        this.bomb,
-        x,
-        y - this.hoistedBombYOffset - this.bombYOffset
-      );
+      this.move(this, this.friend, { row, position });
+      this.move(this, this.bomb, {
+        row,
+        position,
+        yOffset: this.hoistedBombYOffset + this.bombYOffset,
+      });
     } else {
-      this.move(this, this.friend, x, y);
+      this.move(this, this.friend, { row, position });
     }
   }
 
@@ -133,12 +140,16 @@ export class Level3 extends withMap(
 
   private hoistBomb() {
     this.playAudio(AudioAsset.Grunt);
-    this.move(
-      this,
-      this.bomb,
-      this.bomb.x,
-      this.bomb.y - this.hoistedBombYOffset
-    );
+    const [row, position] = mapCoordinates({
+      x: this.bomb.x,
+      y: this.bomb.y,
+      yOffset: this.bombYOffset,
+    });
+    this.move(this, this.bomb, {
+      row,
+      position,
+      yOffset: this.hoistedBombYOffset + this.bombYOffset,
+    });
   }
 
   private explodeHeartAndCompleteLevel() {

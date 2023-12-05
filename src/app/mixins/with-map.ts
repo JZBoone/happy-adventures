@@ -2,7 +2,7 @@ import Phaser from "phaser";
 import { SceneClass } from "./common";
 import { ImageAsset } from "../common/image";
 import { AudioAsset } from "../common/audio";
-import { loadMap } from "../common/map";
+import { loadMap, worldPosition } from "../common/map";
 
 export type Move = "up" | "down" | "left" | "right";
 
@@ -32,19 +32,25 @@ export function withMap<TBase extends SceneClass>(
     move(
       scene: Phaser.Scene,
       object: Phaser.GameObjects.Image,
-      newX: number,
-      newY: number
+      place: {
+        row: number;
+        position: number;
+        xOffset?: number;
+        yOffset?: number;
+      }
     ) {
+      const { row, position, xOffset, yOffset } = place;
+      const [x, y] = worldPosition({ row, position, xOffset, yOffset });
       this.__tweens.set(
         object,
         scene.tweens.add({
           targets: object,
-          x: newX, // The new x-coordinate
-          y: newY, // The new y-coordinate
-          ease: "Linear", // Type of easing (can be 'Sine.easeInOut', 'Cubic.easeOut', etc.)
-          duration: 200, // Duration in milliseconds
-          repeat: 0, // Repeat count, 0 for no repeat
-          yoyo: false, // Yoyo effect, set to true if you want it to go back and forth
+          x,
+          y,
+          ease: "Linear",
+          duration: 200,
+          repeat: 0,
+          yoyo: false,
         })
       );
     }

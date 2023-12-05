@@ -99,11 +99,11 @@ export class Level2 extends withMap(
     }
     switch (map[row][position]) {
       case ImageAsset.Stone:
-        this.moveFriend(row, position);
+        this.move(this, this.friend, { row, position });
         this.playAudio(AudioAsset.Stomp);
         break;
       case ImageAsset.BlackHole:
-        this.moveFriend(row, position);
+        this.move(this, this.friend, { row, position });
         this.playAudio(AudioAsset.Fall);
         disappearFriend(this, this.friend);
         this.time.addEvent({
@@ -122,12 +122,12 @@ export class Level2 extends withMap(
       callback: () => this.scene.start(Level.Level4),
       loop: false,
     });
-    this.moveFriend(row, position);
+    this.move(this, this.friend, { row, position });
     disappearFriend(this, this.friend);
   }
 
   private swallowFriend(row: number, position: number) {
-    this.moveFriend(row, position);
+    this.move(this, this.friend, { row, position });
     this.playAudio(AudioAsset.Chomp);
     disappearFriend(this, this.friend);
     this.time.addEvent({
@@ -143,10 +143,5 @@ export class Level2 extends withMap(
     coordinates: [row: number, position: number][]
   ) {
     return coordinates.some((c) => c[0] === row && c[1] === position);
-  }
-
-  private moveFriend(row: number, position: number) {
-    const [x, y] = worldPosition({ row, position });
-    this.move(this, this.friend, x, y);
   }
 }

@@ -44,11 +44,9 @@ export class Level4 extends withMap(
       this.handleInvalidMove();
       return;
     }
-    this.handleMove(newRow, newPosition);
-  }
-
-  private handleMove(row: number, position: number) {
-    const [x, y] = worldPosition({ row, position });
-    this.move(this, this.friend, x, y);
+    this.move(this, this.friend, {
+      row: newRow,
+      position: newPosition,
+    });
   }
 }

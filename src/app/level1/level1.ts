@@ -46,7 +46,11 @@ export class Level1 extends withMap(
     this.resetLevel1();
     this.castle = this.createSprite(225, 280, SpriteAsset.Castle, 0);
     this.boat = this.createImage(
-      ...worldPosition({ row: 10, position: 14, yOffset: this.boatYOffset }),
+      ...worldPosition({
+        row: 10,
+        position: 14,
+        yOffset: this.boatYOffset * -1,
+      }),
       ImageAsset.Boat
     );
     this.friend = this.createImage(
@@ -90,14 +94,24 @@ export class Level1 extends withMap(
 
   private handleInWaterMove(row: number, position: number) {
     const groundType = map[row][position];
-    const [newX, newY] = worldPosition({ row, position });
     if (groundType === ImageAsset.Water) {
-      this.move(this, this.friend, newX, newY - this.boatYOffset);
-      this.move(this, this.boat, newX, newY + this.boatYOffset);
+      this.move(this, this.friend, {
+        row,
+        position,
+        yOffset: this.boatYOffset,
+      });
+      this.move(this, this.boat, {
+        row,
+        position,
+        yOffset: this.boatYOffset * -1,
+      });
       this.playAudio(AudioAsset.Splash);
     } else if (groundType === ImageAsset.Sand) {
       this.playAudio(AudioAsset.BoardBoat);
-      this.move(this, this.friend, newX, newY);
+      this.move(this, this.friend, {
+        row,
+        position,
+      });
     } else {
       this.handleInvalidMove();
     }
@@ -106,12 +120,17 @@ export class Level1 extends withMap(
   private handleOutOfWaterMove(row: number, position: number) {
     const groundType = map[row][position];
     if (groundType === ImageAsset.Sand) {
-      const [newX, newY] = worldPosition({ row, position });
-      this.move(this, this.friend, newX, newY);
+      this.move(this, this.friend, {
+        row,
+        position,
+      });
       this.playAudio(AudioAsset.SandStep);
     } else if (groundType === ImageAsset.Water && this.boatAt(row, position)) {
-      const [newX, newY] = worldPosition({ row, position });
-      this.move(this, this.friend, newX, newY - this.boatYOffset);
+      this.move(this, this.friend, {
+        row,
+        position,
+        yOffset: this.boatYOffset,
+      });
       this.playAudio(AudioAsset.BoardBoat);
     } else {
       this.handleInvalidMove();
@@ -137,13 +156,17 @@ export class Level1 extends withMap(
 
   private completeLevel() {
     const [row, position] = this.WINNING_POSITION;
-    const [newX, newY] = worldPosition({ row, position });
     this.levelCompleted = true;
     this.castle.anims.play(CastleAnimation.Open);
     this.time.addEvent({
       delay: 500,
       callback: () =>
-        this.move(this, this.friend, newX, newY - this.boatYOffset),
+        this.move(this, this.friend, {
+          row,
+          position,
+          // get it right on the open door
+          yOffset: 10,
+        }),
       loop: false,
     });
     this.time.addEvent({

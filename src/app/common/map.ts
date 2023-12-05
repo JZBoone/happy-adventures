@@ -64,7 +64,7 @@ export function worldPosition(params: {
 }): [x: number, y: number] {
   const { row, position, xOffset, yOffset } = params;
   return [
-    position * mapTileSizePx + halfMapTileSizePx + (xOffset ?? 0),
-    row * mapTileSizePx + halfMapTileSizePx + (yOffset ?? 0),
+    position * mapTileSizePx + halfMapTileSizePx - (xOffset ?? 0),
+    row * mapTileSizePx + halfMapTileSizePx - (yOffset ?? 0),
   ];
 }
