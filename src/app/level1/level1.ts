@@ -1,5 +1,5 @@
 import Phaser from "phaser";
-import { GroundType, map } from "./map";
+import { map } from "./map";
 import { AudioAsset } from "../audio";
 import { ImageAsset } from "../image";
 import { CastleAnimation, SpriteAsset } from "../sprite";
@@ -12,14 +12,13 @@ import {
   loadMap,
 } from "../helpers";
 import { withAssets } from "../mixins/with-assets";
-import { withMoves } from "../mixins/with-moves";
+import { withMap } from "../mixins/with-map";
 
-export class Level1 extends withMoves(
+export class Level1 extends withMap(
   withAssets(Phaser.Scene, {
     audio: [
       AudioAsset.SandStep,
       AudioAsset.BoardBoat,
-      AudioAsset.Thump,
       AudioAsset.Splash,
       AudioAsset.Tada,
       AudioAsset.CastleOpen,
@@ -32,7 +31,8 @@ export class Level1 extends withMoves(
       ImageAsset.Forest,
     ] as const,
     sprites: [SpriteAsset.Castle] as const,
-  })
+  }),
+  map
 ) {
   private friend!: Phaser.GameObjects.Image;
   private castle!: Phaser.GameObjects.Sprite;
@@ -49,7 +49,6 @@ export class Level1 extends withMoves(
   create() {
     super.create();
     this.resetLevel1();
-    loadMap(this, map);
     this.castle = this.createSprite(225, 280, SpriteAsset.Castle, 0);
     this.boat = this.createImage(
       ...worldPosition({ row: 10, position: 14, yOffset: this.boatYOffset }),
@@ -76,13 +75,15 @@ export class Level1 extends withMoves(
       yOffset: this.isInWater() ? this.boatYOffset : 0,
     });
     const [newRow, newPosition] = moveCoordinates(move, row, position);
-    if (
-      newRow < 0 ||
-      newRow > map.length ||
-      newPosition < 0 ||
-      newPosition > map[0].length - 1
-    ) {
+    if (this.moveIsOutOfBounds(newRow, newPosition)) {
       this.handleInvalidMove();
+      return;
+    }
+    if (
+      newRow === this.WINNING_POSITION[0] &&
+      newPosition === this.WINNING_POSITION[1]
+    ) {
+      this.completeLevel();
       return;
     }
     if (!this.isInWater()) {
@@ -95,13 +96,6 @@ export class Level1 extends withMoves(
   private handleInWaterMove(row: number, position: number) {
     const groundType = map[row][position];
     const [newX, newY] = worldPosition({ row, position });
-    if (
-      row === this.WINNING_POSITION[0] &&
-      position === this.WINNING_POSITION[1]
-    ) {
-      this.completeLevel();
-      return;
-    }
     if (groundType === ImageAsset.Water) {
       this.friend.x = newX;
       this.friend.y = newY - this.boatYOffset;
@@ -132,10 +126,6 @@ export class Level1 extends withMoves(
     } else {
       this.handleInvalidMove();
     }
-  }
-
-  private handleInvalidMove() {
-    this.playAudio(AudioAsset.Thump);
   }
 
   private isInWater() {

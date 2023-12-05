@@ -1,5 +1,5 @@
 import Phaser from "phaser";
-import { Move } from "./mixins/with-moves";
+import { Move } from "./mixins/with-map";
 import { ImageAsset } from "./image";
 
 export function showLevelStartText(scene: Phaser.Scene, levelNumber: number) {

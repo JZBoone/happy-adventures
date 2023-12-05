@@ -20,7 +20,7 @@ export function withAssets<
   return class SceneWithAssets extends Base {
     preload() {
       if (assets.audio) {
-        loadAudio(this, assets.audio);
+        loadAudio(this, [...assets.audio, AudioAsset.Thump]);
       }
       if (assets.images) {
         loadImages(this, assets.images);
