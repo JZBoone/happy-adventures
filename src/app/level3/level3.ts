@@ -1,18 +1,13 @@
 import Phaser from "phaser";
-import { GroundType, boneCoordinates, heartCoordinates, map } from "./map";
-import { AudioAsset } from "../audio";
-import { ImageAsset } from "../image";
-import { Level } from "../level";
-import {
-  disappearFriend,
-  mapCoordinates,
-  moveCoordinates,
-  showLevelStartText,
-  worldPosition,
-} from "../helpers";
+import { boneCoordinates, heartCoordinates, map } from "./map";
+import { AudioAsset } from "../common/audio";
+import { ImageAsset } from "../common/image";
+import { Level } from "../common/level";
+import { disappearFriend, showLevelStartText } from "../common/helpers";
 import { Level2Data } from "../level2/data";
 import { withAssets } from "../mixins/with-assets";
 import { withMap } from "../mixins/with-map";
+import { mapCoordinates, moveCoordinates, worldPosition } from "../common/map";
 
 export class Level3 extends withMap(
   withAssets(Phaser.Scene, {

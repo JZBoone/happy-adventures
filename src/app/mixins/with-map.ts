@@ -1,8 +1,8 @@
 import Phaser from "phaser";
 import { SceneClass } from "./common";
-import { ImageAsset } from "../image";
-import { AudioAsset } from "../audio";
-import { loadMap } from "../helpers";
+import { ImageAsset } from "../common/image";
+import { AudioAsset } from "../common/audio";
+import { loadMap } from "../common/map";
 
 export type Move = "up" | "down" | "left" | "right";
 

@@ -1,18 +1,13 @@
 import Phaser from "phaser";
 import { map } from "./map";
-import { AudioAsset } from "../audio";
-import { ImageAsset } from "../image";
-import { CastleAnimation, SpriteAsset } from "../sprite";
-import { Level } from "../level";
-import {
-  mapCoordinates,
-  worldPosition,
-  moveCoordinates,
-  showLevelStartText,
-  loadMap,
-} from "../helpers";
+import { AudioAsset } from "../common/audio";
+import { ImageAsset } from "../common/image";
+import { CastleAnimation, SpriteAsset } from "../common/sprite";
+import { Level } from "../common/level";
+import { showLevelStartText } from "../common/helpers";
 import { withAssets } from "../mixins/with-assets";
 import { withMap } from "../mixins/with-map";
+import { mapCoordinates, moveCoordinates, worldPosition } from "../common/map";
 
 export class Level1 extends withMap(
   withAssets(Phaser.Scene, {

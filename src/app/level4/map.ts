@@ -1,4 +1,4 @@
-import { ImageAsset } from "../image";
+import { ImageAsset } from "../common/image";
 
 export type GroundType = ImageAsset.Forest;
 

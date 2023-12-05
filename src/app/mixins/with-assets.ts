@@ -1,7 +1,7 @@
 import Phaser from "phaser";
-import { AudioAsset, loadAudio } from "../audio";
-import { ImageAsset, loadImages } from "../image";
-import { SpriteAsset, SpriteAssets, loadSprites } from "../sprite";
+import { AudioAsset, loadAudio } from "../common/audio";
+import { ImageAsset, loadImages } from "../common/image";
+import { SpriteAsset, SpriteAssets, loadSprites } from "../common/sprite";
 import { SceneClass } from "./common";
 
 export function withAssets<

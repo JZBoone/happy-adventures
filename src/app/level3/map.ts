@@ -1,4 +1,4 @@
-import { ImageAsset } from "../image";
+import { ImageAsset } from "../common/image";
 
 export const boneCoordinates: [row: number, position: number][] = [
   [7, 3],
