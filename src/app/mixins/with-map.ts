@@ -1,11 +1,11 @@
 import Phaser from "phaser";
-import { Subject, debounceTime, filter, map, share } from "rxjs";
+import { Observable, Subject, debounceTime, filter, map, share } from "rxjs";
 import { ImageAsset } from "../common/image";
 import { AudioAsset } from "../common/audio";
 import { loadMap, moveCoordinates } from "../common/map";
 import { Movable } from "../common/movable";
 import { SpriteAsset } from "../common/sprite";
-import { ISceneWithAssets } from "./with-assets";
+import { DefaultImageAsset, ISceneWithAssets } from "./with-assets";
 import { Constructor } from "./common";
 import { NonMovable } from "../common/non-movable";
 
@@ -17,6 +17,8 @@ interface IWithMap<
   SceneSpriteAsset extends SpriteAsset,
 > extends ISceneWithAssets<SceneAudioAsset, SceneImageAsset, SceneSpriteAsset> {
   friend: Movable<Phaser.GameObjects.Image>;
+  moves$: Observable<[row: number, position: number]>;
+  outOfBoundMoves$: Observable<[row: number, position: number]>;
 }
 
 export function withMap<
@@ -63,7 +65,7 @@ export function withMap<
       this.friend = this.createMovable({
         row,
         position,
-        asset: ImageAsset.Friend as SceneImageAsset,
+        asset: ImageAsset.Friend,
       });
     }
 
@@ -76,11 +78,11 @@ export function withMap<
     }
 
     onInvalidMove() {
-      this.sound.play(AudioAsset.Thump);
+      this.playAudio(AudioAsset.Thump);
     }
 
     createNonMovableImage(params: {
-      asset: SceneImageAsset;
+      asset: SceneImageAsset | DefaultImageAsset;
       row: number;
       position: number;
       offsetX?: number;
@@ -89,7 +91,7 @@ export function withMap<
       width?: number;
     }): NonMovable<Phaser.GameObjects.Image> {
       const { asset, row, position, offsetX, offsetY, height, width } = params;
-      if (!this.images.includes(asset as SceneImageAsset)) {
+      if (!this.images.includes(asset)) {
         throw new Error(
           `Non movable image not loaded. Did you forget to load ${asset}?`
         );
@@ -134,7 +136,7 @@ export function withMap<
     }
 
     createMovable(params: {
-      asset: SceneImageAsset | SceneSpriteAsset;
+      asset: SceneImageAsset | SceneSpriteAsset | DefaultImageAsset;
       row: number;
       position: number;
       offsetX?: number;

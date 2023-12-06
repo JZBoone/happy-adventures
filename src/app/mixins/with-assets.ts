@@ -6,15 +6,17 @@ import { SceneClass } from "./common";
 import { worldPosition } from "../common/map";
 
 export const defaultAudio = [AudioAsset.Thump] as const;
+export type DefaultAudioAsset = (typeof defaultAudio)[number];
 export const defaultImages = [ImageAsset.Friend] as const;
+export type DefaultImageAsset = (typeof defaultImages)[number];
 
 export interface ISceneWithAssets<
   SceneAudioAsset extends AudioAsset,
   SceneImageAsset extends ImageAsset,
   SceneSpriteAsset extends SpriteAsset,
 > extends Phaser.Scene {
-  audio: readonly (SceneAudioAsset | (typeof defaultAudio)[number])[];
-  images: readonly (SceneImageAsset | (typeof defaultImages)[number])[];
+  audio: readonly (SceneAudioAsset | DefaultAudioAsset)[];
+  images: readonly (SceneImageAsset | DefaultImageAsset)[];
   sprites: readonly SceneSpriteAsset[];
   createImage(params: {
     row: number;
@@ -23,7 +25,7 @@ export interface ISceneWithAssets<
     offsetY?: number;
     height?: number;
     width?: number;
-    asset: SceneImageAsset;
+    asset: SceneImageAsset | DefaultImageAsset;
     frame?: string | number;
   }): Phaser.GameObjects.Image;
   createSprite(params: {
@@ -36,7 +38,7 @@ export interface ISceneWithAssets<
     asset: SceneSpriteAsset;
     frame?: string | number;
   }): Phaser.GameObjects.Sprite;
-  playAudio(asset: SceneAudioAsset): void;
+  playAudio(asset: SceneAudioAsset | DefaultAudioAsset): void;
 }
 
 export function withAssets<
@@ -71,7 +73,7 @@ export function withAssets<
 
     create() {}
 
-    playAudio(asset: SceneAudioAsset) {
+    playAudio(asset: SceneAudioAsset | DefaultAudioAsset) {
       if (!this.audio.includes(asset)) {
         throw new Error(`Audio not loaded. Did you forget to load ${asset}?`);
       }
@@ -85,7 +87,7 @@ export function withAssets<
       offsetY?: number;
       height?: number;
       width?: number;
-      asset: SceneImageAsset;
+      asset: SceneImageAsset | DefaultImageAsset;
       frame?: string | number;
     }): Phaser.GameObjects.Image {
       const { row, position, offsetX, offsetY, asset, frame, width, height } =

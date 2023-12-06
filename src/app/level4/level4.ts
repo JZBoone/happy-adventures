@@ -9,7 +9,6 @@ import { withMap } from "../mixins/with-map";
 export class Level4 extends withMap(
   withAssets(Phaser.Scene, {
     images: [
-      ImageAsset.Friend,
       ImageAsset.Forest,
       ImageAsset.Tree,
       ImageAsset.MagicTree,

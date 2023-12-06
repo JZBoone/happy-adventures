@@ -19,16 +19,15 @@ export class Level3 extends withMap(
       ImageAsset.Bones,
       ImageAsset.Elasmosaurus,
       ImageAsset.SmallElasmosaurus,
-      ImageAsset.Friend,
       ImageAsset.Bomb,
-    ],
+    ] as const,
     audio: [
       AudioAsset.Grunt,
       AudioAsset.Explosion,
       AudioAsset.Tada,
       AudioAsset.Crunch,
       AudioAsset.Splat,
-    ],
+    ] as const,
   }),
   map
 ) {

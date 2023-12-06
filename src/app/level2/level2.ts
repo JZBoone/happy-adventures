@@ -11,14 +11,13 @@ import { NonMovable } from "../common/non-movable";
 
 export class Level2 extends withMap(
   withAssets(Phaser.Scene, {
-    images: [...groundTypes, ImageAsset.Monster, ImageAsset.Portal],
+    images: [...groundTypes, ImageAsset.Monster, ImageAsset.Portal] as const,
     audio: [
       AudioAsset.Tada,
       AudioAsset.Chomp,
       AudioAsset.Fall,
       AudioAsset.Stomp,
-      AudioAsset.Thump,
-    ],
+    ] as const,
   }),
   map
 ) {
