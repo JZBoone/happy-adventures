@@ -24,6 +24,13 @@ export enum ImageAsset {
   Forest = "forest",
   Friend = "friend",
   Tree = "tree",
+  MagicTree = "magic-tree",
+  Cactus = "cactus",
+  BoobyTrap = "booby-trap",
+  ThreeSpikes = "three-spikes",
+  MountainSpikes = "mountain-spikes",
+  SpikeBench = "spike-bench",
+  SquareSpike = "square-spike",
 }
 
 export function loadImages(scene: Phaser.Scene, assets: readonly ImageAsset[]) {

@@ -10,7 +10,18 @@ import { Movable } from "../common/movable";
 
 export class Level4 extends withMap(
   withAssets(Phaser.Scene, {
-    images: [ImageAsset.Friend, ImageAsset.Forest, ImageAsset.Tree],
+    images: [
+      ImageAsset.Friend,
+      ImageAsset.Forest,
+      ImageAsset.Tree,
+      ImageAsset.MagicTree,
+      ImageAsset.Cactus,
+      ImageAsset.BoobyTrap,
+      ImageAsset.ThreeSpikes,
+      ImageAsset.MountainSpikes,
+      ImageAsset.SpikeBench,
+      ImageAsset.SquareSpike,
+    ] as const,
   }),
   map
 ) {
@@ -29,6 +40,13 @@ export class Level4 extends withMap(
     });
     this.createImage(50, 50, ImageAsset.Tree);
     this.createImage(100, 100, ImageAsset.Tree);
+    this.createImage(200, 300, ImageAsset.Cactus);
+    this.createImage(200, 250, ImageAsset.BoobyTrap);
+    this.createImage(300, 380, ImageAsset.ThreeSpikes);
+    this.createImage(410, 300, ImageAsset.MountainSpikes);
+    this.createImage(315, 220, ImageAsset.SpikeBench);
+    this.createImage(385, 220, ImageAsset.SquareSpike);
+    this.createImage(300, 300, ImageAsset.MagicTree);
     showLevelStartText(this, 4);
   }
 

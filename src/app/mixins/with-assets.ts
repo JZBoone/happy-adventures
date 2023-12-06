@@ -15,13 +15,13 @@ export interface ISceneWithAssets<
   createImage(
     x: number,
     y: number,
-    texture: ImageAsset,
+    texture: SceneImageAsset,
     frame?: string | number
   ): Phaser.GameObjects.Image;
   createSprite(
     x: number,
     y: number,
-    texture: SpriteAsset,
+    texture: SceneSpriteAsset,
     frame?: string | number
   ): Phaser.GameObjects.Sprite;
   playAudio(asset: SceneAudioAsset): void;
