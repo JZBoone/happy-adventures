@@ -2,11 +2,12 @@ import Phaser from "phaser";
 import { Subject, debounceTime, filter, map, share } from "rxjs";
 import { ImageAsset } from "../common/image";
 import { AudioAsset } from "../common/audio";
-import { loadMap, moveCoordinates, worldPosition } from "../common/map";
+import { loadMap, moveCoordinates } from "../common/map";
 import { Movable } from "../common/movable";
 import { SpriteAsset } from "../common/sprite";
 import { ISceneWithAssets } from "./with-assets";
 import { Constructor } from "./common";
+import { NonMovable } from "../common/non-movable";
 
 export type Move = "up" | "down" | "left" | "right";
 
@@ -78,6 +79,60 @@ export function withMap<
       this.sound.play(AudioAsset.Thump);
     }
 
+    createNonMovableImage(params: {
+      asset: SceneImageAsset;
+      row: number;
+      position: number;
+      offsetX?: number;
+      offsetY?: number;
+      height?: number;
+      width?: number;
+    }): NonMovable<Phaser.GameObjects.Image> {
+      const { asset, row, position, offsetX, offsetY, height, width } = params;
+      if (!this.images.includes(asset as SceneImageAsset)) {
+        throw new Error(
+          `Non movable image not loaded. Did you forget to load ${asset}?`
+        );
+      }
+      const image = this.createImage({
+        row,
+        position,
+        offsetX,
+        offsetY,
+        width,
+        height,
+        asset,
+      });
+      return new NonMovable(image, { offsetX, offsetY, width, height });
+    }
+
+    createNonMovableSprite(params: {
+      asset: SceneSpriteAsset;
+      row: number;
+      position: number;
+      offsetX?: number;
+      offsetY?: number;
+      height?: number;
+      width?: number;
+    }): NonMovable<Phaser.GameObjects.Sprite> {
+      const { asset, row, position, offsetX, offsetY, height, width } = params;
+      if (!this.sprites.includes(asset)) {
+        throw new Error(
+          `Non movable sprite not loaded. Did you forget to load ${asset}?`
+        );
+      }
+      const sprite = this.createSprite({
+        row,
+        position,
+        offsetX,
+        offsetY,
+        height,
+        width,
+        asset: asset as SceneSpriteAsset,
+      });
+      return new NonMovable(sprite, { offsetX, offsetY, width, height });
+    }
+
     createMovable(params: {
       asset: SceneImageAsset | SceneSpriteAsset;
       row: number;
@@ -93,10 +148,21 @@ export function withMap<
           `Movable asset not loaded. Did you forget to load ${asset}?`
         );
       }
-      const [x, y] = worldPosition({ row, position, offsetX, offsetY });
       const createdAsset = isImage
-        ? this.createImage(x, y, asset as SceneImageAsset)
-        : this.createSprite(x, y, asset as SceneSpriteAsset);
+        ? this.createImage({
+            row,
+            position,
+            offsetX,
+            offsetY,
+            asset: asset as SceneImageAsset,
+          })
+        : this.createSprite({
+            row,
+            position,
+            offsetX,
+            offsetY,
+            asset: asset as SceneSpriteAsset,
+          });
       const movable = new Movable(this, createdAsset, { offsetX, offsetY });
       this.movables.push(movable);
       return movable;

@@ -1,40 +1,29 @@
 import { mapCoordinates, worldPosition } from "./map";
+import { NonMovable } from "./non-movable";
 
 export class Movable<
   T extends
     | InstanceType<typeof Phaser.GameObjects.Image>
     | InstanceType<typeof Phaser.GameObjects.Sprite>,
-> {
+> extends NonMovable<T> {
   private movingTween?: Phaser.Tweens.Tween;
-
-  private _offsetX = 0;
-  private _offsetY = 0;
 
   setOffsetY(value: number) {
     const [row, position] = this.coordinates();
-    this._offsetY = value;
+    this.__offsetY = value;
     this.move(row, position);
   }
   setOffsetX(value: number) {
     const [row, position] = this.coordinates();
-    this._offsetX = value;
+    this.__offsetX = value;
     this.move(row, position);
   }
-
-  get offsetY() {
-    return this._offsetY;
-  }
-  get offsetX() {
-    return this._offsetX;
-  }
-
   constructor(
-    private scene: Phaser.Scene,
+    public scene: Phaser.Scene,
     public movable: T,
     options?: { offsetX?: number; offsetY?: number }
   ) {
-    this._offsetX = options?.offsetX ?? 0;
-    this._offsetY = options?.offsetY ?? 0;
+    super(movable, options);
   }
 
   coordinates() {
@@ -69,10 +58,5 @@ export class Movable<
       return false;
     }
     return this.movingTween.isPlaying();
-  }
-
-  isAt(row: number, position: number): boolean {
-    const coordinates = this.coordinates();
-    return row === coordinates[0] && position === coordinates[1];
   }
 }

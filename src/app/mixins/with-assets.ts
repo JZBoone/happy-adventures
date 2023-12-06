@@ -3,27 +3,39 @@ import { AudioAsset, loadAudio } from "../common/audio";
 import { ImageAsset, loadImages } from "../common/image";
 import { SpriteAsset, SpriteAssets, loadSprites } from "../common/sprite";
 import { SceneClass } from "./common";
+import { worldPosition } from "../common/map";
+
+export const defaultAudio = [AudioAsset.Thump] as const;
+export const defaultImages = [ImageAsset.Friend] as const;
 
 export interface ISceneWithAssets<
   SceneAudioAsset extends AudioAsset,
   SceneImageAsset extends ImageAsset,
   SceneSpriteAsset extends SpriteAsset,
 > extends Phaser.Scene {
-  audio: readonly SceneAudioAsset[];
-  images: readonly SceneImageAsset[];
+  audio: readonly (SceneAudioAsset | (typeof defaultAudio)[number])[];
+  images: readonly (SceneImageAsset | (typeof defaultImages)[number])[];
   sprites: readonly SceneSpriteAsset[];
-  createImage(
-    x: number,
-    y: number,
-    texture: SceneImageAsset,
-    frame?: string | number
-  ): Phaser.GameObjects.Image;
-  createSprite(
-    x: number,
-    y: number,
-    texture: SceneSpriteAsset,
-    frame?: string | number
-  ): Phaser.GameObjects.Sprite;
+  createImage(params: {
+    row: number;
+    position: number;
+    offsetX?: number;
+    offsetY?: number;
+    height?: number;
+    width?: number;
+    asset: SceneImageAsset;
+    frame?: string | number;
+  }): Phaser.GameObjects.Image;
+  createSprite(params: {
+    row: number;
+    position: number;
+    offsetX?: number;
+    offsetY?: number;
+    height?: number;
+    width?: number;
+    asset: SceneSpriteAsset;
+    frame?: string | number;
+  }): Phaser.GameObjects.Sprite;
   playAudio(asset: SceneAudioAsset): void;
 }
 
@@ -45,13 +57,13 @@ export function withAssets<
     implements
       ISceneWithAssets<SceneAudioAsset, SceneImageAsset, SceneSpriteAsset>
   {
-    audio: readonly SceneAudioAsset[] = assets?.audio || [];
-    images: readonly SceneImageAsset[] = assets?.images || [];
-    sprites: readonly SceneSpriteAsset[] = assets?.sprites || [];
+    audio = [...(assets.audio || []), ...defaultAudio];
+    images = [...(assets.images || []), ...defaultImages];
+    sprites = assets?.sprites || [];
 
     preload() {
-      loadAudio(this, [...(assets.audio || []), AudioAsset.Thump]);
-      loadImages(this, [...(assets.images || []), ImageAsset.Friend]);
+      loadAudio(this, this.audio);
+      loadImages(this, this.images);
       if (assets.sprites) {
         loadSprites(this, assets.sprites);
       }
@@ -66,31 +78,57 @@ export function withAssets<
       this.sound.play(asset);
     }
 
-    createImage(
-      x: number,
-      y: number,
-      texture: SceneImageAsset,
-      frame?: string | number
-    ): Phaser.GameObjects.Image {
-      if (!this.images.includes(texture)) {
-        throw new Error(`Image not loaded. Did you forget to load ${texture}?`);
+    createImage(params: {
+      row: number;
+      position: number;
+      offsetX?: number;
+      offsetY?: number;
+      height?: number;
+      width?: number;
+      asset: SceneImageAsset;
+      frame?: string | number;
+    }): Phaser.GameObjects.Image {
+      const { row, position, offsetX, offsetY, asset, frame, width, height } =
+        params;
+      const [x, y] = worldPosition({
+        row,
+        position,
+        offsetX,
+        offsetY,
+        width,
+        height,
+      });
+      if (!this.images.includes(asset)) {
+        throw new Error(`Image not loaded. Did you forget to load ${asset}?`);
       }
-      return this.add.image(x, y, texture, frame);
+      return this.add.image(x, y, asset, frame);
     }
 
-    createSprite(
-      x: number,
-      y: number,
-      texture: SceneSpriteAsset,
-      frame?: string | number
-    ): Phaser.GameObjects.Sprite {
-      if (!this.sprites.includes(texture)) {
-        throw new Error(
-          `Sprite not loaded.  Did you forget to load ${texture}`
-        );
+    createSprite(params: {
+      row: number;
+      position: number;
+      offsetX?: number;
+      offsetY?: number;
+      height?: number;
+      width?: number;
+      asset: SceneSpriteAsset;
+      frame?: string | number;
+    }): Phaser.GameObjects.Sprite {
+      const { row, position, offsetX, offsetY, asset, frame, width, height } =
+        params;
+      const [x, y] = worldPosition({
+        row,
+        position,
+        offsetX,
+        offsetY,
+        width,
+        height,
+      });
+      if (!this.sprites.includes(asset)) {
+        throw new Error(`Sprite not loaded.  Did you forget to load ${asset}`);
       }
-      const sprite = this.add.sprite(x, y, texture, frame);
-      SpriteAssets[texture].anims(this, sprite);
+      const sprite = this.add.sprite(x, y, asset, frame);
+      SpriteAssets[asset].anims(this, sprite);
       return sprite;
     }
   };

@@ -29,15 +29,49 @@ export class Level4 extends withMap(
 
   create() {
     super.create();
-    this.createImage(50, 50, ImageAsset.Tree);
-    this.createImage(100, 100, ImageAsset.Tree);
-    this.createImage(200, 300, ImageAsset.Cactus);
-    this.createImage(200, 250, ImageAsset.BoobyTrap);
-    this.createImage(300, 380, ImageAsset.ThreeSpikes);
-    this.createImage(410, 300, ImageAsset.MountainSpikes);
-    this.createImage(315, 220, ImageAsset.SpikeBench);
-    this.createImage(385, 220, ImageAsset.SquareSpike);
-    this.createImage(300, 300, ImageAsset.MagicTree);
+    this.createNonMovableImage({ row: 2, position: 2, asset: ImageAsset.Tree });
+    this.createNonMovableImage({
+      row: 10,
+      position: 9,
+      asset: ImageAsset.Tree,
+    });
+    this.createNonMovableImage({
+      row: 5,
+      position: 5,
+      asset: ImageAsset.Cactus,
+    });
+    this.createNonMovableImage({
+      row: 7,
+      position: 7,
+      asset: ImageAsset.BoobyTrap,
+    });
+    this.createNonMovableImage({
+      row: 4,
+      position: 8,
+      asset: ImageAsset.ThreeSpikes,
+    });
+    this.createNonMovableImage({
+      row: 7,
+      position: 9,
+      asset: ImageAsset.MountainSpikes,
+    });
+    this.createNonMovableImage({
+      row: 3,
+      position: 8,
+      asset: ImageAsset.SpikeBench,
+    });
+    this.createNonMovableImage({
+      row: 5,
+      position: 10,
+      asset: ImageAsset.SquareSpike,
+    });
+    this.createNonMovableImage({
+      row: 5,
+      position: 8,
+      height: 2,
+      width: 2,
+      asset: ImageAsset.MagicTree,
+    });
     this.createFriend();
     this.moves$.subscribe(([row, position]) => this.handleMove(row, position));
     showLevelStartText(this, 4);

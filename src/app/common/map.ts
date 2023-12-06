@@ -26,10 +26,14 @@ export function mapCoordinates(params: {
   y: number;
   offsetX?: number;
   offsetY?: number;
+  height?: number;
+  width?: number;
 }): [row: number, position: number] {
-  const { x, y, offsetX, offsetY } = params;
-  const xNormalized = x + (offsetX ?? 0);
-  const yNormalized = y + (offsetY ?? 0);
+  const { x, y, offsetX, offsetY, height, width } = params;
+  const xNormalized =
+    x + (offsetX ?? 0) + ((width ?? 1) - 1) * halfMapTileSizePx;
+  const yNormalized =
+    y + (offsetY ?? 0) + ((height ?? 1) - 1) * halfMapTileSizePx;
   const index = (normalizedXorY: number) => {
     if (normalizedXorY === halfMapTileSizePx) {
       return 0;
@@ -61,10 +65,18 @@ export function worldPosition(params: {
   position: number;
   offsetX?: number;
   offsetY?: number;
+  height?: number;
+  width?: number;
 }): [x: number, y: number] {
-  const { row, position, offsetX, offsetY } = params;
+  const { row, position, offsetX, offsetY, height, width } = params;
   return [
-    position * mapTileSizePx + halfMapTileSizePx - (offsetX ?? 0),
-    row * mapTileSizePx + halfMapTileSizePx - (offsetY ?? 0),
+    position * mapTileSizePx +
+      halfMapTileSizePx -
+      (offsetX ?? 0) -
+      ((width ?? 1) - 1) * halfMapTileSizePx,
+    row * mapTileSizePx +
+      halfMapTileSizePx -
+      (offsetY ?? 0) -
+      ((height ?? 1) - 1) * halfMapTileSizePx,
   ];
 }

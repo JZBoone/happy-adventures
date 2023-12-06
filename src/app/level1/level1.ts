@@ -8,7 +8,8 @@ import { disappearFriend, showLevelStartText } from "../common/helpers";
 import { withAssets } from "../mixins/with-assets";
 import { withMap } from "../mixins/with-map";
 import { Movable } from "../common/movable";
-import { Subject, debounceTime } from "rxjs";
+import { Subject, debounceTime, takeUntil } from "rxjs";
+import { NonMovable } from "../common/non-movable";
 
 export class Level1 extends withMap(
   withAssets(Phaser.Scene, {
@@ -23,18 +24,16 @@ export class Level1 extends withMap(
       ImageAsset.Sand,
       ImageAsset.Water,
       ImageAsset.Boat,
-      ImageAsset.Friend,
       ImageAsset.Forest,
     ] as const,
     sprites: [SpriteAsset.Castle] as const,
   }),
   map
 ) {
-  private castle!: Phaser.GameObjects.Sprite;
+  private castle!: NonMovable<Phaser.GameObjects.Sprite>;
   private boat!: Movable<Phaser.GameObjects.Image>;
   private inValidMove$ = new Subject<void>();
-
-  private readonly WINNING_POSITION: [row: number, position: number] = [6, 4];
+  private completedLevel$ = new Subject<void>();
 
   constructor() {
     super({ key: Level.Level1 });
@@ -42,7 +41,12 @@ export class Level1 extends withMap(
 
   create() {
     super.create();
-    this.castle = this.createSprite(225, 280, SpriteAsset.Castle, 0);
+    this.castle = this.createNonMovableSprite({
+      row: 6,
+      position: 4,
+      offsetY: 45,
+      asset: SpriteAsset.Castle,
+    });
     this.boat = this.createMovable({
       row: 10,
       position: 14,
@@ -52,7 +56,9 @@ export class Level1 extends withMap(
 
     showLevelStartText(this, 1);
     this.createFriend();
-    this.moves$.subscribe(([row, position]) => this.handleMove(row, position));
+    this.moves$
+      .pipe(takeUntil(this.completedLevel$))
+      .subscribe(([row, position]) => this.handleMove(row, position));
     this.inValidMove$
       .asObservable()
       .pipe(debounceTime(50))
@@ -62,13 +68,7 @@ export class Level1 extends withMap(
   }
 
   handleMove(newRow: number, newPosition: number): void {
-    if (this.friend.isAt(...this.WINNING_POSITION)) {
-      return;
-    }
-    if (
-      newRow === this.WINNING_POSITION[0] &&
-      newPosition === this.WINNING_POSITION[1]
-    ) {
+    if (this.castle.isAt(newRow, newPosition)) {
       this.completeLevel();
       return;
     }
@@ -116,11 +116,11 @@ export class Level1 extends withMap(
   }
 
   private completeLevel() {
-    const [row, position] = this.WINNING_POSITION;
-    this.castle.anims.play(CastleAnimation.Open);
+    this.completedLevel$.complete();
+    this.castle.nonMovable.anims.play(CastleAnimation.Open);
     this.time.addEvent({
       delay: 500,
-      callback: () => this.friend.move(row, position),
+      callback: () => this.friend.move(...this.castle.coordinates()),
       loop: false,
     });
     this.time.addEvent({

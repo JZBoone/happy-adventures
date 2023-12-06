@@ -7,15 +7,11 @@ import { disappearFriend, showLevelStartText } from "../common/helpers";
 import { Level2Data } from "./data";
 import { withAssets } from "../mixins/with-assets";
 import { withMap } from "../mixins/with-map";
+import { NonMovable } from "../common/non-movable";
 
 export class Level2 extends withMap(
   withAssets(Phaser.Scene, {
-    images: [
-      ...groundTypes,
-      ImageAsset.Monster,
-      ImageAsset.Friend,
-      ImageAsset.Portal,
-    ],
+    images: [...groundTypes, ImageAsset.Monster, ImageAsset.Portal],
     audio: [
       AudioAsset.Tada,
       AudioAsset.Chomp,
@@ -27,18 +23,9 @@ export class Level2 extends withMap(
   map
 ) {
   private monsterIsDead = false;
-  private readonly MONSTER_COORDINATES: [row: number, position: number][] = [
-    [10, 12],
-    [10, 13],
-    [11, 12],
-    [11, 13],
-  ];
-  private readonly PORTAL_COORDINATES: [row: number, position: number][] = [
-    [10, 14],
-    [10, 15],
-    [11, 14],
-    [11, 15],
-  ];
+  private monster!: NonMovable<Phaser.GameObjects.Image>;
+  private portal!: NonMovable<Phaser.GameObjects.Image>;
+
   constructor() {
     super({ key: Level.Level2 });
   }
@@ -52,31 +39,35 @@ export class Level2 extends withMap(
   create() {
     super.create();
     if (!this.monsterIsDead) {
-      this.createImage(650, 540, ImageAsset.Monster);
+      this.monster = this.createNonMovableImage({
+        row: 11,
+        position: 13,
+        asset: ImageAsset.Monster,
+        height: 2,
+        width: 2,
+      });
     }
-    this.createImage(750, 540, ImageAsset.Portal);
+    this.portal = this.createNonMovableImage({
+      row: 11,
+      position: 15,
+      asset: ImageAsset.Portal,
+      height: 2,
+      width: 2,
+    });
     showLevelStartText(this, 2);
-    const startingCoordinates = this.monsterIsDead
-      ? this.MONSTER_COORDINATES[0]
-      : [0, 0];
+    const startingCoordinates = this.monsterIsDead ? [11, 13] : [0, 0];
     this.createFriend(...startingCoordinates);
     this.moves$.subscribe(([row, position]) => this.handleMove(row, position));
   }
 
   private handleMove(row: number, position: number) {
-    if (
-      this.monsterIsDead &&
-      this.friendIntersects(row, position, this.PORTAL_COORDINATES)
-    ) {
+    if (this.monsterIsDead && this.portal.isAt(row, position)) {
       this.completeLevel(row, position);
       return;
     }
-    if (
-      !this.monsterIsDead &&
-      this.friendIntersects(row, position, this.MONSTER_COORDINATES)
-    ) {
+    const friendIsOnMonster = this.monster.isAt(row, position);
+    if (!this.monsterIsDead && friendIsOnMonster) {
       this.swallowFriend(row, position);
-
       return;
     }
     switch (map[row][position]) {
@@ -117,13 +108,5 @@ export class Level2 extends withMap(
       callback: () => this.scene.start(Level.Level3),
       loop: false,
     });
-  }
-
-  private friendIntersects(
-    row: number,
-    position: number,
-    coordinates: [row: number, position: number][]
-  ) {
-    return coordinates.some((c) => c[0] === row && c[1] === position);
   }
 }

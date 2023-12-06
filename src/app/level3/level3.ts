@@ -1,5 +1,5 @@
 import Phaser from "phaser";
-import { boneCoordinates, heartCoordinates, map } from "./map";
+import { map } from "./map";
 import { AudioAsset } from "../common/audio";
 import { ImageAsset } from "../common/image";
 import { Level } from "../common/level";
@@ -8,6 +8,7 @@ import { Level2Data } from "../level2/data";
 import { withAssets } from "../mixins/with-assets";
 import { withMap } from "../mixins/with-map";
 import { Movable } from "../common/movable";
+import { NonMovable } from "../common/non-movable";
 
 export class Level3 extends withMap(
   withAssets(Phaser.Scene, {
@@ -32,13 +33,11 @@ export class Level3 extends withMap(
   map
 ) {
   private bomb!: Movable<Phaser.GameObjects.Image>;
-  private heart!: Phaser.GameObjects.Image;
+  private bones: NonMovable<Phaser.GameObjects.Image>[] = [];
+  private heart!: NonMovable<Phaser.GameObjects.Image>;
 
   private readonly bomboffsetY = 25;
   private readonly hoistedBomboffsetY = 30;
-  private readonly BOMB_HOIST_COORDINATES: [row: number, position: number] = [
-    11, 1,
-  ];
 
   constructor() {
     super({ key: Level.Level3 });
@@ -46,10 +45,42 @@ export class Level3 extends withMap(
 
   create() {
     super.create();
-    this.createImage(150, 430, ImageAsset.Bones);
-    this.createImage(570, 330, ImageAsset.Bones);
-    this.createImage(500, 430, ImageAsset.Elasmosaurus);
-    this.createImage(500, 570, ImageAsset.SmallElasmosaurus);
+    this.bones.push(
+      this.createNonMovableImage({
+        row: 9,
+        position: 3,
+        asset: ImageAsset.Bones,
+        width: 2,
+        height: 2,
+      })
+    );
+    this.bones.push(
+      this.createNonMovableImage({
+        row: 7,
+        position: 11,
+        asset: ImageAsset.Bones,
+        width: 2,
+        height: 2,
+      })
+    );
+    this.bones.push(
+      this.createNonMovableImage({
+        row: 10,
+        position: 13,
+        asset: ImageAsset.Elasmosaurus,
+        width: 8,
+        height: 4,
+      })
+    );
+    this.bones.push(
+      this.createNonMovableImage({
+        row: 11,
+        position: 11,
+        asset: ImageAsset.SmallElasmosaurus,
+        width: 4,
+        height: 2,
+      })
+    );
     this.createFriend();
     this.bomb = this.createMovable({
       row: 11,
@@ -57,9 +88,15 @@ export class Level3 extends withMap(
       asset: ImageAsset.Bomb,
       offsetY: this.bomboffsetY,
     });
-    this.heart = this.createImage(600, 100, ImageAsset.Heart);
+    this.heart = this.createNonMovableImage({
+      row: 3,
+      position: 12,
+      width: 3,
+      height: 4,
+      asset: ImageAsset.Heart,
+    });
     this.tweens.add({
-      targets: this.heart,
+      targets: this.heart.nonMovable,
       scaleX: 1.25,
       scaleY: 1.25,
       ease: "Sine.easeInOut",
@@ -67,26 +104,25 @@ export class Level3 extends withMap(
       yoyo: true,
       repeat: -1,
     });
-    this.createImage(250, 130, ImageAsset.Lungs);
+    this.createNonMovableImage({
+      row: 4,
+      position: 7,
+      asset: ImageAsset.Lungs,
+      width: 6,
+      height: 5,
+    });
     this.moves$.subscribe(([row, position]) => this.handleMove(row, position));
     showLevelStartText(this, 3);
   }
 
   private handleMove(row: number, position: number) {
-    if (
-      this.isCarryingBomb() &&
-      this.intersects(row, position, heartCoordinates)
-    ) {
+    if (this.isCarryingBomb() && this.heart.isAt(row, position)) {
       this.explodeHeartAndCompleteLevel();
-    } else if (
-      row === this.BOMB_HOIST_COORDINATES[0] &&
-      position === this.BOMB_HOIST_COORDINATES[1] &&
-      !this.isCarryingBomb()
-    ) {
+    } else if (this.bomb.isAt(row, position) && !this.isCarryingBomb()) {
       this.hoistBomb();
     }
     this.playAudio(
-      this.intersects(row, position, boneCoordinates)
+      this.bones.some((bones) => bones.isAt(row, position))
         ? AudioAsset.Crunch
         : AudioAsset.Splat
     );
@@ -96,14 +132,6 @@ export class Level3 extends withMap(
     } else {
       this.friend.move(row, position);
     }
-  }
-
-  private intersects(
-    row: number,
-    position: number,
-    coordinates: [row: number, position: number][]
-  ): boolean {
-    return coordinates.some((c) => c[0] === row && c[1] === position);
   }
 
   private isCarryingBomb() {
@@ -117,7 +145,7 @@ export class Level3 extends withMap(
 
   private explodeHeartAndCompleteLevel() {
     this.playAudio(AudioAsset.Explosion);
-    this.heart.setVisible(false);
+    this.heart.nonMovable.setVisible(false);
     this.bomb.movable.setVisible(false);
     disappearFriend(this, this.friend.movable);
     this.time.addEvent({
