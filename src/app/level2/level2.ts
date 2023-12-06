@@ -65,8 +65,7 @@ export class Level2 extends withMap(
       this.completeLevel(row, position);
       return;
     }
-    const friendIsOnMonster = this.monster.isAt(row, position);
-    if (!this.monsterIsDead && friendIsOnMonster) {
+    if (!this.monsterIsDead && this.monster.isAt(row, position)) {
       this.swallowFriend(row, position);
       return;
     }
