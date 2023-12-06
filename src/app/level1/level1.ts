@@ -7,8 +7,8 @@ import { Level } from "../common/level";
 import { disappearFriend, showLevelStartText } from "../common/helpers";
 import { withAssets } from "../mixins/with-assets";
 import { withMap } from "../mixins/with-map";
-import { moveCoordinates } from "../common/map";
 import { Movable } from "../common/movable";
+import { Subject, debounceTime } from "rxjs";
 
 export class Level1 extends withMap(
   withAssets(Phaser.Scene, {
@@ -30,10 +30,9 @@ export class Level1 extends withMap(
   }),
   map
 ) {
-  private friend!: Movable<Phaser.GameObjects.Image>;
   private castle!: Phaser.GameObjects.Sprite;
   private boat!: Movable<Phaser.GameObjects.Image>;
-  private levelCompleted = false;
+  private inValidMove$ = new Subject<void>();
 
   private readonly WINNING_POSITION: [row: number, position: number] = [6, 4];
 
@@ -43,7 +42,6 @@ export class Level1 extends withMap(
 
   create() {
     super.create();
-    this.resetLevel1();
     this.castle = this.createSprite(225, 280, SpriteAsset.Castle, 0);
     this.boat = this.createMovable({
       row: 10,
@@ -52,28 +50,19 @@ export class Level1 extends withMap(
       asset: ImageAsset.Boat,
     });
 
-    this.friend = this.createMovable({
-      row: 0,
-      position: 0,
-      asset: ImageAsset.Friend,
-    });
     showLevelStartText(this, 1);
+    this.createFriend();
+    this.moves$.subscribe(([row, position]) => this.handleMove(row, position));
+    this.inValidMove$
+      .asObservable()
+      .pipe(debounceTime(50))
+      .subscribe(() => {
+        this.onInvalidMove();
+      });
   }
 
-  update() {
-    if (this.levelCompleted) {
-      return;
-    }
-    const move = this.getMove();
-    if (!move) {
-      return;
-    }
-    const [newRow, newPosition] = moveCoordinates(
-      move,
-      ...this.friend.coordinates()
-    );
-    if (this.moveIsOutOfBounds(newRow, newPosition)) {
-      this.handleInvalidMove();
+  handleMove(newRow: number, newPosition: number): void {
+    if (this.friend.isAt(...this.WINNING_POSITION)) {
       return;
     }
     if (
@@ -101,7 +90,7 @@ export class Level1 extends withMap(
       this.friend.setOffsetY(0);
       this.friend.move(row, position);
     } else {
-      this.handleInvalidMove();
+      this.inValidMove$.next();
     }
   }
 
@@ -118,7 +107,7 @@ export class Level1 extends withMap(
       this.friend.move(row, position);
       this.playAudio(AudioAsset.BoardBoat);
     } else {
-      this.handleInvalidMove();
+      this.inValidMove$.next();
     }
   }
 
@@ -126,13 +115,8 @@ export class Level1 extends withMap(
     return this.friend.isAt(...this.boat.coordinates());
   }
 
-  private resetLevel1() {
-    this.levelCompleted = false;
-  }
-
   private completeLevel() {
     const [row, position] = this.WINNING_POSITION;
-    this.levelCompleted = true;
     this.castle.anims.play(CastleAnimation.Open);
     this.time.addEvent({
       delay: 500,

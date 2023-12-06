@@ -7,8 +7,6 @@ import { disappearFriend, showLevelStartText } from "../common/helpers";
 import { Level2Data } from "./data";
 import { withAssets } from "../mixins/with-assets";
 import { withMap } from "../mixins/with-map";
-import { moveCoordinates } from "../common/map";
-import { Movable } from "../common/movable";
 
 export class Level2 extends withMap(
   withAssets(Phaser.Scene, {
@@ -28,8 +26,7 @@ export class Level2 extends withMap(
   }),
   map
 ) {
-  friend!: Movable<Phaser.GameObjects.Image>;
-  monsterIsDead = false;
+  private monsterIsDead = false;
   private readonly MONSTER_COORDINATES: [row: number, position: number][] = [
     [10, 12],
     [10, 13],
@@ -54,32 +51,16 @@ export class Level2 extends withMap(
 
   create() {
     super.create();
-    this.friend = this.createMovable({
-      row: 0,
-      position: 0,
-      asset: ImageAsset.Friend,
-    });
     if (!this.monsterIsDead) {
       this.createImage(650, 540, ImageAsset.Monster);
     }
     this.createImage(750, 540, ImageAsset.Portal);
     showLevelStartText(this, 2);
-  }
-
-  update() {
-    const move = this.getMove();
-    if (!move) {
-      return;
-    }
-    const [newRow, newPosition] = moveCoordinates(
-      move,
-      ...this.friend.coordinates()
-    );
-    if (this.moveIsOutOfBounds(newRow, newPosition)) {
-      this.handleInvalidMove();
-      return;
-    }
-    this.handleMove(newRow, newPosition);
+    const startingCoordinates = this.monsterIsDead
+      ? this.MONSTER_COORDINATES[0]
+      : [0, 0];
+    this.createFriend(...startingCoordinates);
+    this.moves$.subscribe(([row, position]) => this.handleMove(row, position));
   }
 
   private handleMove(row: number, position: number) {

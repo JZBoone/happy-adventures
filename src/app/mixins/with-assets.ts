@@ -51,13 +51,13 @@ export function withAssets<
 
     preload() {
       loadAudio(this, [...(assets.audio || []), AudioAsset.Thump]);
-      if (assets.images) {
-        loadImages(this, assets.images);
-      }
+      loadImages(this, [...(assets.images || []), ImageAsset.Friend]);
       if (assets.sprites) {
         loadSprites(this, assets.sprites);
       }
     }
+
+    create() {}
 
     playAudio(asset: SceneAudioAsset) {
       if (!this.audio.includes(asset)) {

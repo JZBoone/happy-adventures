@@ -7,7 +7,6 @@ import { disappearFriend, showLevelStartText } from "../common/helpers";
 import { Level2Data } from "../level2/data";
 import { withAssets } from "../mixins/with-assets";
 import { withMap } from "../mixins/with-map";
-import { moveCoordinates } from "../common/map";
 import { Movable } from "../common/movable";
 
 export class Level3 extends withMap(
@@ -32,7 +31,6 @@ export class Level3 extends withMap(
   }),
   map
 ) {
-  private friend!: Movable<Phaser.GameObjects.Image>;
   private bomb!: Movable<Phaser.GameObjects.Image>;
   private heart!: Phaser.GameObjects.Image;
 
@@ -48,6 +46,17 @@ export class Level3 extends withMap(
 
   create() {
     super.create();
+    this.createImage(150, 430, ImageAsset.Bones);
+    this.createImage(570, 330, ImageAsset.Bones);
+    this.createImage(500, 430, ImageAsset.Elasmosaurus);
+    this.createImage(500, 570, ImageAsset.SmallElasmosaurus);
+    this.createFriend();
+    this.bomb = this.createMovable({
+      row: 11,
+      position: 1,
+      asset: ImageAsset.Bomb,
+      offsetY: this.bomboffsetY,
+    });
     this.heart = this.createImage(600, 100, ImageAsset.Heart);
     this.tweens.add({
       targets: this.heart,
@@ -59,38 +68,8 @@ export class Level3 extends withMap(
       repeat: -1,
     });
     this.createImage(250, 130, ImageAsset.Lungs);
-    this.createImage(150, 430, ImageAsset.Bones);
-    this.createImage(570, 330, ImageAsset.Bones);
-    this.createImage(500, 430, ImageAsset.Elasmosaurus);
-    this.createImage(500, 570, ImageAsset.SmallElasmosaurus);
-    this.friend = this.createMovable({
-      row: 0,
-      position: 0,
-      asset: ImageAsset.Friend,
-    });
-    this.bomb = this.createMovable({
-      row: 11,
-      position: 1,
-      asset: ImageAsset.Bomb,
-      offsetY: this.bomboffsetY,
-    });
+    this.moves$.subscribe(([row, position]) => this.handleMove(row, position));
     showLevelStartText(this, 3);
-  }
-
-  update() {
-    const move = this.getMove();
-    if (!move) {
-      return;
-    }
-    const [newRow, newPosition] = moveCoordinates(
-      move,
-      ...this.friend.coordinates()
-    );
-    if (this.moveIsOutOfBounds(newRow, newPosition)) {
-      this.handleInvalidMove();
-      return;
-    }
-    this.handleMove(newRow, newPosition);
   }
 
   private handleMove(row: number, position: number) {
