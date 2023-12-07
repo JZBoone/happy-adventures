@@ -1,3 +1,7 @@
+require("dotenv").config({
+  path: process.env.NODE_ENV === "production" ? ".env.prod" : ".env.dev",
+});
+
 module.exports.esbuildConfig = {
   entryPoints: ["./src/app/game.ts"],
   bundle: true,
@@ -6,4 +10,7 @@ module.exports.esbuildConfig = {
   sourcemap: true,
   platform: "browser",
   target: ["chrome118"],
+  define: {
+    "process.env.API_URL": JSON.stringify(process.env.API_URL),
+  },
 };

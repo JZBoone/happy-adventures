@@ -2,6 +2,7 @@ const express = require("express");
 const { join } = require("path");
 const app = express();
 const esbuild = require("esbuild");
+
 const { esbuildConfig } = require("../esbuild.config");
 
 const port = process.env.port || 3000;

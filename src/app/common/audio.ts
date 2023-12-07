@@ -18,6 +18,6 @@ export enum AudioAsset {
 
 export function loadAudio(scene: Phaser.Scene, assets: readonly AudioAsset[]) {
   for (const asset of assets) {
-    scene.load.audio(asset, `assets/audio/${asset}.mp3`);
+    scene.load.audio(asset, `${process.env.API_URL}/assets/audio/${asset}.mp3`);
   }
 }

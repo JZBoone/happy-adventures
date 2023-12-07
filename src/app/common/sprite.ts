@@ -69,7 +69,7 @@ export function loadSprites(
     }
     scene.load.spritesheet(
       asset,
-      SpriteAssets[asset].path,
+      `${process.env.API_URL}/${SpriteAssets[asset].path}`,
       SpriteAssets[asset].frameConfig
     );
     loadAudio(scene, SpriteAssets[asset].audioAssets || []);

@@ -4,14 +4,18 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "npx nodemon --ignore ./src/js --ext .js ./src/server.js -p 3000",
-    "build": "node esbuild",
-    "deploy": "gsutil -m cp -r ./src/* gs://happy-adventures",
+    "start": "NODE_ENV=development npx nodemon --ignore ./src/js --ext .js ./src/server.js -p 3000",
+    "build": "npm run build:dev",
+    "build:dev": "NODE_ENV=development node build",
+    "build:prod": "NODE_ENV=production node build",
+    "deploy": "npm run build:prod && gsutil -m cp -r ./dist/* gs://happy-adventures",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@types/node": "^20.10.3",
+    "dotenv": "^16.3.1",
     "esbuild": "^0.19.8",
     "express": "^4.18.2",
     "http-server": "^14.1.1",

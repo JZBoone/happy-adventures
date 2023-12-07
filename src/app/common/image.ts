@@ -35,6 +35,6 @@ export enum ImageAsset {
 
 export function loadImages(scene: Phaser.Scene, assets: readonly ImageAsset[]) {
   for (const asset of assets) {
-    scene.load.image(asset, `assets/image/${asset}.png`);
+    scene.load.image(asset, `${process.env.API_URL}/assets/image/${asset}.png`);
   }
 }
