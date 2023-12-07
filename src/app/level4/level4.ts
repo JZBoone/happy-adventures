@@ -28,43 +28,43 @@ export class Level4 extends withMap(
 
   create() {
     super.create();
-    this.createNonMovableImage({ row: 2, position: 2, asset: ImageAsset.Tree });
-    this.createNonMovableImage({
+    this.createNonMovable({ row: 2, position: 2, asset: ImageAsset.Tree });
+    this.createNonMovable({
       row: 10,
       position: 9,
       asset: ImageAsset.Tree,
     });
-    this.createNonMovableImage({
+    this.createNonMovable({
       row: 5,
       position: 5,
       asset: ImageAsset.Cactus,
     });
-    this.createNonMovableImage({
+    this.createNonMovable({
       row: 7,
       position: 7,
       asset: ImageAsset.BoobyTrap,
     });
-    this.createNonMovableImage({
+    this.createNonMovable({
       row: 4,
       position: 8,
       asset: ImageAsset.ThreeSpikes,
     });
-    this.createNonMovableImage({
+    this.createNonMovable({
       row: 7,
       position: 9,
       asset: ImageAsset.MountainSpikes,
     });
-    this.createNonMovableImage({
+    this.createNonMovable({
       row: 3,
       position: 8,
       asset: ImageAsset.SpikeBench,
     });
-    this.createNonMovableImage({
+    this.createNonMovable({
       row: 5,
       position: 10,
       asset: ImageAsset.SquareSpike,
     });
-    this.createNonMovableImage({
+    this.createNonMovable({
       row: 5,
       position: 8,
       height: 2,

@@ -11,7 +11,7 @@ import { NonMovable } from "../common/non-movable";
 
 export type Move = "up" | "down" | "left" | "right";
 
-interface IWithMap<
+interface ISceneWithMap<
   SceneAudioAsset extends AudioAsset,
   SceneImageAsset extends ImageAsset,
   SceneSpriteAsset extends SpriteAsset,
@@ -19,6 +19,32 @@ interface IWithMap<
   friend: Movable<Phaser.GameObjects.Image>;
   moves$: Observable<[row: number, position: number]>;
   outOfBoundMoves$: Observable<[row: number, position: number]>;
+  createFriend(row?: number, position?: number): void;
+  onInvalidMove: () => void;
+  createNonMovable<
+    Asset extends SceneImageAsset | DefaultImageAsset | SceneSpriteAsset,
+  >(params: {
+    asset: Asset;
+    row: number;
+    position: number;
+    offsetX?: number;
+    offsetY?: number;
+    height?: number;
+    width?: number;
+  }): Asset extends SceneSpriteAsset
+    ? NonMovable<Phaser.GameObjects.Sprite>
+    : NonMovable<Phaser.GameObjects.Image>;
+  createMovable<
+    Asset extends SceneImageAsset | DefaultImageAsset | SceneSpriteAsset,
+  >(params: {
+    asset: Asset;
+    row: number;
+    position: number;
+    offsetX?: number;
+    offsetY?: number;
+  }): Asset extends SceneSpriteAsset
+    ? Movable<Phaser.GameObjects.Sprite>
+    : Movable<Phaser.GameObjects.Image>;
 }
 
 export function withMap<
@@ -33,7 +59,8 @@ export function withMap<
 ) {
   return class SceneWithMap
     extends Base
-    implements IWithMap<SceneAudioAsset, SceneImageAsset, SceneSpriteAsset>
+    implements
+      ISceneWithMap<SceneAudioAsset, SceneImageAsset, SceneSpriteAsset>
   {
     cursors!: Phaser.Types.Input.Keyboard.CursorKeys;
     friend!: Movable<Phaser.GameObjects.Image>;
@@ -81,93 +108,89 @@ export function withMap<
       this.playAudio(AudioAsset.Thump);
     }
 
-    createNonMovableImage(params: {
-      asset: SceneImageAsset | DefaultImageAsset;
+    createNonMovable<
+      Asset extends SceneImageAsset | DefaultImageAsset | SceneSpriteAsset,
+    >(params: {
+      asset: Asset;
       row: number;
       position: number;
       offsetX?: number;
       offsetY?: number;
       height?: number;
       width?: number;
-    }): NonMovable<Phaser.GameObjects.Image> {
+    }): Asset extends SceneSpriteAsset
+      ? NonMovable<Phaser.GameObjects.Sprite>
+      : NonMovable<Phaser.GameObjects.Image> {
       const { asset, row, position, offsetX, offsetY, height, width } = params;
-      if (!this.images.includes(asset)) {
+      if (!this.assetIsLoadedImage(asset) && !this.assetIsLoadedSprite(asset)) {
         throw new Error(
-          `Non movable image not loaded. Did you forget to load ${asset}?`
+          `Non-movable asset not loaded. Did you forget to load ${asset}?`
         );
       }
-      const image = this.createImage({
-        row,
-        position,
-        offsetX,
-        offsetY,
-        width,
-        height,
-        asset,
-      });
-      return new NonMovable(image, { offsetX, offsetY, width, height });
-    }
-
-    createNonMovableSprite(params: {
-      asset: SceneSpriteAsset;
-      row: number;
-      position: number;
-      offsetX?: number;
-      offsetY?: number;
-      height?: number;
-      width?: number;
-    }): NonMovable<Phaser.GameObjects.Sprite> {
-      const { asset, row, position, offsetX, offsetY, height, width } = params;
-      if (!this.sprites.includes(asset)) {
-        throw new Error(
-          `Non movable sprite not loaded. Did you forget to load ${asset}?`
-        );
-      }
-      const sprite = this.createSprite({
-        row,
-        position,
-        offsetX,
-        offsetY,
-        height,
-        width,
-        asset: asset as SceneSpriteAsset,
-      });
-      return new NonMovable(sprite, { offsetX, offsetY, width, height });
-    }
-
-    createMovable(params: {
-      asset: SceneImageAsset | SceneSpriteAsset | DefaultImageAsset;
-      row: number;
-      position: number;
-      offsetX?: number;
-      offsetY?: number;
-    }): Movable<Phaser.GameObjects.Image | Phaser.GameObjects.Sprite> {
-      const { asset, row, position, offsetX, offsetY } = params;
-      const isImage = this.images.includes(asset as SceneImageAsset);
-      const isSprite = this.sprites.includes(asset as SceneSpriteAsset);
-      if (!isImage && !isSprite) {
-        throw new Error(
-          `Movable asset not loaded. Did you forget to load ${asset}?`
-        );
-      }
-      const createdAsset = isImage
+      const createdAsset = this.assetIsLoadedImage(asset)
         ? this.createImage({
             row,
             position,
             offsetX,
             offsetY,
-            asset: asset as SceneImageAsset,
+            asset,
           })
         : this.createSprite({
             row,
             position,
             offsetX,
             offsetY,
-            asset: asset as SceneSpriteAsset,
+            asset,
           });
-      const movable = new Movable(this, createdAsset, { offsetX, offsetY });
+      return new NonMovable(createdAsset, {
+        offsetX,
+        offsetY,
+        width,
+        height,
+      }) as Asset extends SceneSpriteAsset
+        ? NonMovable<Phaser.GameObjects.Sprite>
+        : NonMovable<Phaser.GameObjects.Image>;
+    }
+
+    createMovable<
+      Asset extends SceneImageAsset | DefaultImageAsset | SceneSpriteAsset,
+    >(params: {
+      asset: Asset;
+      row: number;
+      position: number;
+      offsetX?: number;
+      offsetY?: number;
+    }): Asset extends SceneSpriteAsset
+      ? Movable<Phaser.GameObjects.Sprite>
+      : Movable<Phaser.GameObjects.Image> {
+      const { asset, row, position, offsetX, offsetY } = params;
+      if (!this.assetIsLoadedImage(asset) && !this.assetIsLoadedSprite(asset)) {
+        throw new Error(
+          `Movable asset not loaded. Did you forget to load ${asset}?`
+        );
+      }
+      const createdAsset = this.assetIsLoadedImage(asset)
+        ? this.createImage({
+            row,
+            position,
+            offsetX,
+            offsetY,
+            asset,
+          })
+        : this.createSprite({
+            row,
+            position,
+            offsetX,
+            offsetY,
+            asset,
+          });
+      const movable: Movable<
+        Phaser.GameObjects.Image | Phaser.GameObjects.Sprite
+      > = new Movable(this, createdAsset, { offsetX, offsetY });
       this.movables.push(movable);
-      return movable;
+      return movable as Asset extends SceneSpriteAsset
+        ? Movable<Phaser.GameObjects.Sprite>
+        : Movable<Phaser.GameObjects.Image>;
     }
 
     private moveIsOutOfBounds(newRow: number, newPosition: number): boolean {
@@ -195,6 +218,15 @@ export function withMap<
         return "left";
       }
       return null;
+    }
+    private assetIsLoadedImage(
+      asset: string
+    ): asset is SceneImageAsset | DefaultImageAsset {
+      return this.images.includes(asset as SceneImageAsset | DefaultImageAsset);
+    }
+
+    private assetIsLoadedSprite(asset: string): asset is SceneSpriteAsset {
+      return this.sprites.includes(asset as SceneSpriteAsset);
     }
   };
 }

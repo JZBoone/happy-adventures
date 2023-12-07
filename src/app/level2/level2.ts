@@ -38,7 +38,7 @@ export class Level2 extends withMap(
   create() {
     super.create();
     if (!this.monsterIsDead) {
-      this.monster = this.createNonMovableImage({
+      this.monster = this.createNonMovable({
         row: 11,
         position: 13,
         asset: ImageAsset.Monster,
@@ -46,7 +46,7 @@ export class Level2 extends withMap(
         width: 2,
       });
     }
-    this.portal = this.createNonMovableImage({
+    this.portal = this.createNonMovable({
       row: 11,
       position: 15,
       asset: ImageAsset.Portal,

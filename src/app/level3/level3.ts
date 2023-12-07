@@ -45,7 +45,7 @@ export class Level3 extends withMap(
   create() {
     super.create();
     this.bones.push(
-      this.createNonMovableImage({
+      this.createNonMovable({
         row: 9,
         position: 3,
         asset: ImageAsset.Bones,
@@ -54,7 +54,7 @@ export class Level3 extends withMap(
       })
     );
     this.bones.push(
-      this.createNonMovableImage({
+      this.createNonMovable({
         row: 7,
         position: 11,
         asset: ImageAsset.Bones,
@@ -63,7 +63,7 @@ export class Level3 extends withMap(
       })
     );
     this.bones.push(
-      this.createNonMovableImage({
+      this.createNonMovable({
         row: 10,
         position: 13,
         asset: ImageAsset.Elasmosaurus,
@@ -72,7 +72,7 @@ export class Level3 extends withMap(
       })
     );
     this.bones.push(
-      this.createNonMovableImage({
+      this.createNonMovable({
         row: 11,
         position: 11,
         asset: ImageAsset.SmallElasmosaurus,
@@ -87,7 +87,7 @@ export class Level3 extends withMap(
       asset: ImageAsset.Bomb,
       offsetY: this.bomboffsetY,
     });
-    this.heart = this.createNonMovableImage({
+    this.heart = this.createNonMovable({
       row: 3,
       position: 12,
       width: 3,
@@ -103,7 +103,7 @@ export class Level3 extends withMap(
       yoyo: true,
       repeat: -1,
     });
-    this.createNonMovableImage({
+    this.createNonMovable({
       row: 4,
       position: 7,
       asset: ImageAsset.Lungs,

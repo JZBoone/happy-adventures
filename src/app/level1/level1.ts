@@ -41,7 +41,7 @@ export class Level1 extends withMap(
 
   create() {
     super.create();
-    this.castle = this.createNonMovableSprite({
+    this.castle = this.createNonMovable({
       row: 6,
       position: 4,
       offsetY: 45,
