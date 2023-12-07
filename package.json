@@ -4,8 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "npx nodemon ./src/server.js -p 3000",
-    "build": "node build",
+    "start": "npx nodemon --ignore ./src/js --ext .js ./src/server.js -p 3000",
+    "build": "node esbuild",
     "deploy": "gsutil -m cp -r ./src/* gs://happy-adventures",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
