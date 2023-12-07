@@ -6,7 +6,7 @@ import { loadMap, moveCoordinates } from "../common/map";
 import { Movable } from "../common/movable";
 import { SpriteAsset } from "../common/sprite";
 import { DefaultImageAsset, ISceneWithAssets } from "./with-assets";
-import { Constructor } from "./common";
+import { Constructor } from "./types";
 import { NonMovable } from "../common/non-movable";
 
 export type Move = "up" | "down" | "left" | "right";
@@ -134,6 +134,8 @@ export function withMap<
             offsetX,
             offsetY,
             asset,
+            width,
+            height,
           })
         : this.createSprite({
             row,
@@ -141,6 +143,8 @@ export function withMap<
             offsetX,
             offsetY,
             asset,
+            width,
+            height,
           });
       return new NonMovable(createdAsset, {
         offsetX,

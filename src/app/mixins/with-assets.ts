@@ -2,7 +2,7 @@ import Phaser from "phaser";
 import { AudioAsset, loadAudio } from "../common/audio";
 import { ImageAsset, loadImages } from "../common/image";
 import { SpriteAsset, SpriteAssets, loadSprites } from "../common/sprite";
-import { SceneClass } from "./common";
+import { SceneClass } from "./types";
 import { worldPosition } from "../common/map";
 
 export const defaultAudio = [AudioAsset.Thump] as const;

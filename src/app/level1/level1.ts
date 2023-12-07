@@ -8,7 +8,7 @@ import { showLevelStartText } from "../common/helpers";
 import { withAssets } from "../mixins/with-assets";
 import { withMap } from "../mixins/with-map";
 import { Movable } from "../common/movable";
-import { Subject, debounceTime, takeUntil } from "rxjs";
+import { Subject, debounceTime, takeWhile } from "rxjs";
 import { NonMovable } from "../common/non-movable";
 
 export class Level1 extends withMap(
@@ -33,7 +33,7 @@ export class Level1 extends withMap(
   private castle!: NonMovable<Phaser.GameObjects.Sprite>;
   private boat!: Movable<Phaser.GameObjects.Image>;
   private inValidMove$ = new Subject<void>();
-  private completedLevel$ = new Subject<void>();
+  private levelCompleted = false;
 
   constructor() {
     super({ key: Level.Level1 });
@@ -41,6 +41,7 @@ export class Level1 extends withMap(
 
   create() {
     super.create();
+    this.levelCompleted = false;
     this.castle = this.createNonMovable({
       row: 6,
       position: 4,
@@ -57,7 +58,7 @@ export class Level1 extends withMap(
     showLevelStartText(this, 1);
     this.createFriend();
     this.moves$
-      .pipe(takeUntil(this.completedLevel$))
+      .pipe(takeWhile(() => !this.levelCompleted))
       .subscribe(([row, position]) => this.handleMove(row, position));
     this.inValidMove$
       .asObservable()
@@ -116,7 +117,7 @@ export class Level1 extends withMap(
   }
 
   private completeLevel() {
-    this.completedLevel$.complete();
+    this.levelCompleted = true;
     this.castle.nonMovable.anims.play(CastleAnimation.Open);
     this.time.addEvent({
       delay: 500,
