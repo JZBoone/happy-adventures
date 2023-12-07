@@ -1,15 +1,16 @@
 import Phaser from "phaser";
 import { takeWhile } from "rxjs";
 import { map } from "./map";
-import { AudioAsset } from "../common/audio";
-import { ImageAsset } from "../common/image";
-import { CastleAnimation, SpriteAsset } from "../common/sprite";
 import { Level } from "../common/level";
 import { showLevelStartText } from "../common/helpers";
 import { withAssets } from "../mixins/with-assets";
 import { withMap } from "../mixins/with-map";
 import { Movable } from "../common/movable";
-import { NonMovable } from "../common/non-movable";
+import { Immovable } from "../common/immovable";
+import { AudioAsset } from "../types/audio";
+import { ImageAsset } from "../types/image";
+import { CastleAnimation, SpriteAsset } from "../types/sprite";
+import { Coordinates } from "../types/maps";
 
 export class Level1 extends withMap(
   withAssets(Phaser.Scene, {
@@ -30,7 +31,7 @@ export class Level1 extends withMap(
   }),
   map
 ) {
-  private castle!: NonMovable<Phaser.GameObjects.Sprite>;
+  private castle!: Immovable<Phaser.GameObjects.Sprite>;
   private boat!: Movable<Phaser.GameObjects.Image>;
   private levelCompleted = false;
 
@@ -41,15 +42,13 @@ export class Level1 extends withMap(
   create() {
     super.create();
     this.levelCompleted = false;
-    this.castle = this.createNonMovable({
-      row: 6,
-      position: 4,
+    this.castle = this.createImmovableSprite({
+      coordinates: [6, 4],
       offsetY: 45,
       asset: SpriteAsset.Castle,
     });
-    this.boat = this.createMovable({
-      row: 10,
-      position: 14,
+    this.boat = this.createMovableImage({
+      coordinates: [10, 14],
       offsetY: -15,
       asset: ImageAsset.Boat,
     });
@@ -58,63 +57,62 @@ export class Level1 extends withMap(
     this.createFriend();
     this.moves$
       .pipe(takeWhile(() => !this.levelCompleted))
-      .subscribe(([row, position]) => this.handleMove(row, position));
+      .subscribe(({ coordinates }) => this.handleMove(coordinates));
   }
 
-  handleMove(newRow: number, newPosition: number): void {
-    if (this.castle.isAt(newRow, newPosition)) {
+  handleMove(coordinates: Coordinates): void {
+    if (this.castle.isAt(coordinates)) {
       this.completeLevel();
       return;
     }
     if (!this.isInWater()) {
-      this.handleOutOfWaterMove(newRow, newPosition);
+      this.handleOutOfWaterMove(coordinates);
     } else {
-      this.handleInWaterMove(newRow, newPosition);
+      this.handleInWaterMove(coordinates);
     }
   }
 
-  private handleInWaterMove(row: number, position: number) {
+  private handleInWaterMove(coordinates: Coordinates) {
+    const [row, position] = coordinates;
     const groundType = map[row][position];
     if (groundType === ImageAsset.Water) {
-      this.friend.move(row, position);
-      this.boat.move(row, position);
-      this.playAudio(AudioAsset.Splash);
+      this.friend.move(coordinates);
+      this.boat.move(coordinates);
+      this.playSound(AudioAsset.Splash, { volume: 0.25 });
     } else if (groundType === ImageAsset.Sand) {
-      this.playAudio(AudioAsset.BoardBoat);
+      this.playSound(AudioAsset.BoardBoat);
       this.friend.setOffsetY(0);
-      this.friend.move(row, position);
+      this.friend.move(coordinates);
     } else {
-      this.invalidMoves$.next([row, position]);
+      this.invalidMoves$.next();
     }
   }
 
-  private handleOutOfWaterMove(row: number, position: number) {
+  private handleOutOfWaterMove(coordinates: Coordinates) {
+    const [row, position] = coordinates;
     const groundType = map[row][position];
     if (groundType === ImageAsset.Sand) {
-      this.friend.move(row, position);
-      this.playAudio(AudioAsset.SandStep);
-    } else if (
-      groundType === ImageAsset.Water &&
-      this.boat.isAt(row, position)
-    ) {
+      this.friend.move(coordinates);
+      this.playSound(AudioAsset.SandStep);
+    } else if (groundType === ImageAsset.Water && this.boat.isAt(coordinates)) {
       this.friend.setOffsetY(this.boat.offsetY * -1);
-      this.friend.move(row, position);
-      this.playAudio(AudioAsset.BoardBoat);
+      this.friend.move(coordinates);
+      this.playSound(AudioAsset.BoardBoat);
     } else {
-      this.invalidMoves$.next([row, position]);
+      this.invalidMoves$.next();
     }
   }
 
   private isInWater() {
-    return this.friend.isAt(...this.boat.coordinates());
+    return this.friend.isAt(this.boat.coordinates());
   }
 
   private completeLevel() {
     this.levelCompleted = true;
-    this.castle.nonMovable.anims.play(CastleAnimation.Open);
+    this.castle.immovable.anims.play(CastleAnimation.Open);
     this.time.addEvent({
       delay: 500,
-      callback: () => this.friend.move(...this.castle.coordinates()),
+      callback: () => this.friend.move(this.castle.coordinates()),
       loop: false,
     });
     this.time.addEvent({
@@ -124,7 +122,7 @@ export class Level1 extends withMap(
     });
     this.time.addEvent({
       delay: 1_500,
-      callback: () => this.playAudio(AudioAsset.Tada),
+      callback: () => this.playSound(AudioAsset.Tada),
       loop: false,
     });
     this.time.addEvent({

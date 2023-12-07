@@ -1,8 +1,8 @@
-import Phaser from "phaser";
-import { AudioAsset, loadAudio } from "./audio";
+import { AudioAsset } from "./audio";
 
 export enum SpriteAsset {
   Castle = "castle",
+  MiniPlane = "mini-plane",
 }
 
 export enum CastleAnimation {
@@ -10,7 +10,13 @@ export enum CastleAnimation {
   Close = "castle.close",
 }
 
+export enum MiniPlaneAnimation {
+  Fly = "mini-plane.fly",
+}
+
 export type CastleFrame = 0 | 1 | 2 | 3 | 4 | 5 | 6;
+
+export type MiniPlaneFrame = 0 | 1 | 2 | 3;
 
 export const SpriteAssets: Record<
   SpriteAsset,
@@ -57,21 +63,27 @@ export const SpriteAssets: Record<
       });
     },
   },
+  [SpriteAsset.MiniPlane]: {
+    path: "assets/image/mini-plane.png",
+    frameConfig: {
+      frameWidth: 101,
+      frameHeight: 85.47,
+    },
+    anims: (scene) => {
+      if (!scene.anims.exists(MiniPlaneAnimation.Fly)) {
+        scene.anims.create({
+          key: MiniPlaneAnimation.Fly,
+          frames: scene.anims.generateFrameNumbers(SpriteAsset.MiniPlane, {
+            start: 1 satisfies MiniPlaneFrame,
+            end: 3 satisfies MiniPlaneFrame,
+          }),
+          frameRate: 50,
+          repeat: -1,
+        });
+      }
+    },
+  },
 };
 
-export function loadSprites(
-  scene: Phaser.Scene,
-  assets: readonly SpriteAsset[]
-) {
-  for (const asset of assets) {
-    if (!SpriteAssets[asset]) {
-      throw new Error(`Sprite ${asset} not recognized`);
-    }
-    scene.load.spritesheet(
-      asset,
-      `${process.env.API_URL}/${SpriteAssets[asset].path}`,
-      SpriteAssets[asset].frameConfig
-    );
-    loadAudio(scene, SpriteAssets[asset].audioAssets || []);
-  }
-}
+export const defaultSprites = [SpriteAsset.MiniPlane] as const;
+export type DefaultSpriteAsset = (typeof defaultSprites)[number];

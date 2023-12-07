@@ -5,7 +5,7 @@ require("dotenv").config({
 module.exports.esbuildConfig = {
   entryPoints: ["./src/app/game.ts"],
   bundle: true,
-  minify: true,
+  minify: process.env.NODE_ENV === "production" ? true : false,
   outfile: "./src/js/bundle.js",
   sourcemap: true,
   platform: "browser",

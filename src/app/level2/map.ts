@@ -1,4 +1,4 @@
-import { ImageAsset } from "../common/image";
+import { ImageAsset } from "../types/image";
 
 const blackHoleCoordinates: [y: number, x: number][] = [
   [0, 3],

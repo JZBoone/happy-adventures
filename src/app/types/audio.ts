@@ -1,5 +1,3 @@
-import Phaser from "phaser";
-
 export enum AudioAsset {
   BoardBoat = "board-boat",
   Chomp = "chomp",
@@ -14,10 +12,8 @@ export enum AudioAsset {
   Stomp = "stomp",
   Tada = "tada",
   Thump = "thump",
+  Motor = "motor",
 }
 
-export function loadAudio(scene: Phaser.Scene, assets: readonly AudioAsset[]) {
-  for (const asset of assets) {
-    scene.load.audio(asset, `${process.env.API_URL}/assets/audio/${asset}.mp3`);
-  }
-}
+export const defaultAudio = [AudioAsset.Thump] as const;
+export type DefaultAudioAsset = (typeof defaultAudio)[number];

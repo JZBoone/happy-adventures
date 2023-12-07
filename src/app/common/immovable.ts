@@ -1,6 +1,7 @@
-import { mapCoordinates } from "./map";
+import { Coordinates } from "../types/maps";
+import { mapCoordinates, worldPosition } from "./map";
 
-export class NonMovable<
+export class Immovable<
   T extends
     | InstanceType<typeof Phaser.GameObjects.Image>
     | InstanceType<typeof Phaser.GameObjects.Sprite>,
@@ -19,7 +20,7 @@ export class NonMovable<
   }
 
   constructor(
-    public nonMovable: T,
+    public immovable: T,
     options?: {
       offsetX?: number;
       offsetY?: number;
@@ -35,8 +36,8 @@ export class NonMovable<
 
   coordinates() {
     return mapCoordinates({
-      x: this.nonMovable.x,
-      y: this.nonMovable.y,
+      x: this.immovable.x,
+      y: this.immovable.y,
       offsetX: this.offsetX,
       offsetY: this.offsetY,
       height: this.height,
@@ -44,7 +45,19 @@ export class NonMovable<
     });
   }
 
-  private isAtRow(row: number) {
+  move(coordinates: Coordinates) {
+    const [x, y] = worldPosition({
+      coordinates,
+      offsetX: this.offsetX,
+      offsetY: this.offsetY,
+      width: this.width,
+      height: this.height,
+    });
+    this.immovable.x = x;
+    this.immovable.y = y;
+  }
+
+  private occupiesRow(row: number) {
     const [actualRow] = this.coordinates();
     if (actualRow === row) {
       return true;
@@ -56,7 +69,7 @@ export class NonMovable<
     return actualRow > row && actualRow <= row + adjacentRows;
   }
 
-  private isAtPosition(position: number) {
+  private occupiesPosition(position: number) {
     const [, actualPosition] = this.coordinates();
     if (actualPosition === position) {
       return true;
@@ -71,7 +84,12 @@ export class NonMovable<
     );
   }
 
-  isAt(row: number, position: number): boolean {
-    return this.isAtRow(row) && this.isAtPosition(position);
+  isAt([row, position]: Coordinates): boolean {
+    const [actualRow, actualPosition] = this.coordinates();
+    return actualRow === row && actualPosition === position;
+  }
+
+  occupies([row, position]: Coordinates): boolean {
+    return this.occupiesRow(row) && this.occupiesPosition(position);
   }
 }

@@ -1,5 +1,3 @@
-import Phaser from "phaser";
-
 export enum ImageAsset {
   Boat = "boat",
   Mine = "mine",
@@ -31,10 +29,8 @@ export enum ImageAsset {
   MountainSpikes = "mountain-spikes",
   SpikeBench = "spike-bench",
   SquareSpike = "square-spike",
+  LandingPad = "landing-pad",
 }
 
-export function loadImages(scene: Phaser.Scene, assets: readonly ImageAsset[]) {
-  for (const asset of assets) {
-    scene.load.image(asset, `${process.env.API_URL}/assets/image/${asset}.png`);
-  }
-}
+export const defaultImages = [ImageAsset.Friend] as const;
+export type DefaultImageAsset = (typeof defaultImages)[number];

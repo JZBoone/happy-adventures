@@ -1,13 +1,14 @@
 import Phaser from "phaser";
 import { groundTypes, map } from "./map";
-import { AudioAsset } from "../common/audio";
-import { ImageAsset } from "../common/image";
 import { Level } from "../common/level";
 import { showLevelStartText } from "../common/helpers";
 import { Level2Data } from "./data";
 import { withAssets } from "../mixins/with-assets";
 import { withMap } from "../mixins/with-map";
-import { NonMovable } from "../common/non-movable";
+import { Immovable } from "../common/immovable";
+import { ImageAsset } from "../types/image";
+import { AudioAsset } from "../types/audio";
+import { Coordinates } from "../types/maps";
 
 export class Level2 extends withMap(
   withAssets(Phaser.Scene, {
@@ -22,8 +23,8 @@ export class Level2 extends withMap(
   map
 ) {
   private monsterIsDead = false;
-  private monster!: NonMovable<Phaser.GameObjects.Image>;
-  private portal!: NonMovable<Phaser.GameObjects.Image>;
+  private monster!: Immovable<Phaser.GameObjects.Image>;
+  private portal!: Immovable<Phaser.GameObjects.Image>;
 
   constructor() {
     super({ key: Level.Level2 });
@@ -38,44 +39,45 @@ export class Level2 extends withMap(
   create() {
     super.create();
     if (!this.monsterIsDead) {
-      this.monster = this.createNonMovable({
-        row: 11,
-        position: 13,
+      this.monster = this.createImmovableImage({
+        coordinates: [11, 13],
         asset: ImageAsset.Monster,
         height: 2,
         width: 2,
       });
     }
-    this.portal = this.createNonMovable({
-      row: 11,
-      position: 15,
+    this.portal = this.createImmovableImage({
+      coordinates: [11, 15],
       asset: ImageAsset.Portal,
       height: 2,
       width: 2,
     });
     showLevelStartText(this, 2);
-    const startingCoordinates = this.monsterIsDead ? [11, 13] : [0, 0];
-    this.createFriend(...startingCoordinates);
-    this.moves$.subscribe(([row, position]) => this.handleMove(row, position));
+    const startingCoordinates: Coordinates = this.monsterIsDead
+      ? [11, 13]
+      : [0, 0];
+    this.createFriend({ coordinates: startingCoordinates });
+    this.moves$.subscribe(({ coordinates }) => this.handleMove(coordinates));
   }
 
-  private handleMove(row: number, position: number) {
-    if (this.monsterIsDead && this.portal.isAt(row, position)) {
-      this.completeLevel(row, position);
+  private handleMove(coordinates: Coordinates) {
+    if (this.monsterIsDead && this.portal.occupies(coordinates)) {
+      this.completeLevel(coordinates);
       return;
     }
-    if (!this.monsterIsDead && this.monster.isAt(row, position)) {
-      this.swallowFriend(row, position);
+    if (!this.monsterIsDead && this.monster.occupies(coordinates)) {
+      this.swallowFriend(coordinates);
       return;
     }
+    const [row, position] = coordinates;
     switch (map[row][position]) {
       case ImageAsset.Stone:
-        this.friend.move(row, position);
-        this.playAudio(AudioAsset.Stomp);
+        this.friend.move(coordinates);
+        this.playSound(AudioAsset.Stomp);
         break;
       case ImageAsset.BlackHole:
-        this.friend.move(row, position);
-        this.playAudio(AudioAsset.Fall);
+        this.friend.move(coordinates);
+        this.playSound(AudioAsset.Fall);
         this.friend.disappear();
         this.time.addEvent({
           delay: 2_000,
@@ -86,20 +88,20 @@ export class Level2 extends withMap(
     }
   }
 
-  private completeLevel(row: number, position: number) {
-    this.playAudio(AudioAsset.Tada);
+  private completeLevel(coordinates: Coordinates) {
+    this.playSound(AudioAsset.Tada);
     this.time.addEvent({
       delay: 2_000,
       callback: () => this.scene.start(Level.Level4),
       loop: false,
     });
-    this.friend.move(row, position);
+    this.friend.move(coordinates);
     this.friend.disappear();
   }
 
-  private swallowFriend(row: number, position: number) {
-    this.friend.move(row, position);
-    this.playAudio(AudioAsset.Chomp);
+  private swallowFriend(coordinates: Coordinates) {
+    this.friend.move(coordinates);
+    this.playSound(AudioAsset.Chomp);
     this.friend.disappear();
     this.time.addEvent({
       delay: 2_000,

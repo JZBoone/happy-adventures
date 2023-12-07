@@ -1,10 +1,10 @@
-import { ImageAsset } from "./image";
-import { Move } from "../mixins/with-map";
+import { ImageAsset } from "../types/image";
+import { Coordinates, Move } from "../types/maps";
 
 export const mapTileSizePx = 50;
 export const halfMapTileSizePx = mapTileSizePx / 2;
 
-export const playStartCoordinates: [x: number, y: number] = [
+export const playStartCoordinates: Coordinates = [
   halfMapTileSizePx,
   halfMapTileSizePx,
 ];
@@ -28,7 +28,7 @@ export function mapCoordinates(params: {
   offsetY?: number;
   height?: number;
   width?: number;
-}): [row: number, position: number] {
+}): Coordinates {
   const { x, y, offsetX, offsetY, height, width } = params;
   const xNormalized =
     x + (offsetX ?? 0) + ((width ?? 1) - 1) * halfMapTileSizePx;
@@ -45,9 +45,9 @@ export function mapCoordinates(params: {
 
 export function moveCoordinates(
   move: Move,
-  row: number,
-  position: number
-): [row: number, position: number] {
+  coordinates: Coordinates
+): Coordinates {
+  const [row, position] = coordinates;
   switch (move) {
     case "up":
       return [row - 1, position];
@@ -61,14 +61,14 @@ export function moveCoordinates(
 }
 
 export function worldPosition(params: {
-  row: number;
-  position: number;
+  coordinates: Coordinates;
   offsetX?: number;
   offsetY?: number;
   height?: number;
   width?: number;
 }): [x: number, y: number] {
-  const { row, position, offsetX, offsetY, height, width } = params;
+  const { coordinates, offsetX, offsetY, height, width } = params;
+  const [row, position] = coordinates;
   return [
     position * mapTileSizePx +
       halfMapTileSizePx -
