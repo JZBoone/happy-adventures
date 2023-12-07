@@ -12,7 +12,7 @@ module.exports = {
       env: {
         node: true,
       },
-      files: [".eslintrc.js}"],
+      files: [".eslintrc.js"],
       parserOptions: {
         sourceType: "script",
       },
