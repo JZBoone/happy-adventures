@@ -1,4 +1,5 @@
 import Phaser from "phaser";
+import { takeWhile } from "rxjs";
 import { map } from "./map";
 import { AudioAsset } from "../common/audio";
 import { ImageAsset } from "../common/image";
@@ -8,7 +9,6 @@ import { showLevelStartText } from "../common/helpers";
 import { withAssets } from "../mixins/with-assets";
 import { withMap } from "../mixins/with-map";
 import { Movable } from "../common/movable";
-import { Subject, debounceTime, takeWhile } from "rxjs";
 import { NonMovable } from "../common/non-movable";
 
 export class Level1 extends withMap(
@@ -32,7 +32,6 @@ export class Level1 extends withMap(
 ) {
   private castle!: NonMovable<Phaser.GameObjects.Sprite>;
   private boat!: Movable<Phaser.GameObjects.Image>;
-  private inValidMove$ = new Subject<void>();
   private levelCompleted = false;
 
   constructor() {
@@ -60,12 +59,6 @@ export class Level1 extends withMap(
     this.moves$
       .pipe(takeWhile(() => !this.levelCompleted))
       .subscribe(([row, position]) => this.handleMove(row, position));
-    this.inValidMove$
-      .asObservable()
-      .pipe(debounceTime(50))
-      .subscribe(() => {
-        this.onInvalidMove();
-      });
   }
 
   handleMove(newRow: number, newPosition: number): void {
@@ -91,7 +84,7 @@ export class Level1 extends withMap(
       this.friend.setOffsetY(0);
       this.friend.move(row, position);
     } else {
-      this.inValidMove$.next();
+      this.invalidMoves$.next([row, position]);
     }
   }
 
@@ -108,7 +101,7 @@ export class Level1 extends withMap(
       this.friend.move(row, position);
       this.playAudio(AudioAsset.BoardBoat);
     } else {
-      this.inValidMove$.next();
+      this.invalidMoves$.next([row, position]);
     }
   }
 

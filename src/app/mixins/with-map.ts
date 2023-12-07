@@ -18,9 +18,8 @@ interface ISceneWithMap<
 > extends ISceneWithAssets<SceneAudioAsset, SceneImageAsset, SceneSpriteAsset> {
   friend: Movable<Phaser.GameObjects.Image>;
   moves$: Observable<[row: number, position: number]>;
-  outOfBoundMoves$: Observable<[row: number, position: number]>;
+  invalidMoves$: Subject<[row: number, position: number]>;
   createFriend(row?: number, position?: number): void;
-  onInvalidMove: () => void;
   createNonMovable<
     Asset extends SceneImageAsset | DefaultImageAsset | SceneSpriteAsset,
   >(params: {
@@ -72,9 +71,7 @@ export function withMap<
     moves$ = this.allMoveCoordinates$.pipe(
       filter((coordinates) => !this.moveIsOutOfBounds(...coordinates))
     );
-    outOfBoundMoves$ = this.allMoveCoordinates$.pipe(
-      filter((coordinates) => this.moveIsOutOfBounds(...coordinates))
-    );
+    invalidMoves$ = new Subject<[row: number, position: number]>();
 
     private movables: Movable<
       Phaser.GameObjects.Image | Phaser.GameObjects.Sprite
@@ -83,8 +80,13 @@ export function withMap<
     create() {
       loadMap(this, sceneMap);
       this.cursors = this.input.keyboard!.createCursorKeys();
-      this.outOfBoundMoves$.pipe(debounceTime(50)).subscribe(() => {
-        this.onInvalidMove();
+      this.allMoveCoordinates$
+        .pipe(filter((coordinates) => this.moveIsOutOfBounds(...coordinates)))
+        .subscribe((coordinates) => {
+          this.invalidMoves$.next(coordinates);
+        });
+      this.invalidMoves$.pipe(debounceTime(50)).subscribe(() => {
+        this.playAudio(AudioAsset.Thump);
       });
     }
 
@@ -102,10 +104,6 @@ export function withMap<
         return;
       }
       this._moves$.next(move);
-    }
-
-    onInvalidMove() {
-      this.playAudio(AudioAsset.Thump);
     }
 
     createNonMovable<
