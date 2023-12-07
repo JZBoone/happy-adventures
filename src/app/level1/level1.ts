@@ -4,7 +4,7 @@ import { AudioAsset } from "../common/audio";
 import { ImageAsset } from "../common/image";
 import { CastleAnimation, SpriteAsset } from "../common/sprite";
 import { Level } from "../common/level";
-import { disappearFriend, showLevelStartText } from "../common/helpers";
+import { showLevelStartText } from "../common/helpers";
 import { withAssets } from "../mixins/with-assets";
 import { withMap } from "../mixins/with-map";
 import { Movable } from "../common/movable";
@@ -125,7 +125,7 @@ export class Level1 extends withMap(
     });
     this.time.addEvent({
       delay: 1_000,
-      callback: () => disappearFriend(this, this.friend.movable),
+      callback: () => this.friend.disappear(),
       loop: false,
     });
     this.time.addEvent({

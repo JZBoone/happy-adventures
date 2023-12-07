@@ -59,4 +59,17 @@ export class Movable<
     }
     return this.movingTween.isPlaying();
   }
+
+  disappear() {
+    this.scene.tweens.add({
+      targets: this.movable,
+      scaleX: 0, // Scale horizontally to 0
+      scaleY: 0, // Scale vertically to 0
+      ease: "Linear", // Use a linear easing
+      duration: 2000, // Duration of the tween in milliseconds
+      onComplete: () => {
+        this.movable.setVisible(false); // Hide the sprite after scaling down
+      },
+    });
+  }
 }

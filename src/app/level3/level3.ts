@@ -3,7 +3,7 @@ import { map } from "./map";
 import { AudioAsset } from "../common/audio";
 import { ImageAsset } from "../common/image";
 import { Level } from "../common/level";
-import { disappearFriend, showLevelStartText } from "../common/helpers";
+import { showLevelStartText } from "../common/helpers";
 import { Level2Data } from "../level2/data";
 import { withAssets } from "../mixins/with-assets";
 import { withMap } from "../mixins/with-map";
@@ -146,7 +146,7 @@ export class Level3 extends withMap(
     this.playAudio(AudioAsset.Explosion);
     this.heart.nonMovable.setVisible(false);
     this.bomb.movable.setVisible(false);
-    disappearFriend(this, this.friend.movable);
+    this.friend.disappear();
     this.time.addEvent({
       delay: 2_000,
       callback: () => this.playAudio(AudioAsset.Tada),

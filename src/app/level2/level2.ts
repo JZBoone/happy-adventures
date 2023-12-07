@@ -3,7 +3,7 @@ import { groundTypes, map } from "./map";
 import { AudioAsset } from "../common/audio";
 import { ImageAsset } from "../common/image";
 import { Level } from "../common/level";
-import { disappearFriend, showLevelStartText } from "../common/helpers";
+import { showLevelStartText } from "../common/helpers";
 import { Level2Data } from "./data";
 import { withAssets } from "../mixins/with-assets";
 import { withMap } from "../mixins/with-map";
@@ -76,7 +76,7 @@ export class Level2 extends withMap(
       case ImageAsset.BlackHole:
         this.friend.move(row, position);
         this.playAudio(AudioAsset.Fall);
-        disappearFriend(this, this.friend.movable);
+        this.friend.disappear();
         this.time.addEvent({
           delay: 2_000,
           callback: () => this.scene.start(Level.Level1),
@@ -94,13 +94,13 @@ export class Level2 extends withMap(
       loop: false,
     });
     this.friend.move(row, position);
-    disappearFriend(this, this.friend.movable);
+    this.friend.disappear();
   }
 
   private swallowFriend(row: number, position: number) {
     this.friend.move(row, position);
     this.playAudio(AudioAsset.Chomp);
-    disappearFriend(this, this.friend.movable);
+    this.friend.disappear();
     this.time.addEvent({
       delay: 2_000,
       callback: () => this.scene.start(Level.Level3),
