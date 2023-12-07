@@ -1,26 +1,33 @@
 module.exports = {
   env: {
-    browser: true,
-    es2021: true,
+    node: true,
   },
-  extends: ["eslint:recommended", "plugin:@typescript-eslint/recommended"],
+  extends: ["eslint:recommended"],
+  parserOptions: {
+    ecmaVersion: "latest",
+    sourceType: "module",
+  },
   overrides: [
     {
       env: {
         node: true,
       },
-      files: [".eslintrc.{js,cjs}"],
+      files: [".eslintrc.js}"],
       parserOptions: {
         sourceType: "script",
       },
     },
+    {
+      env: {
+        browser: true,
+        es2021: true,
+      },
+      extends: ["eslint:recommended", "plugin:@typescript-eslint/recommended"],
+      files: ["**/*.ts"],
+      parser: "@typescript-eslint/parser",
+      plugins: ["@typescript-eslint"],
+    },
   ],
-  parser: "@typescript-eslint/parser",
-  parserOptions: {
-    ecmaVersion: "latest",
-    sourceType: "module",
-  },
-  plugins: ["@typescript-eslint"],
   rules: {},
-  ignorePatterns: ["**/*.js"],
+  ignorePatterns: ["*.html", "dist/*", "src/js/*"],
 };
