@@ -12,4 +12,4 @@ To load the deployed version of the app visit:
 
 https://storage.googleapis.com/happy-adventures/index.html
 
-This app is built on https://phaser.io/ and is configured to run on an up to date version of Chrome. It requires a keyboard to play (specifically the arrow keys).
+This app is built on https://phaser.io/ and is configured to run on an up-to-date version of Chrome. It requires a keyboard to play (specifically the arrow keys).
