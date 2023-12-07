@@ -50,7 +50,7 @@ export const SpriteAssets: Record<
           repeat: 0,
         });
       }
-      sprite.on("animationstart", (anim: any) => {
+      sprite.on("animationstart", (anim: { key: string }) => {
         if (anim.key === CastleAnimation.Open) {
           scene.sound.play(AudioAsset.CastleOpen);
         }

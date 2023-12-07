@@ -1,7 +1,7 @@
 import Phaser from "phaser";
 
 export function showLevelStartText(scene: Phaser.Scene, levelNumber: number) {
-  let levelText = scene.add
+  const levelText = scene.add
     .text(
       scene.cameras.main.centerX,
       scene.cameras.main.centerY,
