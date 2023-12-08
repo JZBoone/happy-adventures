@@ -113,11 +113,12 @@ export class Level3 extends withMap(
     } else if (this.bomb.isAt(coordinates) && !this.isCarryingBomb()) {
       this.hoistBomb();
     }
-    this.playSound(
-      this.bones.some((bones) => bones.occupies(coordinates))
-        ? AudioAsset.Crunch
-        : AudioAsset.Splat
-    );
+    if (this.bones.some((bones) => bones.occupies(coordinates))) {
+      this.playSound(AudioAsset.Crunch, { volume: 0.5 });
+    } else {
+      this.playSound(AudioAsset.Splat, { volume: 0.25 });
+    }
+
     if (this.isCarryingBomb()) {
       this.friend.move(coordinates);
       this.bomb.move(coordinates);
@@ -131,12 +132,12 @@ export class Level3 extends withMap(
   }
 
   private hoistBomb() {
-    this.playSound(AudioAsset.Grunt);
+    this.playSound(AudioAsset.Grunt, { volume: 0.5 });
     this.bomb.setOffsetY(this.hoistedBomboffsetY + this.bomboffsetY);
   }
 
   private explodeHeartAndCompleteLevel() {
-    this.playSound(AudioAsset.Explosion);
+    this.playSound(AudioAsset.Explosion, { volume: 0.5 });
     this.heart.immovable.setVisible(false);
     this.bomb.movable.setVisible(false);
     this.friend.disappear();
