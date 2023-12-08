@@ -1,10 +1,11 @@
 import { Observable, Subject } from "rxjs";
-import { Friend, Movable } from "../common/movable";
+import { Movable } from "../common/movable";
 import { Immovable } from "../common/immovable";
 import { AudioAsset } from "./audio";
 import { DefaultImageAsset, ImageAsset } from "./image";
 import { DefaultSpriteAsset, SpriteAsset } from "./sprite";
 import { ISceneWithAssets } from "./assets";
+import { Friend } from "../common/friend";
 
 export type Coordinates = [row: number, position: number];
 
