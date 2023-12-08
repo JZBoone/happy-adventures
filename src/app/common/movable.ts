@@ -3,7 +3,7 @@ import { AudioAsset } from "../types/audio";
 import { ImageAsset } from "../types/image";
 import { Coordinates } from "../types/maps";
 import { SpriteAsset } from "../types/sprite";
-import { mapCoordinates, worldPosition } from "./map";
+import { worldPosition } from "./map";
 import { Immovable } from "./immovable";
 
 export class Movable<
@@ -25,7 +25,7 @@ export class Movable<
   }
   constructor(
     public scene: ISceneWithAssets<AudioAsset, ImageAsset, SpriteAsset>,
-    public movable: T,
+    public phaserObject: T,
     options?: {
       offsetX?: number;
       offsetY?: number;
@@ -33,7 +33,7 @@ export class Movable<
       width?: number;
     }
   ) {
-    super(movable, options);
+    super(phaserObject, options);
   }
 
   async move(
@@ -49,12 +49,12 @@ export class Movable<
         height: this.height,
       });
       if (options.noAnimation) {
-        this.movable.x = x;
-        this.movable.y = y;
+        this.phaserObject.x = x;
+        this.phaserObject.y = y;
         return resolve();
       }
       this.movingTween = this.scene.tweens.add({
-        targets: this.movable,
+        targets: this.phaserObject,
         x,
         y,
         ease: "Linear",
@@ -63,17 +63,6 @@ export class Movable<
         yoyo: false,
         onComplete: () => resolve(),
       });
-    });
-  }
-
-  coordinates() {
-    return mapCoordinates({
-      x: this.movable.x,
-      y: this.movable.y,
-      offsetX: this.offsetX,
-      offsetY: this.offsetY,
-      height: this.height,
-      width: this.width,
     });
   }
 

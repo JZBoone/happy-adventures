@@ -121,17 +121,17 @@ export class Level4 extends withMap(
 
     if (!this.friend.mount && this.miniplane.occupies(coordinates)) {
       this.friend.mountSprite(this.miniplane, this.miniplane.coordinates());
-      this.miniplane.movable.anims.play(MiniPlaneAnimation.Fly);
+      this.miniplane.phaserObject.anims.play(MiniPlaneAnimation.Fly);
       this.motorSound.play();
       this.trees.forEach((tree) => {
-        tree.immovable.setDepth(0);
+        tree.phaserObject.setDepth(0);
       });
-      this.miniplane.movable.setDepth(10);
+      this.miniplane.phaserObject.setDepth(10);
       return;
     }
     if (this.friend.mount && this.landingPad.isAt(coordinates)) {
-      this.miniplane.movable.anims.stop();
-      this.miniplane.movable.setFrame(0);
+      this.miniplane.phaserObject.anims.stop();
+      this.miniplane.phaserObject.setFrame(0);
       await this.miniplane.move(coordinates);
       this.friend.unmountSprite();
       const [start, end] = this.unmountCoordinates(move);

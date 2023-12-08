@@ -108,7 +108,7 @@ export class Level1 extends withMap(
 
   private completeLevel() {
     this.levelCompleted = true;
-    this.castle.immovable.anims.play(CastleAnimation.Open);
+    this.castle.phaserObject.anims.play(CastleAnimation.Open);
     this.time.addEvent({
       delay: 500,
       callback: () => this.friend.move(this.castle.coordinates()),

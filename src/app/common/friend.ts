@@ -7,13 +7,13 @@ export class Friend extends Movable<Phaser.GameObjects.Image> {
   disappear(): Promise<void> {
     return new Promise((resolve) => {
       this.scene.tweens.add({
-        targets: this.movable,
+        targets: this.phaserObject,
         scaleX: 0, // Scale horizontally to 0
         scaleY: 0, // Scale vertically to 0
         ease: "Linear", // Use a linear easing
         duration: 2000, // Duration of the tween in milliseconds
         onComplete: () => {
-          this.movable.setVisible(false); // Hide the sprite after scaling down
+          this.phaserObject.setVisible(false); // Hide the sprite after scaling down
           resolve();
         },
       });
@@ -24,7 +24,7 @@ export class Friend extends Movable<Phaser.GameObjects.Image> {
     movable: Movable<Phaser.GameObjects.Sprite>,
     coordinates: Coordinates
   ) {
-    this.movable.setVisible(false);
+    this.phaserObject.setVisible(false);
     this.mount = movable;
     this.mount.move(coordinates);
   }
@@ -35,7 +35,7 @@ export class Friend extends Movable<Phaser.GameObjects.Image> {
     }
     const mount = this.mount;
     this.mount = null;
-    this.movable.setVisible(true);
+    this.phaserObject.setVisible(true);
     return mount;
   }
 

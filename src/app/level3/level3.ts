@@ -89,7 +89,7 @@ export class Level3 extends withMap(
       asset: ImageAsset.Heart,
     });
     this.tweens.add({
-      targets: this.heart.immovable,
+      targets: this.heart.phaserObject,
       scaleX: 1.25,
       scaleY: 1.25,
       ease: "Sine.easeInOut",
@@ -138,8 +138,8 @@ export class Level3 extends withMap(
 
   private explodeHeartAndCompleteLevel() {
     this.playSound(AudioAsset.Explosion, { volume: 0.5 });
-    this.heart.immovable.setVisible(false);
-    this.bomb.movable.setVisible(false);
+    this.heart.phaserObject.setVisible(false);
+    this.bomb.phaserObject.setVisible(false);
     this.friend.disappear();
     this.time.addEvent({
       delay: 2_000,

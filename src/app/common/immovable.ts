@@ -20,7 +20,7 @@ export class Immovable<
   }
 
   constructor(
-    public immovable: T,
+    public phaserObject: T,
     options?: {
       offsetX?: number;
       offsetY?: number;
@@ -36,8 +36,8 @@ export class Immovable<
 
   coordinates() {
     return mapCoordinates({
-      x: this.immovable.x,
-      y: this.immovable.y,
+      x: this.phaserObject.x,
+      y: this.phaserObject.y,
       offsetX: this.offsetX,
       offsetY: this.offsetY,
       height: this.height,
@@ -53,8 +53,8 @@ export class Immovable<
       width: this.width,
       height: this.height,
     });
-    this.immovable.x = x;
-    this.immovable.y = y;
+    this.phaserObject.x = x;
+    this.phaserObject.y = y;
   }
 
   private occupiesRow(row: number) {
