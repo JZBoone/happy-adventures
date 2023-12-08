@@ -15,5 +15,5 @@ export enum AudioAsset {
   Motor = "motor",
 }
 
-export const defaultAudio = [AudioAsset.Thump] as const;
+export const defaultAudio = [AudioAsset.Thump, AudioAsset.Tada] as const;
 export type DefaultAudioAsset = (typeof defaultAudio)[number];

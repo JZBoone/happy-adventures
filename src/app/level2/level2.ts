@@ -13,12 +13,7 @@ import { Coordinates } from "../types/maps";
 export class Level2 extends withMap(
   withAssets(Phaser.Scene, {
     images: [...groundTypes, ImageAsset.Monster, ImageAsset.Portal] as const,
-    audio: [
-      AudioAsset.Tada,
-      AudioAsset.Chomp,
-      AudioAsset.Fall,
-      AudioAsset.Stomp,
-    ] as const,
+    audio: [AudioAsset.Chomp, AudioAsset.Fall, AudioAsset.Stomp] as const,
   }),
   map
 ) {
@@ -73,7 +68,7 @@ export class Level2 extends withMap(
     switch (map[row][position]) {
       case ImageAsset.Stone:
         this.friend.move(coordinates);
-        this.playSound(AudioAsset.Stomp);
+        this.playSound(AudioAsset.Stomp, { volume: 0.5 });
         break;
       case ImageAsset.BlackHole:
         this.friend.move(coordinates);

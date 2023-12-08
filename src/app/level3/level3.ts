@@ -25,7 +25,6 @@ export class Level3 extends withMap(
     audio: [
       AudioAsset.Grunt,
       AudioAsset.Explosion,
-      AudioAsset.Tada,
       AudioAsset.Crunch,
       AudioAsset.Splat,
     ] as const,

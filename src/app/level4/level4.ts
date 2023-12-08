@@ -35,17 +35,20 @@ export class Level4 extends withMap(
     super({ key: Level.Level4 });
   }
 
-  spikies: Immovable<Phaser.GameObjects.Image>[] = [];
-  miniplane!: Movable<Phaser.GameObjects.Sprite>;
-  landingPad!: Immovable<Phaser.GameObjects.Image>;
-  trees: Immovable<Phaser.GameObjects.Image>[] = [];
-  motorSound!:
+  private spikies: Immovable<Phaser.GameObjects.Image>[] = [];
+  private miniplane!: Movable<Phaser.GameObjects.Sprite>;
+  private landingPad!: Immovable<Phaser.GameObjects.Image>;
+  private trees: Immovable<Phaser.GameObjects.Image>[] = [];
+  private motorSound!:
     | Phaser.Sound.NoAudioSound
     | Phaser.Sound.HTML5AudioSound
     | Phaser.Sound.WebAudioSound;
+  private completedLevel = false;
+  private magicTree!: Immovable<Phaser.GameObjects.Image>;
 
   create() {
     super.create();
+    this.completedLevel = false;
     const spikyTypes = [
       ImageAsset.Cactus,
       ImageAsset.BoobyTrap,
@@ -93,7 +96,7 @@ export class Level4 extends withMap(
       }
     }
 
-    this.createImmovableImage({
+    this.magicTree = this.createImmovableImage({
       coordinates: [4, 9],
       height: 2,
       width: 2,
@@ -138,6 +141,14 @@ export class Level4 extends withMap(
       await this.friend.move(end);
       this.motorSound.stop();
       return;
+    }
+    if (
+      !this.completedLevel &&
+      !this.friend.mount &&
+      this.magicTree.occupies(coordinates)
+    ) {
+      this.completedLevel = true;
+      this.playSound(AudioAsset.Tada);
     }
     this.friend.move(coordinates);
   }

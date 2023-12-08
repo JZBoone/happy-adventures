@@ -18,7 +18,6 @@ export class Level1 extends withMap(
       AudioAsset.SandStep,
       AudioAsset.BoardBoat,
       AudioAsset.Splash,
-      AudioAsset.Tada,
       AudioAsset.CastleOpen,
     ] as const,
     images: [
