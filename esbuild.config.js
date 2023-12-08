@@ -7,7 +7,7 @@ module.exports.esbuildConfig = {
   bundle: true,
   minify: process.env.NODE_ENV === "production" ? true : false,
   outfile: "./src/js/bundle.js",
-  sourcemap: true,
+  sourcemap: process.env.NODE_ENV !== "production" ? true : false,
   platform: "browser",
   target: ["chrome118"],
   define: {
