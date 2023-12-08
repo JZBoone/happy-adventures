@@ -131,17 +131,10 @@ export class Friend extends Movable<Phaser.GameObjects.Image> {
   }
 
   coordinates() {
-    if (!this.mount) {
-      return super.coordinates();
+    if (this.mount) {
+      return this.mount.coordinates();
     }
-    return mapCoordinates({
-      x: this.mount.movable.x,
-      y: this.mount.movable.y,
-      offsetX: this.mount.offsetX,
-      offsetY: this.mount.offsetY,
-      height: this.mount.height,
-      width: this.mount.width,
-    });
+    return super.coordinates();
   }
 
   isMoving(): boolean {
