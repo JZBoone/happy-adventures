@@ -1,5 +1,4 @@
 import Phaser from "phaser";
-import { SceneClass } from "./types";
 import { worldPosition } from "../common/map";
 import { AudioAsset, DefaultAudioAsset, defaultAudio } from "../types/audio";
 import { DefaultImageAsset, ImageAsset, defaultImages } from "../types/image";
@@ -7,9 +6,10 @@ import { SpriteAsset, SpriteAssets, defaultSprites } from "../types/sprite";
 import { ISceneWithAssets } from "../types/assets";
 import { loadAudio, loadImages, loadSprites } from "../common/assets";
 import { Coordinates } from "../types/maps";
+import { Constructor } from "../types/util";
 
 export function withAssets<
-  TBase extends SceneClass,
+  TBase extends Constructor<Phaser.Scene>,
   SceneAudioAsset extends AudioAsset,
   SceneImageAsset extends ImageAsset,
   SceneSpriteAsset extends SpriteAsset,

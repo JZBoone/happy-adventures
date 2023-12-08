@@ -1,7 +1,7 @@
 import Phaser from "phaser";
 import { takeWhile } from "rxjs";
 import { map } from "./map";
-import { Level } from "../common/level";
+import { Level } from "../types/level";
 import { showLevelStartText } from "../common/helpers";
 import { withAssets } from "../mixins/with-assets";
 import { withMap } from "../mixins/with-map";

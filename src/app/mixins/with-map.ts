@@ -2,13 +2,13 @@ import Phaser from "phaser";
 import { Subject, debounceTime, filter, map, share } from "rxjs";
 import { loadMap, moveCoordinates } from "../common/map";
 import { Friend, Movable } from "../common/movable";
-import { Constructor } from "./types";
 import { Immovable } from "../common/immovable";
 import { Coordinates, ISceneWithMap, Move } from "../types/maps";
 import { AudioAsset } from "../types/audio";
 import { DefaultImageAsset, ImageAsset } from "../types/image";
 import { DefaultSpriteAsset, SpriteAsset } from "../types/sprite";
 import { ISceneWithAssets } from "../types/assets";
+import { Constructor } from "../types/util";
 
 export function withMap<
   SceneAudioAsset extends AudioAsset,

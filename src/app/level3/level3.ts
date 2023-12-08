@@ -1,6 +1,6 @@
 import Phaser from "phaser";
 import { map } from "./map";
-import { Level } from "../common/level";
+import { Level } from "../types/level";
 import { showLevelStartText } from "../common/helpers";
 import { Level2Data } from "../level2/data";
 import { withAssets } from "../mixins/with-assets";
