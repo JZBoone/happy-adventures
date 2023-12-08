@@ -1,6 +1,6 @@
 import Phaser from "phaser";
 import { Subject, debounceTime, filter, map, share } from "rxjs";
-import { loadMap, moveCoordinates } from "../common/map";
+import { loadMap, mapTileSizePx, moveCoordinates } from "../common/map";
 import { Movable } from "../common/movable";
 import { Immovable } from "../common/immovable";
 import { Coordinates, ISceneWithMap, Move } from "../types/maps";
@@ -162,6 +162,8 @@ export function withMap<
         offsetY,
         width,
         height,
+        sceneWidth: sceneMap[0].length * mapTileSizePx,
+        sceneHeight: sceneMap.length * mapTileSizePx,
       });
       this.movables.push(friend);
       this.friend = friend;

@@ -58,9 +58,9 @@ export class Level4 extends withMap(
       ImageAsset.SquareSpike,
     ] as const;
     let spikyCounter = 0;
-    for (const row of range(0, 10)) {
-      for (const position of range(3, 13)) {
-        if (range(1, 9).includes(row) && range(4, 12).includes(position)) {
+    for (const row of range(8, 18)) {
+      for (const position of range(11, 21)) {
+        if (range(9, 17).includes(row) && range(12, 20).includes(position)) {
           continue;
         }
         const asset = spikyTypes[spikyCounter % (spikyTypes.length - 1)];
@@ -74,30 +74,39 @@ export class Level4 extends withMap(
       }
     }
     this.landingPad = this.createImmovableImage({
-      coordinates: [7, 6],
+      coordinates: [15, 14],
       height: 2,
       width: 2,
       asset: ImageAsset.LandingPad,
     });
     this.miniplane = this.createMovableSprite({
-      coordinates: [11, 15],
+      coordinates: [29, 29],
       height: 2,
       width: 2,
       asset: SpriteAsset.MiniPlane,
     });
-    for (const row of [10, 11]) {
-      for (const position of [14, 15]) {
-        this.trees.push(
-          this.createImmovableImage({
-            coordinates: [row, position],
-            asset: ImageAsset.Tree,
-          })
-        );
+    const treeClumps: [startRow: number, startPosition: number][] = [
+      [2, 1],
+      [12, 4],
+      [17, 25],
+      [22, 10],
+      [28, 28],
+    ];
+    for (const treeClump of treeClumps) {
+      for (const row of [treeClump[0], treeClump[0] + 1]) {
+        for (const position of [treeClump[1], treeClump[1] + 1]) {
+          this.trees.push(
+            this.createImmovableImage({
+              coordinates: [row, position],
+              asset: ImageAsset.Tree,
+            })
+          );
+        }
       }
     }
 
     this.magicTree = this.createImmovableImage({
-      coordinates: [4, 9],
+      coordinates: [12, 18],
       height: 2,
       width: 2,
       asset: ImageAsset.MagicTree,

@@ -1,8 +1,31 @@
+import { ISceneWithAssets } from "../types/assets";
+import { AudioAsset } from "../types/audio";
+import { ImageAsset } from "../types/image";
 import { Coordinates } from "../types/maps";
+import { SpriteAsset } from "../types/sprite";
 import { Movable } from "./movable";
 
 export class Friend extends Movable<Phaser.GameObjects.Image> {
   mount: Movable<Phaser.GameObjects.Sprite> | null = null;
+
+  private sceneSize: { width: number; height: number };
+
+  constructor(
+    public scene: ISceneWithAssets<AudioAsset, ImageAsset, SpriteAsset>,
+    public phaserObject: InstanceType<typeof Phaser.GameObjects.Image>,
+    options: {
+      offsetX?: number;
+      offsetY?: number;
+      height?: number;
+      width?: number;
+      sceneWidth: number;
+      sceneHeight: number;
+    }
+  ) {
+    super(scene, phaserObject, options);
+    this.sceneSize = { width: options.sceneWidth, height: options.sceneHeight };
+    this.initFollow();
+  }
 
   disappear(): Promise<void> {
     return new Promise((resolve) => {
@@ -27,6 +50,7 @@ export class Friend extends Movable<Phaser.GameObjects.Image> {
     this.phaserObject.setVisible(false);
     this.mount = movable;
     this.mount.move(coordinates);
+    this.followMount();
   }
 
   unmountSprite(): Movable<Phaser.GameObjects.Sprite> {
@@ -36,6 +60,7 @@ export class Friend extends Movable<Phaser.GameObjects.Image> {
     const mount = this.mount;
     this.mount = null;
     this.phaserObject.setVisible(true);
+    this.unfollowMount();
     return mount;
   }
 
@@ -61,5 +86,40 @@ export class Friend extends Movable<Phaser.GameObjects.Image> {
       return super.isMoving();
     }
     return this.mount.isMoving();
+  }
+
+  private followMount() {
+    if (!this.mount) {
+      throw new Error("Cannot follow mount. Nothing mounted!");
+    }
+    const currentCameraPosX = this.scene.cameras.main.scrollX;
+    const currentCameraPosY = this.scene.cameras.main.scrollY;
+    this.scene.cameras.main.stopFollow();
+    this.scene.cameras.main.startFollow(
+      this.mount!.phaserObject,
+      true,
+      0.05,
+      0.05
+    );
+    this.scene.cameras.main.setScroll(currentCameraPosX, currentCameraPosY);
+  }
+
+  private unfollowMount() {
+    const currentCameraPosX = this.scene.cameras.main.scrollX;
+    const currentCameraPosY = this.scene.cameras.main.scrollY;
+    this.scene.cameras.main.stopFollow();
+    this.scene.cameras.main.startFollow(this.phaserObject, true, 0.05, 0.05);
+    this.scene.cameras.main.setScroll(currentCameraPosX, currentCameraPosY);
+  }
+
+  private initFollow() {
+    this.scene.cameras.main.setBounds(
+      0,
+      0,
+      this.sceneSize.width,
+      this.sceneSize.height
+    );
+    this.scene.cameras.main.startFollow(this.phaserObject, true, 0.05, 0.05);
+    this.scene.cameras.main.setDeadzone(100, 100);
   }
 }

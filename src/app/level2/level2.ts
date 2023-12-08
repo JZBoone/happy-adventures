@@ -1,4 +1,5 @@
 import Phaser from "phaser";
+import { takeWhile } from "rxjs";
 import { groundTypes, map } from "./map";
 import { Level } from "../types/level";
 import { showLevelStartText } from "../common/helpers";
@@ -20,6 +21,7 @@ export class Level2 extends withMap(
   private monsterIsDead = false;
   private monster!: Immovable<Phaser.GameObjects.Image>;
   private portal!: Immovable<Phaser.GameObjects.Image>;
+  private didShutDown = false;
 
   constructor() {
     super({ key: Level.Level2 });
@@ -32,6 +34,7 @@ export class Level2 extends withMap(
   }
 
   create() {
+    this.didShutDown = false;
     super.create();
     if (!this.monsterIsDead) {
       this.monster = this.createImmovableImage({
@@ -52,7 +55,9 @@ export class Level2 extends withMap(
       ? [11, 13]
       : [0, 0];
     this.createFriend({ coordinates: startingCoordinates });
-    this.moves$.subscribe(({ coordinates }) => this.handleMove(coordinates));
+    this.moves$
+      .pipe(takeWhile(() => !this.didShutDown))
+      .subscribe(({ coordinates }) => this.handleMove(coordinates));
   }
 
   private handleMove(coordinates: Coordinates) {
@@ -84,6 +89,7 @@ export class Level2 extends withMap(
   }
 
   private completeLevel(coordinates: Coordinates) {
+    this.didShutDown = true;
     this.playSound(AudioAsset.Tada);
     this.time.addEvent({
       delay: 2_000,
@@ -95,6 +101,7 @@ export class Level2 extends withMap(
   }
 
   private swallowFriend(coordinates: Coordinates) {
+    this.didShutDown = true;
     this.friend.move(coordinates);
     this.playSound(AudioAsset.Chomp);
     this.friend.disappear();

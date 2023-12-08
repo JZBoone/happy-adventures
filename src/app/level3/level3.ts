@@ -76,12 +76,6 @@ export class Level3 extends withMap(
         height: 2,
       })
     );
-    this.createFriend();
-    this.bomb = this.createMovableImage({
-      coordinates: [11, 1],
-      asset: ImageAsset.Bomb,
-      offsetY: this.bomboffsetY,
-    });
     this.heart = this.createImmovableImage({
       coordinates: [3, 12],
       width: 3,
@@ -102,6 +96,12 @@ export class Level3 extends withMap(
       asset: ImageAsset.Lungs,
       width: 6,
       height: 5,
+    });
+    this.createFriend();
+    this.bomb = this.createMovableImage({
+      coordinates: [11, 1],
+      asset: ImageAsset.Bomb,
+      offsetY: this.bomboffsetY,
     });
     this.moves$.subscribe(({ coordinates }) => this.handleMove(coordinates));
     showLevelStartText(this, 3);
