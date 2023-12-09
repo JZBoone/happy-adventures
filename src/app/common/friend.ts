@@ -48,9 +48,9 @@ export class Friend extends Movable<Phaser.GameObjects.Image> {
     coordinates: Coordinates
   ) {
     this.phaserObject.setVisible(false);
+    this.move(coordinates);
     this.mount = movable;
     this.mount.move(coordinates);
-    this.followMount();
   }
 
   unmountSprite(): Movable<Phaser.GameObjects.Sprite> {
@@ -60,7 +60,6 @@ export class Friend extends Movable<Phaser.GameObjects.Image> {
     const mount = this.mount;
     this.mount = null;
     this.phaserObject.setVisible(true);
-    this.unfollowMount();
     return mount;
   }
 
@@ -71,6 +70,7 @@ export class Friend extends Movable<Phaser.GameObjects.Image> {
     if (!this.mount) {
       return super.move(coordinates, options);
     }
+    super.move(coordinates, options);
     return this.mount.move(coordinates, options);
   }
 
@@ -86,30 +86,6 @@ export class Friend extends Movable<Phaser.GameObjects.Image> {
       return super.isMoving();
     }
     return this.mount.isMoving();
-  }
-
-  private followMount() {
-    if (!this.mount) {
-      throw new Error("Cannot follow mount. Nothing mounted!");
-    }
-    const currentCameraPosX = this.scene.cameras.main.scrollX;
-    const currentCameraPosY = this.scene.cameras.main.scrollY;
-    this.scene.cameras.main.stopFollow();
-    this.scene.cameras.main.startFollow(
-      this.mount!.phaserObject,
-      true,
-      0.05,
-      0.05
-    );
-    this.scene.cameras.main.setScroll(currentCameraPosX, currentCameraPosY);
-  }
-
-  private unfollowMount() {
-    const currentCameraPosX = this.scene.cameras.main.scrollX;
-    const currentCameraPosY = this.scene.cameras.main.scrollY;
-    this.scene.cameras.main.stopFollow();
-    this.scene.cameras.main.startFollow(this.phaserObject, true, 0.05, 0.05);
-    this.scene.cameras.main.setScroll(currentCameraPosX, currentCameraPosY);
   }
 
   private initFollow() {
