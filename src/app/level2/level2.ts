@@ -9,15 +9,17 @@ import { withMap } from "../mixins/with-map";
 import { Immovable } from "../common/immovable";
 import { ImageAsset } from "../types/image";
 import { AudioAsset } from "../types/audio";
-import { Coordinates } from "../types/maps";
+import { Coordinates } from "../types/map";
 
-export class Level2 extends withMap(
+export class Level2MapAndAssets extends withMap(
   withAssets(Phaser.Scene, {
     images: [...groundTypes, ImageAsset.Monster, ImageAsset.Portal] as const,
     audio: [AudioAsset.Chomp, AudioAsset.Fall, AudioAsset.Stomp] as const,
   }),
   map
-) {
+) {}
+
+export class Level2 extends Level2MapAndAssets {
   private monsterIsDead = false;
   private monster!: Immovable<Phaser.GameObjects.Image>;
   private portal!: Immovable<Phaser.GameObjects.Image>;

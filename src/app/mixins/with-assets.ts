@@ -5,7 +5,7 @@ import { DefaultImageAsset, ImageAsset, defaultImages } from "../types/image";
 import { SpriteAsset, SpriteAssets, defaultSprites } from "../types/sprite";
 import { ISceneWithAssets } from "../types/assets";
 import { loadAudio, loadImages, loadSprites } from "../common/assets";
-import { Coordinates } from "../types/maps";
+import { Coordinates } from "../types/map";
 import { Constructor } from "../types/util";
 
 export function withAssets<

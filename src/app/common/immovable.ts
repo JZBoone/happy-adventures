@@ -1,4 +1,5 @@
-import { Coordinates } from "../types/maps";
+import { isEqual, range } from "lodash";
+import { Coordinates } from "../types/map";
 import { mapCoordinates, worldPosition } from "./map";
 
 export class Immovable<
@@ -91,5 +92,34 @@ export class Immovable<
 
   occupies([row, position]: Coordinates): boolean {
     return this.occupiesRow(row) && this.occupiesPosition(position);
+  }
+
+  isAdjacentTo(coordinates: Coordinates): boolean {
+    const [actualRow, actualPosition] = this.coordinates();
+    const rowBoundaries = [actualRow - (this.height - 1), actualRow];
+    const positionBoundaries = [
+      actualPosition - (this.width - 1),
+      actualPosition,
+    ];
+    for (const position of range(
+      positionBoundaries[0],
+      positionBoundaries[1] + 1
+    )) {
+      if (isEqual([rowBoundaries[0] - 1, position], coordinates)) {
+        return true;
+      }
+      if (isEqual([rowBoundaries[0] + 1, position], coordinates)) {
+        return true;
+      }
+    }
+    for (const row of range(rowBoundaries[0], rowBoundaries[1] + 1)) {
+      if (isEqual([row, positionBoundaries[0] - 1], coordinates)) {
+        return true;
+      }
+      if (isEqual([row, positionBoundaries[0] + 1], coordinates)) {
+        return true;
+      }
+    }
+    return false;
   }
 }

@@ -10,9 +10,9 @@ import { Immovable } from "../common/immovable";
 import { AudioAsset } from "../types/audio";
 import { ImageAsset } from "../types/image";
 import { CastleAnimation, SpriteAsset } from "../types/sprite";
-import { Coordinates } from "../types/maps";
+import { Coordinates } from "../types/map";
 
-export class Level1 extends withMap(
+export class Level1MapAndAssets extends withMap(
   withAssets(Phaser.Scene, {
     audio: [
       AudioAsset.SandStep,
@@ -29,7 +29,9 @@ export class Level1 extends withMap(
     sprites: [SpriteAsset.Castle] as const,
   }),
   map
-) {
+) {}
+
+export class Level1 extends Level1MapAndAssets {
   private castle!: Immovable<Phaser.GameObjects.Sprite>;
   private boat!: Movable<Phaser.GameObjects.Image>;
   private levelCompleted = false;

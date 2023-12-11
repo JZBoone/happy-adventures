@@ -1,5 +1,5 @@
 import { ImageAsset } from "../types/image";
-import { Coordinates, Move } from "../types/maps";
+import { Coordinates, Move } from "../types/map";
 
 export const mapTileSizePx = 50;
 export const halfMapTileSizePx = mapTileSizePx / 2;
@@ -9,16 +9,28 @@ export const playStartCoordinates: Coordinates = [
   halfMapTileSizePx,
 ];
 
+export function createMapImage(
+  scene: Phaser.Scene,
+  params: { asset: ImageAsset; coordinates: Coordinates }
+) {
+  const { asset, coordinates } = params;
+  return scene.add.image(
+    coordinates[1] * mapTileSizePx + halfMapTileSizePx,
+    coordinates[0] * mapTileSizePx + halfMapTileSizePx,
+    asset
+  );
+}
+
 export function loadMap(scene: Phaser.Scene, map: ImageAsset[][]) {
-  map.forEach((row, rowIndex) => {
-    row.forEach((groundType, positionIndex) => {
-      scene.add.image(
-        positionIndex * mapTileSizePx + halfMapTileSizePx,
-        rowIndex * mapTileSizePx + halfMapTileSizePx,
-        groundType
-      );
-    });
-  });
+  return map.map((row, rowIndex) =>
+    row.map((asset, positionIndex) => ({
+      asset,
+      image: createMapImage(scene, {
+        asset,
+        coordinates: [rowIndex, positionIndex],
+      }),
+    }))
+  );
 }
 
 export function mapCoordinates(params: {
@@ -79,4 +91,14 @@ export function worldPosition(params: {
       (offsetY ?? 0) -
       ((height ?? 1) - 1) * halfMapTileSizePx,
   ];
+}
+
+export function pointerCoordinates(pointer: {
+  x: number;
+  y: number;
+}): Coordinates {
+  const { x, y } = pointer;
+  const row = Math.floor(y / mapTileSizePx);
+  const position = Math.floor(x / mapTileSizePx);
+  return [row, position];
 }

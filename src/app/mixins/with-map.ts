@@ -3,13 +3,14 @@ import { Subject, debounceTime, filter, map, share } from "rxjs";
 import { loadMap, mapTileSizePx, moveCoordinates } from "../common/map";
 import { Movable } from "../common/movable";
 import { Immovable } from "../common/immovable";
-import { Coordinates, ISceneWithMap, Move } from "../types/maps";
+import { Coordinates, ISceneWithMap, Move } from "../types/map";
 import { AudioAsset } from "../types/audio";
 import { DefaultImageAsset, ImageAsset } from "../types/image";
 import { DefaultSpriteAsset, SpriteAsset } from "../types/sprite";
 import { ISceneWithAssets } from "../types/assets";
 import { Constructor } from "../types/util";
 import { Friend } from "../common/friend";
+import { Interactable } from "../common/interactable";
 
 export function withMap<
   SceneAudioAsset extends AudioAsset,
@@ -28,6 +29,10 @@ export function withMap<
   {
     cursors!: Phaser.Types.Input.Keyboard.CursorKeys;
     friend!: Friend;
+    map: {
+      asset: ImageAsset;
+      image: Phaser.GameObjects.Image;
+    }[][] = [];
     private _moves$ = new Subject<Move>();
     private allMoveCoordinates$ = this._moves$.asObservable().pipe(
       map((move) => ({
@@ -37,7 +42,7 @@ export function withMap<
       share()
     );
     moves$ = this.allMoveCoordinates$.pipe(
-      filter(({ coordinates }) => !this.moveIsOutOfBounds(...coordinates))
+      filter(({ coordinates }) => !this.moveIsIllegal(...coordinates))
     );
     invalidMoves$ = new Subject<void>();
 
@@ -45,13 +50,17 @@ export function withMap<
       Phaser.GameObjects.Image | Phaser.GameObjects.Sprite
     >[] = [];
 
+    private interactables: Interactable<
+      SceneAudioAsset,
+      SceneImageAsset,
+      SceneSpriteAsset
+    >[] = [];
+
     create() {
-      loadMap(this, sceneMap);
+      this.map = loadMap(this, sceneMap);
       this.cursors = this.input.keyboard!.createCursorKeys();
       this.allMoveCoordinates$
-        .pipe(
-          filter(({ coordinates }) => this.moveIsOutOfBounds(...coordinates))
-        )
+        .pipe(filter(({ coordinates }) => this.moveIsIllegal(...coordinates)))
         .subscribe(() => {
           this.invalidMoves$.next();
         });
@@ -170,6 +179,41 @@ export function withMap<
       return this.friend;
     }
 
+    createInteractable<Asset extends SceneImageAsset>(params: {
+      asset: Asset;
+      coordinates: Coordinates;
+      offsetX?: number;
+      offsetY?: number;
+      width?: number;
+      height?: number;
+      message: string;
+    }): Interactable<SceneAudioAsset, SceneImageAsset, SceneSpriteAsset> {
+      const { asset, coordinates, offsetX, offsetY, width, height, message } =
+        params;
+      if (!this.images.includes(asset)) {
+        throw new Error(
+          `Interactable image not loaded. Did you forget to load ${asset}?`
+        );
+      }
+      const image = this.createImage({
+        coordinates: coordinates,
+        offsetX,
+        offsetY,
+        asset,
+        width,
+        height,
+      });
+      const interactable = new Interactable(this, image, {
+        offsetX,
+        offsetY,
+        width,
+        height,
+        message,
+      });
+      this.interactables.push(interactable);
+      return interactable;
+    }
+
     createMovableSprite<
       Asset extends SceneSpriteAsset | DefaultSpriteAsset,
     >(params: {
@@ -236,12 +280,15 @@ export function withMap<
       return movable;
     }
 
-    private moveIsOutOfBounds(newRow: number, newPosition: number): boolean {
+    private moveIsIllegal(newRow: number, newPosition: number): boolean {
       return (
         newRow < 0 ||
         newRow > sceneMap.length - 1 ||
         newPosition < 0 ||
-        newPosition > sceneMap[0].length - 1
+        newPosition > sceneMap[0].length - 1 ||
+        this.interactables.some((interactable) =>
+          interactable.isAt([newRow, newPosition])
+        )
       );
     }
 

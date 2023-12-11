@@ -1,6 +1,6 @@
 import { AudioAsset, DefaultAudioAsset } from "./audio";
 import { DefaultImageAsset, ImageAsset } from "./image";
-import { Coordinates } from "./maps";
+import { Coordinates } from "./map";
 import { DefaultSpriteAsset, SpriteAsset } from "./sprite";
 
 export interface ISceneWithAssets<
@@ -40,4 +40,6 @@ export interface ISceneWithAssets<
     | Phaser.Sound.NoAudioSound
     | Phaser.Sound.HTML5AudioSound
     | Phaser.Sound.WebAudioSound;
+  preload(): void | Promise<void>;
+  create(): void | Promise<void>;
 }

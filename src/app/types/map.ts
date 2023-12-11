@@ -6,6 +6,7 @@ import { DefaultImageAsset, ImageAsset } from "./image";
 import { DefaultSpriteAsset, SpriteAsset } from "./sprite";
 import { ISceneWithAssets } from "./assets";
 import { Friend } from "../common/friend";
+import { Interactable } from "../common/interactable";
 
 export type Coordinates = [row: number, position: number];
 
@@ -19,6 +20,10 @@ export interface ISceneWithMap<
   friend: Friend;
   moves$: Observable<{ coordinates: Coordinates; move: Move }>;
   invalidMoves$: Subject<void>;
+  map: {
+    asset: ImageAsset;
+    image: Phaser.GameObjects.Image;
+  }[][];
   createFriend<Asset extends SceneImageAsset | DefaultImageAsset>(params?: {
     asset?: Asset;
     coordinates: Coordinates;
@@ -27,6 +32,15 @@ export interface ISceneWithMap<
     height?: number;
     width?: number;
   }): Friend;
+  createInteractable<Asset extends SceneImageAsset>(params: {
+    asset: Asset;
+    coordinates: Coordinates;
+    offsetX?: number;
+    offsetY?: number;
+    height?: number;
+    width?: number;
+    message: string;
+  }): Interactable<SceneAudioAsset, SceneImageAsset, SceneSpriteAsset>;
   createImmovableSprite<
     Asset extends SceneSpriteAsset | DefaultSpriteAsset,
   >(params: {
@@ -67,4 +81,6 @@ export interface ISceneWithMap<
     height?: number;
     width?: number;
   }): Movable<Phaser.GameObjects.Image>;
+  preload(): void | Promise<void>;
+  create(): void | Promise<void>;
 }

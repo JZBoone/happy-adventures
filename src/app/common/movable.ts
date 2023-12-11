@@ -1,7 +1,7 @@
 import { ISceneWithAssets } from "../types/assets";
 import { AudioAsset } from "../types/audio";
 import { ImageAsset } from "../types/image";
-import { Coordinates } from "../types/maps";
+import { Coordinates } from "../types/map";
 import { SpriteAsset } from "../types/sprite";
 import { worldPosition } from "./map";
 import { Immovable } from "./immovable";

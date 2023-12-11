@@ -30,6 +30,7 @@ export enum ImageAsset {
   SpikeBench = "spike-bench",
   SquareSpike = "square-spike",
   LandingPad = "landing-pad",
+  SpikyGuy = "spiky-guy",
 }
 
 export const defaultImages = [ImageAsset.Friend] as const;

@@ -9,11 +9,11 @@ import { Immovable } from "../common/immovable";
 import { debounceTime } from "rxjs";
 import { ImageAsset } from "../types/image";
 import { MiniPlaneAnimation, SpriteAsset } from "../types/sprite";
-import { Coordinates, Move } from "../types/maps";
+import { Coordinates, Move } from "../types/map";
 import { Movable } from "../common/movable";
 import { AudioAsset } from "../types/audio";
 
-export class Level4 extends withMap(
+export class Level4MapAndAssets extends withMap(
   withAssets(Phaser.Scene, {
     images: [
       ImageAsset.Forest,
@@ -26,11 +26,14 @@ export class Level4 extends withMap(
       ImageAsset.MountainSpikes,
       ImageAsset.SpikeBench,
       ImageAsset.SquareSpike,
+      ImageAsset.SpikyGuy,
     ] as const,
     audio: [AudioAsset.Motor] as const,
   }),
   map
-) {
+) {}
+
+export class Level4 extends Level4MapAndAssets {
   constructor() {
     super({ key: Level.Level4 });
   }
@@ -84,6 +87,18 @@ export class Level4 extends withMap(
       height: 2,
       width: 2,
       asset: SpriteAsset.MiniPlane,
+    });
+    this.createInteractable({
+      coordinates: [5, 5],
+      asset: ImageAsset.SpikyGuy,
+      message:
+        "The magic tree needs your help! If you find my twin brother he can tell how to get there!",
+    });
+    this.createInteractable({
+      coordinates: [22, 13],
+      asset: ImageAsset.SpikyGuy,
+      message:
+        "You can't walk through the spikies to get to the magic tree! If you find my airplane maybe you could get there.",
     });
     const treeClumps: [startRow: number, startPosition: number][] = [
       [2, 1],
