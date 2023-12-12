@@ -37,7 +37,7 @@ app.post("/map/:level", async (req, res) => {
 });
 
 app.use("/assets", express.static(join(__dirname, "assets")));
-app.use("/js", express.static(join(__dirname, "./dist")));
+app.use("/js", express.static(join(__dirname, "./js")));
 
 app.listen(port, () => {
   console.log(`App listening on port ${port}`);
