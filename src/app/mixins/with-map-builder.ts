@@ -13,6 +13,7 @@ import {
 import { Subject, distinctUntilChanged } from "rxjs";
 import { isEqual } from "lodash";
 import { Level } from "../types/level";
+import { toast } from "../common/helpers";
 
 export const withMapBuilder = <
   SceneAudioAsset extends AudioAsset,
@@ -22,11 +23,12 @@ export const withMapBuilder = <
   LevelClass: Constructor<
     ISceneWithMap<SceneAudioAsset, SceneImageAsset, SceneSpriteAsset>
   >,
-  level: Level
+  level: Level,
+  groundTypes: readonly SceneImageAsset[]
 ) => {
   return class MapBuilder extends LevelClass {
     private selectedImageAsset!: SceneImageAsset;
-    private mapImageAssets: SceneImageAsset[] = [];
+    private mapImageAssets: readonly SceneImageAsset[] = groundTypes;
     private pointerIsDown = false;
     private changeCoordinates$ = new Subject<Coordinates>();
     private cursors!: Phaser.Types.Input.Keyboard.CursorKeys;
@@ -47,11 +49,6 @@ export const withMapBuilder = <
       this.mapHeight = this.map.length * mapTileSizePx;
       this.mapWidth = this.map[0].length * mapTileSizePx;
       this.input.mouse!.disableContextMenu();
-      this.mapImageAssets = Array.from(
-        new Set(
-          this.map.flatMap((row) => row.map((position) => position.asset))
-        )
-      ) as SceneImageAsset[];
       this.selectedImageAsset = this.mapImageAssets[0];
       this.changeCoordinates$
         .pipe(distinctUntilChanged(isEqual))
@@ -114,7 +111,9 @@ export const withMapBuilder = <
             level,
             this.map.map((row) => row.map((position) => position.asset))
           );
+          toast(this, "Saved map.");
         } catch (e) {
+          toast(this, "Oops! Could not save map.");
           console.error("Error saving map", e);
         }
       }
@@ -158,7 +157,10 @@ export const withMapBuilder = <
 
     private handlePointerDown(pointer: Phaser.Input.Pointer) {
       const [row, position] = pointerCoordinates(pointer, this.cameras.main);
-      console.info(`row: ${row} position: ${position}`);
+      if ((pointer.event as MouseEvent).shiftKey) {
+        console.info(row, position);
+        toast(this, `${row}, ${position}`, 2_000);
+      }
       if (!this.map[row][position]) {
         console.error(
           `Out of bounds pointerdown: x: ${pointer.x} y: ${pointer.y} row: ${row} position: ${position}`

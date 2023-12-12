@@ -1,6 +1,5 @@
 import Phaser from "phaser";
 import { takeWhile } from "rxjs";
-import { map } from "./map";
 import { Level } from "../types/level";
 import { showLevelStartText } from "../common/helpers";
 import { withAssets } from "../mixins/with-assets";
@@ -75,7 +74,7 @@ export class Level1 extends Level1MapAndAssets {
 
   private handleInWaterMove(coordinates: Coordinates) {
     const [row, position] = coordinates;
-    const groundType = map[row][position];
+    const groundType = this.map[row][position].asset;
     if (groundType === ImageAsset.Water) {
       this.friend.move(coordinates);
       this.boat.move(coordinates);

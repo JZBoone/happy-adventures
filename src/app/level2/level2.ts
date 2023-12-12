@@ -1,6 +1,6 @@
 import Phaser from "phaser";
 import { takeWhile } from "rxjs";
-import { groundTypes, map } from "./map";
+import { groundTypes } from "./map";
 import { Level } from "../types/level";
 import { showLevelStartText } from "../common/helpers";
 import { Level2Data } from "./data";
@@ -16,7 +16,7 @@ export class Level2MapAndAssets extends withMap(
     images: [...groundTypes, ImageAsset.Monster, ImageAsset.Portal] as const,
     audio: [AudioAsset.Chomp, AudioAsset.Fall, AudioAsset.Stomp] as const,
   }),
-  map
+  Level.Level2
 ) {}
 
 export class Level2 extends Level2MapAndAssets {
@@ -72,7 +72,7 @@ export class Level2 extends Level2MapAndAssets {
       return;
     }
     const [row, position] = coordinates;
-    switch (map[row][position]) {
+    switch (this.map[row][position].asset) {
       case ImageAsset.Stone:
         this.friend.move(coordinates);
         this.playSound(AudioAsset.Stomp, { volume: 0.5 });
