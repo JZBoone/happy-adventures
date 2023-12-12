@@ -20,10 +20,13 @@ export interface ISceneWithMap<
   friend: Friend;
   moves$: Observable<{ coordinates: Coordinates; move: Move }>;
   invalidMoves$: Subject<void>;
+  pendingMapJson: Promise<ImageAsset[][] | null>;
   map: {
     asset: ImageAsset;
     image: Phaser.GameObjects.Image;
   }[][];
+  mapWidth: number;
+  mapHeight: number;
   createFriend<Asset extends SceneImageAsset | DefaultImageAsset>(params?: {
     asset?: Asset;
     coordinates: Coordinates;

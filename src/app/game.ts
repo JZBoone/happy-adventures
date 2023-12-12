@@ -1,13 +1,35 @@
 import Phaser from "phaser";
-import { Level1 } from "./level1/level1";
-import { Level2 } from "./level2/level2";
-import { Level3 } from "./level3/level3";
-import { Level4 } from "./level4/level4";
+import { Level1, Level1MapAndAssets } from "./level1/level1";
+import { Level2, Level2MapAndAssets } from "./level2/level2";
+import { Level3, Level3MapAndAssets } from "./level3/level3";
+import { Level4, Level4MapAndAssets } from "./level4/level4";
+import { worldHeight, worldWidth } from "./types/world";
+import { withMapBuilder } from "./mixins/with-map-builder";
+import { Level } from "./types/level";
+
+const levels = [
+  {
+    level: Level1,
+    mapBuilder: withMapBuilder(Level1MapAndAssets, Level.Level1),
+  },
+  {
+    level: Level2,
+    mapBuilder: withMapBuilder(Level2MapAndAssets, Level.Level2),
+  },
+  {
+    level: Level3,
+    mapBuilder: withMapBuilder(Level3MapAndAssets, Level.Level3),
+  },
+  {
+    level: Level4,
+    mapBuilder: withMapBuilder(Level4MapAndAssets, Level.Level4),
+  },
+];
 
 export default new Phaser.Game({
   type: Phaser.AUTO,
-  width: 800,
-  height: 600,
+  width: worldWidth,
+  height: worldHeight,
   physics: {
     default: "arcade",
     arcade: {
@@ -15,5 +37,8 @@ export default new Phaser.Game({
       debug: false,
     },
   },
-  scene: [Level1, Level2, Level3, Level4],
+  scene: [
+    ...levels.map(({ level }) => level),
+    ...levels.map(({ mapBuilder }) => mapBuilder),
+  ],
 });

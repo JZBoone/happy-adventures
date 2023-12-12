@@ -49,8 +49,8 @@ export class Level4 extends Level4MapAndAssets {
   private completedLevel = false;
   private magicTree!: Immovable<Phaser.GameObjects.Image>;
 
-  create() {
-    super.create();
+  async create() {
+    await super.create();
     this.completedLevel = false;
     const spikyTypes = [
       ImageAsset.Cactus,

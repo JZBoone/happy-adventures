@@ -44,8 +44,8 @@ export class Level3 extends Level3MapAndAssets {
     super({ key: Level.Level3 });
   }
 
-  create() {
-    super.create();
+  async create() {
+    await super.create();
     this.bones.push(
       this.createImmovableImage({
         coordinates: [9, 3],

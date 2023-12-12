@@ -35,9 +35,9 @@ export class Level2 extends Level2MapAndAssets {
     }
   }
 
-  create() {
+  async create() {
+    await super.create();
     this.didShutDown = false;
-    super.create();
     if (!this.monsterIsDead) {
       this.monster = this.createImmovableImage({
         coordinates: [11, 13],

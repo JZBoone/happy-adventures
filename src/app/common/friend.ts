@@ -18,12 +18,12 @@ export class Friend extends Movable<Phaser.GameObjects.Image> {
       offsetY?: number;
       height?: number;
       width?: number;
-      sceneWidth: number;
-      sceneHeight: number;
+      mapWidth: number;
+      mapHeight: number;
     }
   ) {
     super(scene, phaserObject, options);
-    this.sceneSize = { width: options.sceneWidth, height: options.sceneHeight };
+    this.sceneSize = { width: options.mapWidth, height: options.mapHeight };
     this.initFollow();
   }
 

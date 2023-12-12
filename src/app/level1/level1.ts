@@ -28,7 +28,7 @@ export class Level1MapAndAssets extends withMap(
     ] as const,
     sprites: [SpriteAsset.Castle] as const,
   }),
-  map
+  Level.Level1
 ) {}
 
 export class Level1 extends Level1MapAndAssets {
@@ -40,8 +40,8 @@ export class Level1 extends Level1MapAndAssets {
     super({ key: Level.Level1 });
   }
 
-  create() {
-    super.create();
+  async create() {
+    await super.create();
     this.levelCompleted = false;
     this.castle = this.createImmovableSprite({
       coordinates: [6, 4],
@@ -91,7 +91,7 @@ export class Level1 extends Level1MapAndAssets {
 
   private handleOutOfWaterMove(coordinates: Coordinates) {
     const [row, position] = coordinates;
-    const groundType = map[row][position];
+    const groundType = this.map[row][position].asset;
     if (groundType === ImageAsset.Sand) {
       this.friend.move(coordinates);
       this.playSound(AudioAsset.SandStep);

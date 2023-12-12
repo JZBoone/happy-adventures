@@ -1,4 +1,5 @@
 import { ImageAsset } from "../types/image";
+import { Level } from "../types/level";
 import { Coordinates, Move } from "../types/map";
 
 export const mapTileSizePx = 50;
@@ -93,12 +94,40 @@ export function worldPosition(params: {
   ];
 }
 
-export function pointerCoordinates(pointer: {
-  x: number;
-  y: number;
-}): Coordinates {
-  const { x, y } = pointer;
+export function pointerCoordinates(
+  pointer: {
+    x: number;
+    y: number;
+  },
+  camera: Phaser.Cameras.Scene2D.Camera
+): Coordinates {
+  const { x, y } = camera.getWorldPoint(pointer.x, pointer.y);
   const row = Math.floor(y / mapTileSizePx);
   const position = Math.floor(x / mapTileSizePx);
   return [row, position];
+}
+
+export async function fetchMap(mapName: string) {
+  const result = await fetch(
+    `${process.env.API_URL}/assets/map/${mapName}.json`
+  );
+  return await result.json();
+}
+
+export function mapEditorSceneKey(level: Level) {
+  return `${level}MapEditor`;
+}
+
+export async function saveMap(level: Level, map: ImageAsset[][]) {
+  const response = await fetch(`${process.env.API_URL}/map/${level}`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(map),
+  });
+  if (!response.ok) {
+    throw new Error("Network response was not ok: " + response.statusText);
+  }
+  return response.json();
 }
