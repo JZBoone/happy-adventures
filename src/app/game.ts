@@ -5,14 +5,13 @@ import { Level2, Level2MapAndAssets } from "./level2/level2";
 import { groundTypes as level2GroundTypes } from "./level2/map";
 import { Level3 } from "./level3/level3";
 import { Level4 } from "./level4/level4";
-import { worldHeight, worldWidth } from "./types/world";
 import { withMapBuilder } from "./mixins/with-map-builder";
 import { Level } from "./types/level";
 
 export default new Phaser.Game({
   type: Phaser.AUTO,
-  width: worldWidth,
-  height: worldHeight,
+  width: 800,
+  height: 600,
   physics: {
     default: "arcade",
     arcade: {

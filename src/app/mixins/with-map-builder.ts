@@ -36,6 +36,7 @@ export const withMapBuilder = <
       s: Phaser.Input.Keyboard.Key;
       i: Phaser.Input.Keyboard.Key;
       o: Phaser.Input.Keyboard.Key;
+      esc: Phaser.Input.Keyboard.Key;
     };
     private __ready = false;
 
@@ -61,7 +62,7 @@ export const withMapBuilder = <
       this.input.on("pointerup", () => {
         this.pointerIsDown = false;
       });
-      this.input.on("pointermove", (pointer: { x: number; y: number }) => {
+      this.input.on("pointermove", (pointer: Phaser.Input.Pointer) => {
         if (this.pointerIsDown) {
           this.changeCoordinates$.next(
             pointerCoordinates(pointer, this.cameras.main)
@@ -73,6 +74,7 @@ export const withMapBuilder = <
         s: this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.S),
         i: this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.I),
         o: this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.O),
+        esc: this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.ESC),
       };
       this.cameras.main.setBounds(0, 0, this.mapWidth, this.mapHeight);
       this.cameras.main.setZoom(1);
@@ -87,6 +89,7 @@ export const withMapBuilder = <
       this.maybeShiftCamera();
       this.maybePrintMap();
       this.maybeZoom();
+      this.maybeLaunchLevel();
     }
 
     private maybeZoom() {
@@ -181,6 +184,12 @@ export const withMapBuilder = <
           .asset as SceneImageAsset;
         this.pointerIsDown = true;
         this.changeCoordinates$.next([row, position]);
+      }
+    }
+
+    private maybeLaunchLevel() {
+      if (Phaser.Input.Keyboard.JustUp(this.hotkey.esc)) {
+        this.scene.start(level);
       }
     }
   };
