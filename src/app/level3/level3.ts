@@ -10,6 +10,7 @@ import { Immovable } from "../common/immovable";
 import { ImageAsset } from "../types/image";
 import { AudioAsset } from "../types/audio";
 import { Coordinates } from "../types/map";
+import { takeWhile } from "rxjs";
 
 export class Level3MapAndAssets extends withMap(
   withAssets(Phaser.Scene, {
@@ -36,6 +37,7 @@ export class Level3 extends Level3MapAndAssets {
   private bomb!: Movable<Phaser.GameObjects.Image>;
   private bones: Immovable<Phaser.GameObjects.Image>[] = [];
   private heart!: Immovable<Phaser.GameObjects.Image>;
+  private levelCompleted = false;
 
   private readonly bomboffsetY = 25;
   private readonly hoistedBomboffsetY = 30;
@@ -45,6 +47,7 @@ export class Level3 extends Level3MapAndAssets {
   }
 
   async create() {
+    this.levelCompleted = false;
     await super.create();
     this.bones.push(
       this.createImmovableImage({
@@ -105,7 +108,9 @@ export class Level3 extends Level3MapAndAssets {
       asset: ImageAsset.Bomb,
       offsetY: this.bomboffsetY,
     });
-    this.moves$.subscribe(({ coordinates }) => this.handleMove(coordinates));
+    this.moves$
+      .pipe(takeWhile(() => !this.levelCompleted))
+      .subscribe(({ coordinates }) => this.handleMove(coordinates));
     showLevelStartText(this, 3);
   }
 
@@ -139,6 +144,7 @@ export class Level3 extends Level3MapAndAssets {
   }
 
   private explodeHeartAndCompleteLevel() {
+    this.levelCompleted = true;
     this.playSound(AudioAsset.Explosion, { volume: 0.5 });
     this.heart.phaserObject.setVisible(false);
     this.bomb.phaserObject.setVisible(false);

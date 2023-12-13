@@ -1,6 +1,7 @@
 import Phaser from "phaser";
 import { Subject, debounceTime, filter, map, share } from "rxjs";
 import {
+  createMapImage,
   fetchMap,
   loadMap,
   mapEditorSceneKey,
@@ -81,8 +82,7 @@ export function withMap<
         this.mapJson = sceneMap;
         this.pendingMapJson = Promise.resolve(null);
       }
-      this.mapHeight = this.mapJson.length * mapTileSizePx;
-      this.mapWidth = this.mapJson[0].length * mapTileSizePx;
+      this.setMapDimensions();
     }
 
     async create() {
@@ -321,6 +321,39 @@ export function withMap<
       return movable;
     }
 
+    makeMapTaller(groundType: SceneImageAsset) {
+      const newRow: SceneImageAsset[] = [];
+      for (let i = 0; i < this.mapJson[0].length; i++) {
+        newRow.push(groundType);
+      }
+      this.mapJson.push(newRow);
+      this.map.push(
+        newRow.map((asset, positionIndex) => ({
+          asset,
+          image: createMapImage(this, {
+            asset,
+            coordinates: [this.map.length, positionIndex],
+          }),
+        }))
+      );
+      this.setMapDimensions();
+    }
+
+    makeMapWider(groundType: SceneImageAsset) {
+      const positionIndex = this.map[0].length;
+      for (let i = 0; i < this.mapJson.length; i++) {
+        this.mapJson[i].push(groundType);
+        this.map[i].push({
+          asset: groundType,
+          image: createMapImage(this, {
+            asset: groundType,
+            coordinates: [i, positionIndex],
+          }),
+        });
+      }
+      this.setMapDimensions();
+    }
+
     private moveIsIllegal(newRow: number, newPosition: number): boolean {
       return (
         newRow < 0 ||
@@ -349,6 +382,15 @@ export function withMap<
         return "left";
       }
       return null;
+    }
+
+    /**
+     * Updates `this.mapHeight` and `this.mapWidth`. Should be called
+     * after changing `this.mapJson`
+     */
+    setMapDimensions() {
+      this.mapHeight = this.mapJson.length * mapTileSizePx;
+      this.mapWidth = this.mapJson[0].length * mapTileSizePx;
     }
   };
 }

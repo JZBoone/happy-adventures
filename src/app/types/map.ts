@@ -86,4 +86,8 @@ export interface ISceneWithMap<
   }): Movable<Phaser.GameObjects.Image>;
   preload(): void | Promise<void>;
   create(): void | Promise<void>;
+  /** for map builder */
+  makeMapTaller(groundType: SceneImageAsset): void;
+  /** for map builder */
+  makeMapWider(groundType: SceneImageAsset): void;
 }

@@ -39,14 +39,18 @@ export class Interactable<
         if (this.bubbleText) {
           this.bubbleText.bubble.destroy();
           this.bubbleText.text.destroy();
+          this.bubbleText = undefined;
         }
       }
     });
   }
 
   interact() {
-    const height = 75;
-    const width = 170;
+    if (this.bubbleText) {
+      return;
+    }
+    const height = 125;
+    const width = 250;
     const bubble = this.scene.add.graphics({
       x: this.phaserObject.x + mapTileSizePx / 2,
       y: this.phaserObject.y - mapTileSizePx / 2 - height - 5,
@@ -63,7 +67,7 @@ export class Interactable<
       bubble.y + 10,
       this.message,
       {
-        font: "12px Arial",
+        font: "20px Arial",
         wordWrap: { width: width - 10 },
       }
     );

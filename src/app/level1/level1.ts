@@ -48,7 +48,7 @@ export class Level1 extends Level1MapAndAssets {
       asset: SpriteAsset.Castle,
     });
     this.boat = this.createMovableImage({
-      coordinates: [10, 14],
+      coordinates: [33, 39],
       offsetY: -15,
       asset: ImageAsset.Boat,
     });

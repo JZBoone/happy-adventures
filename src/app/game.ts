@@ -10,8 +10,8 @@ import { Level } from "./types/level";
 
 export default new Phaser.Game({
   type: Phaser.AUTO,
-  width: 800,
-  height: 600,
+  width: "100%",
+  height: "100%",
   physics: {
     default: "arcade",
     arcade: {

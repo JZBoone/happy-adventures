@@ -33,12 +33,22 @@ export const withMapBuilder = <
     private changeCoordinates$ = new Subject<Coordinates>();
     private cursors!: Phaser.Types.Input.Keyboard.CursorKeys;
     private hotkey!: {
+      /** s for save */
       s: Phaser.Input.Keyboard.Key;
+      /** i for (zoom) in */
       i: Phaser.Input.Keyboard.Key;
+      /** o for (zoom) out */
       o: Phaser.Input.Keyboard.Key;
+      /** t + shift for (make) taller */
+      t: Phaser.Input.Keyboard.Key;
+      /** w + shift for (make) wider */
+      w: Phaser.Input.Keyboard.Key;
+      /** exit map builder and return to level */
       esc: Phaser.Input.Keyboard.Key;
+      /** used in combination with other hotkeys */
+      shift: Phaser.Input.Keyboard.Key;
     };
-    private __ready = false;
+    private _ready = false;
 
     constructor() {
       super({ key: mapEditorSceneKey(level) });
@@ -46,7 +56,7 @@ export const withMapBuilder = <
 
     async create() {
       await super.create();
-      this.__ready = true;
+      this._ready = true;
       this.mapHeight = this.map.length * mapTileSizePx;
       this.mapWidth = this.map[0].length * mapTileSizePx;
       this.input.mouse!.disableContextMenu();
@@ -74,7 +84,12 @@ export const withMapBuilder = <
         s: this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.S),
         i: this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.I),
         o: this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.O),
+        t: this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.T),
+        w: this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.W),
         esc: this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.ESC),
+        shift: this.input.keyboard!.addKey(
+          Phaser.Input.Keyboard.KeyCodes.SHIFT
+        ),
       };
       this.cameras.main.setBounds(0, 0, this.mapWidth, this.mapHeight);
       this.cameras.main.setZoom(1);
@@ -83,9 +98,10 @@ export const withMapBuilder = <
     }
 
     async update() {
-      if (!this.__ready) {
+      if (!this._ready) {
         return;
       }
+      this.maybeGrowMap();
       this.maybeShiftCamera();
       this.maybePrintMap();
       this.maybeZoom();
@@ -145,6 +161,22 @@ export const withMapBuilder = <
         );
       } else if (this.cursors.left.isDown && cam.scrollX > 0) {
         cam.scrollX = Math.max(cam.scrollX - cameraSpeed, 0);
+      }
+    }
+
+    private maybeGrowMap() {
+      if (
+        Phaser.Input.Keyboard.JustUp(this.hotkey.t) &&
+        this.hotkey.shift.isDown
+      ) {
+        this.makeMapTaller(groundTypes[0]);
+        this.cameras.main.setBounds(0, 0, this.mapWidth, this.mapHeight);
+      } else if (
+        Phaser.Input.Keyboard.JustUp(this.hotkey.w) &&
+        this.hotkey.shift.isDown
+      ) {
+        this.makeMapWider(groundTypes[0]);
+        this.cameras.main.setBounds(0, 0, this.mapWidth, this.mapHeight);
       }
     }
 
