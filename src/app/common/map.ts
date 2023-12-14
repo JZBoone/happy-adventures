@@ -1,6 +1,7 @@
 import { ImageAsset } from "../types/image";
 import { Level } from "../types/level";
 import { Coordinates, Move } from "../types/map";
+import { SpriteAsset } from "../types/sprite";
 
 export const mapTileSizePx = 50;
 export const halfMapTileSizePx = mapTileSizePx / 2;
@@ -107,11 +108,90 @@ export function pointerCoordinates(
   return [row, position];
 }
 
-export async function fetchMap(mapName: string) {
+async function fetchMapJson(mapName: string): Promise<ImageAsset[][]> {
   const result = await fetch(
     `${process.env.API_URL}/assets/map/${mapName}.json`
   );
   return await result.json();
+}
+
+async function fetchMapObjects<
+  SceneSpriteAsset extends SpriteAsset,
+  SceneImageAsset extends ImageAsset,
+  SceneImmovableImages extends Record<string, { asset: SceneImageAsset }>,
+  SceneImmovableSprites extends Record<string, { asset: SceneSpriteAsset }>,
+  SceneMovableImages extends Record<string, { asset: SceneImageAsset }>,
+>(mapName: string) {
+  const result = await fetch(
+    `${process.env.API_URL}/assets/map/${mapName}-objects.json`
+  );
+  return (await result.json()) as {
+    immovableImages: {
+      [Property in keyof SceneImmovableImages]: {
+        asset: SceneImageAsset;
+        coordinates: Coordinates;
+        offsetY?: number;
+        width?: number;
+        height?: number;
+      };
+    };
+    immovableSprites: {
+      [Property in keyof SceneImmovableSprites]: {
+        asset: SceneSpriteAsset;
+        coordinates: Coordinates;
+        offsetY?: number;
+        width?: number;
+        height?: number;
+      };
+    };
+    movableImages: {
+      [Property in keyof SceneMovableImages]: {
+        asset: SceneImageAsset;
+        coordinates: Coordinates;
+        offsetY?: number;
+        width?: number;
+        height?: number;
+      };
+    };
+  } | null;
+}
+
+export async function fetchMap<
+  SceneSpriteAsset extends SpriteAsset,
+  SceneImageAsset extends ImageAsset,
+  SceneImmovableImages extends Record<
+    string,
+    {
+      asset: SceneImageAsset;
+    }
+  >,
+  SceneImmovableSprites extends Record<
+    string,
+    {
+      asset: SceneSpriteAsset;
+    }
+  >,
+  SceneMovableImages extends Record<
+    string,
+    {
+      asset: SceneImageAsset;
+    }
+  >,
+>(mapName: string) {
+  const results = await Promise.allSettled([
+    fetchMapJson(mapName),
+    fetchMapObjects<
+      SceneSpriteAsset,
+      SceneImageAsset,
+      SceneImmovableImages,
+      SceneImmovableSprites,
+      SceneMovableImages
+    >(mapName),
+  ]);
+  return {
+    mapJson: results[0].status === "fulfilled" ? results[0].value : null,
+    mapObjectsJson: results[1].status === "fulfilled" ? results[1].value : null,
+  };
 }
 
 export function mapEditorSceneKey(level: Level) {

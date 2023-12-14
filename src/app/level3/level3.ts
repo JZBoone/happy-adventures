@@ -30,7 +30,7 @@ export class Level3MapAndAssets extends withMap(
       AudioAsset.Splat,
     ] as const,
   }),
-  map
+  { map }
 ) {}
 
 export class Level3 extends Level3MapAndAssets {

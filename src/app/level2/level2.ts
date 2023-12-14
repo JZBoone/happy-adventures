@@ -6,7 +6,6 @@ import { showLevelStartText } from "../common/helpers";
 import { Level2Data } from "./data";
 import { withAssets } from "../mixins/with-assets";
 import { withMap } from "../mixins/with-map";
-import { Immovable } from "../common/immovable";
 import { ImageAsset } from "../types/image";
 import { AudioAsset } from "../types/audio";
 import { Coordinates } from "../types/map";
@@ -16,13 +15,17 @@ export class Level2MapAndAssets extends withMap(
     images: [...groundTypes, ImageAsset.Monster, ImageAsset.Portal] as const,
     audio: [AudioAsset.Chomp, AudioAsset.Fall, AudioAsset.Stomp] as const,
   }),
-  Level.Level2
+  {
+    map: Level.Level2,
+    immovableImages: {
+      monster: { asset: ImageAsset.Monster },
+      portal: { asset: ImageAsset.Portal },
+    } as const,
+  }
 ) {}
 
 export class Level2 extends Level2MapAndAssets {
   private monsterIsDead = false;
-  private monster!: Immovable<Phaser.GameObjects.Image>;
-  private portal!: Immovable<Phaser.GameObjects.Image>;
   private didShutDown = false;
 
   constructor() {
@@ -38,20 +41,9 @@ export class Level2 extends Level2MapAndAssets {
   async create() {
     await super.create();
     this.didShutDown = false;
-    if (!this.monsterIsDead) {
-      this.monster = this.createImmovableImage({
-        coordinates: [11, 13],
-        asset: ImageAsset.Monster,
-        height: 2,
-        width: 2,
-      });
+    if (this.monsterIsDead) {
+      this.immovableImages.monster.phaserObject.setVisible(false);
     }
-    this.portal = this.createImmovableImage({
-      coordinates: [11, 15],
-      asset: ImageAsset.Portal,
-      height: 2,
-      width: 2,
-    });
     showLevelStartText(this, 2);
     const startingCoordinates: Coordinates = this.monsterIsDead
       ? [11, 13]
@@ -63,11 +55,17 @@ export class Level2 extends Level2MapAndAssets {
   }
 
   private handleMove(coordinates: Coordinates) {
-    if (this.monsterIsDead && this.portal.occupies(coordinates)) {
+    if (
+      this.monsterIsDead &&
+      this.immovableImages.portal.occupies(coordinates)
+    ) {
       this.completeLevel(coordinates);
       return;
     }
-    if (!this.monsterIsDead && this.monster.occupies(coordinates)) {
+    if (
+      !this.monsterIsDead &&
+      this.immovableImages.monster.occupies(coordinates)
+    ) {
       this.swallowFriend(coordinates);
       return;
     }

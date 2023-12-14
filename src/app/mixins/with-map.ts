@@ -24,11 +24,19 @@ export function withMap<
   SceneAudioAsset extends AudioAsset,
   SceneImageAsset extends ImageAsset,
   SceneSpriteAsset extends SpriteAsset,
+  SceneImmovableImages extends Record<string, { asset: SceneImageAsset }>,
+  SceneImmovableSprites extends Record<string, { asset: SceneSpriteAsset }>,
+  SceneMovableImages extends Record<string, { asset: SceneImageAsset }>,
 >(
   Base: Constructor<
     ISceneWithAssets<SceneAudioAsset, SceneImageAsset, SceneSpriteAsset>
   >,
-  sceneMap: ImageAsset[][] | string
+  options: {
+    map: ImageAsset[][] | string;
+    immovableImages?: SceneImmovableImages;
+    immovableSprites?: SceneImmovableSprites;
+    movableImages?: SceneMovableImages;
+  }
 ) {
   return class SceneWithMap
     extends Base
@@ -43,8 +51,82 @@ export function withMap<
     }[][] = [];
     mapWidth!: number;
     mapHeight!: number;
-    pendingMapJson!: Promise<ImageAsset[][] | null>;
+    pendingMapJson!: Promise<{
+      mapJson: ImageAsset[][] | null;
+      mapObjectsJson: {
+        immovableImages: {
+          [Property in keyof SceneImmovableImages]: {
+            asset: SceneImageAsset;
+            coordinates: Coordinates;
+            offsetY?: number;
+            width?: number;
+            height?: number;
+          };
+        };
+        immovableSprites: {
+          [Property in keyof SceneImmovableSprites]: {
+            asset: SceneSpriteAsset;
+            coordinates: Coordinates;
+            offsetY?: number;
+            width?: number;
+            height?: number;
+          };
+        };
+        movableImages: {
+          [Property in keyof SceneMovableImages]: {
+            asset: SceneImageAsset;
+            coordinates: Coordinates;
+            offsetY?: number;
+            width?: number;
+            height?: number;
+          };
+        };
+      } | null;
+    } | null>;
     private mapJson: ImageAsset[][] = [];
+    private mapObjectsJson?: {
+      immovableImages: {
+        [Property in keyof SceneImmovableImages]: {
+          asset: SceneImageAsset;
+          coordinates: Coordinates;
+          offsetY?: number;
+          width?: number;
+          height?: number;
+        };
+      };
+      immovableSprites: {
+        [Property in keyof SceneImmovableSprites]: {
+          asset: SceneSpriteAsset;
+          coordinates: Coordinates;
+          offsetY?: number;
+          width?: number;
+          height?: number;
+        };
+      };
+      movableImages: {
+        [Property in keyof SceneMovableImages]: {
+          asset: SceneImageAsset;
+          coordinates: Coordinates;
+          offsetY?: number;
+          width?: number;
+          height?: number;
+        };
+      };
+    } | null;
+    // @ts-expect-error Type '{}' is not assignable to type '{ [Property in keyof SceneImmovableSprites]: Immovable<Sprite>; }'.ts(2322)
+    immovableImages: {
+      [Property in keyof SceneImmovableImages]: Immovable<Phaser.GameObjects.Image>;
+    } = {};
+    // @ts-expect-error Type '{}' is not assignable to type '{ [Property in keyof SceneImmovableSprites]: Immovable<Sprite>; }'.ts(2322)
+    immovableSprites: {
+      [Property in keyof SceneImmovableSprites]: Immovable<Phaser.GameObjects.Sprite>;
+    } = {};
+    // @ts-expect-error Type '{}' is not assignable to type '{ [Property in keyof SceneImmovableSprites]: Immovable<Sprite>; }'.ts(2322)
+    movableImages: {
+      [Property in keyof SceneMovableImages]: Movable<
+        Phaser.GameObjects.Sprite | Phaser.GameObjects.Image
+      >;
+    } = {};
     private _moves$ = new Subject<Move>();
     private allMoveCoordinates$ = this._moves$.asObservable().pipe(
       map((move) => ({
@@ -74,12 +156,27 @@ export function withMap<
 
     async preload() {
       super.preload();
-      if (typeof sceneMap === "string") {
-        const pendingMapJson = fetchMap(sceneMap);
+      if (typeof options.map === "string") {
+        const pendingMapJson = fetchMap<
+          SceneSpriteAsset,
+          SceneImageAsset,
+          SceneImmovableImages,
+          SceneImmovableSprites,
+          SceneMovableImages
+        >(options.map);
         this.pendingMapJson = pendingMapJson;
-        this.mapJson = await pendingMapJson;
+        const { mapJson, mapObjectsJson } = await pendingMapJson;
+        if (!mapJson) {
+          throw new Error("mapJson not loaded");
+        }
+        this.mapJson = mapJson;
+        if (!mapObjectsJson) {
+          console.warn("mapObjectsJson not loaded");
+        } else {
+          this.mapObjectsJson = mapObjectsJson;
+        }
       } else {
-        this.mapJson = sceneMap;
+        this.mapJson = options.map;
         this.pendingMapJson = Promise.resolve(null);
       }
       this.setMapDimensions();
@@ -88,6 +185,30 @@ export function withMap<
     async create() {
       await this.pendingMapJson;
       this.map = loadMap(this, this.mapJson);
+      if (this.mapObjectsJson?.immovableSprites) {
+        for (const [key, _options] of Object.entries(
+          this.mapObjectsJson.immovableSprites
+        )) {
+          this.immovableSprites[key as keyof SceneImmovableSprites] =
+            this.createImmovableSprite(_options);
+        }
+      }
+      if (this.mapObjectsJson?.movableImages) {
+        for (const [key, _options] of Object.entries(
+          this.mapObjectsJson.movableImages
+        )) {
+          this.movableImages[key as keyof SceneMovableImages] =
+            this.createMovableImage(_options);
+        }
+      }
+      if (this.mapObjectsJson?.immovableImages) {
+        for (const [key, _options] of Object.entries(
+          this.mapObjectsJson.immovableImages
+        )) {
+          this.immovableImages[key as keyof SceneImmovableImages] =
+            this.createMovableImage(_options);
+        }
+      }
       this.cursors = this.input.keyboard!.createCursorKeys();
       this.allMoveCoordinates$
         .pipe(filter(({ coordinates }) => this.moveIsIllegal(...coordinates)))
@@ -105,10 +226,10 @@ export function withMap<
     update() {
       if (
         process.env.MAP_BUILDER_ENABLED &&
-        typeof sceneMap === "string" &&
+        typeof options.map === "string" &&
         Phaser.Input.Keyboard.JustDown(this.hotkey.e)
       ) {
-        this.scene.start(mapEditorSceneKey(sceneMap as Level));
+        this.scene.start(mapEditorSceneKey(options.map as Level));
         return;
       }
       const move = this.getMove();

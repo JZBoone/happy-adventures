@@ -15,7 +15,7 @@ export function withAssets<
   SceneSpriteAsset extends SpriteAsset,
 >(
   Base: TBase,
-  assets: {
+  options: {
     audio?: readonly SceneAudioAsset[];
     images?: readonly SceneImageAsset[];
     sprites?: readonly SceneSpriteAsset[];
@@ -26,9 +26,9 @@ export function withAssets<
     implements
       ISceneWithAssets<SceneAudioAsset, SceneImageAsset, SceneSpriteAsset>
   {
-    audio = [...(assets.audio || []), ...defaultAudio];
-    images = [...(assets.images || []), ...defaultImages];
-    sprites = [...(assets.sprites || []), ...defaultSprites];
+    audio = [...(options.audio || []), ...defaultAudio];
+    images = [...(options.images || []), ...defaultImages];
+    sprites = [...(options.sprites || []), ...defaultSprites];
 
     preload() {
       loadAudio(this, this.audio);

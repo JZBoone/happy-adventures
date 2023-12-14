@@ -30,7 +30,7 @@ export class Level4MapAndAssets extends withMap(
     ] as const,
     audio: [AudioAsset.Motor] as const,
   }),
-  map
+  { map }
 ) {}
 
 export class Level4 extends Level4MapAndAssets {

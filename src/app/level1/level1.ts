@@ -4,8 +4,6 @@ import { Level } from "../types/level";
 import { showLevelStartText } from "../common/helpers";
 import { withAssets } from "../mixins/with-assets";
 import { withMap } from "../mixins/with-map";
-import { Movable } from "../common/movable";
-import { Immovable } from "../common/immovable";
 import { AudioAsset } from "../types/audio";
 import { ImageAsset } from "../types/image";
 import { CastleAnimation, SpriteAsset } from "../types/sprite";
@@ -27,12 +25,16 @@ export class Level1MapAndAssets extends withMap(
     ] as const,
     sprites: [SpriteAsset.Castle] as const,
   }),
-  Level.Level1
+  {
+    map: Level.Level1,
+    immovableSprites: {
+      castle: { asset: SpriteAsset.Castle },
+    } as const,
+    movableImages: { boat: { asset: ImageAsset.Boat } } as const,
+  }
 ) {}
 
 export class Level1 extends Level1MapAndAssets {
-  private castle!: Immovable<Phaser.GameObjects.Sprite>;
-  private boat!: Movable<Phaser.GameObjects.Image>;
   private levelCompleted = false;
 
   constructor() {
@@ -42,16 +44,6 @@ export class Level1 extends Level1MapAndAssets {
   async create() {
     await super.create();
     this.levelCompleted = false;
-    this.castle = this.createImmovableSprite({
-      coordinates: [6, 4],
-      offsetY: 45,
-      asset: SpriteAsset.Castle,
-    });
-    this.boat = this.createMovableImage({
-      coordinates: [33, 39],
-      offsetY: -15,
-      asset: ImageAsset.Boat,
-    });
 
     showLevelStartText(this, 1);
     this.createFriend();
@@ -61,7 +53,7 @@ export class Level1 extends Level1MapAndAssets {
   }
 
   handleMove(coordinates: Coordinates): void {
-    if (this.castle.isAt(coordinates)) {
+    if (this.immovableSprites.castle.isAt(coordinates)) {
       this.completeLevel();
       return;
     }
@@ -77,7 +69,7 @@ export class Level1 extends Level1MapAndAssets {
     const groundType = this.map[row][position].asset;
     if (groundType === ImageAsset.Water) {
       this.friend.move(coordinates);
-      this.boat.move(coordinates);
+      this.movableImages.boat.move(coordinates);
       this.playSound(AudioAsset.Splash, { volume: 0.25 });
     } else if (groundType === ImageAsset.Sand) {
       this.playSound(AudioAsset.BoardBoat);
@@ -94,8 +86,11 @@ export class Level1 extends Level1MapAndAssets {
     if (groundType === ImageAsset.Sand) {
       this.friend.move(coordinates);
       this.playSound(AudioAsset.SandStep);
-    } else if (groundType === ImageAsset.Water && this.boat.isAt(coordinates)) {
-      this.friend.setOffsetY(this.boat.offsetY * -1);
+    } else if (
+      groundType === ImageAsset.Water &&
+      this.movableImages.boat.isAt(coordinates)
+    ) {
+      this.friend.setOffsetY(this.movableImages.boat.offsetY * -1);
       this.friend.move(coordinates);
       this.playSound(AudioAsset.BoardBoat);
     } else {
@@ -104,15 +99,16 @@ export class Level1 extends Level1MapAndAssets {
   }
 
   private isInWater() {
-    return this.friend.isAt(this.boat.coordinates());
+    return this.friend.isAt(this.movableImages.boat.coordinates());
   }
 
   private completeLevel() {
     this.levelCompleted = true;
-    this.castle.phaserObject.anims.play(CastleAnimation.Open);
+    this.immovableSprites.castle.phaserObject.anims.play(CastleAnimation.Open);
     this.time.addEvent({
       delay: 500,
-      callback: () => this.friend.move(this.castle.coordinates()),
+      callback: () =>
+        this.friend.move(this.immovableSprites.castle.coordinates()),
       loop: false,
     });
     this.time.addEvent({
