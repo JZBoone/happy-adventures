@@ -8,7 +8,7 @@ const jsDistDir = join(distDir, "./js");
 
 const isProd = process.env.NODE_ENV === "production";
 
-if (isProd) {
+if (isProd && fs.existsSync(distDir)) {
   fs.rmdirSync(distDir, { recursive: true, force: true });
 }
 
