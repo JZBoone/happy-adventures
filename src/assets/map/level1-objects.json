@@ -2,7 +2,7 @@
   "immovableSprites": {
     "castle": {
       "coordinates": [
-        4,
+        6,
         4
       ],
       "offsetY": 45,
@@ -12,8 +12,8 @@
   "movableImages": {
     "boat": {
       "coordinates": [
-        29,
-        37
+        33,
+        39
       ],
       "offsetY": -15,
       "asset": "boat"
