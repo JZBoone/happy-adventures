@@ -45,7 +45,16 @@ export function withMap<
   return class SceneWithMap
     extends Base
     implements
-      ISceneWithMap<SceneAudioAsset, SceneImageAsset, SceneSpriteAsset>
+      ISceneWithMap<
+        SceneAudioAsset,
+        SceneImageAsset,
+        SceneSpriteAsset,
+        SceneImmovableImages,
+        SceneImmovableImageGroups,
+        SceneImmovableSprites,
+        SceneMovableImages,
+        SceneMovableSprites
+      >
   {
     cursors!: Phaser.Types.Input.Keyboard.CursorKeys;
     friend!: Friend;

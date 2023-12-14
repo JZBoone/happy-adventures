@@ -14,14 +14,30 @@ import { Subject, distinctUntilChanged } from "rxjs";
 import { isEqual } from "lodash";
 import { Level } from "../types/level";
 import { toast } from "../common/helpers";
+import { Movable } from "../common/movable";
+import { Immovable } from "../common/immovable";
 
 export const withMapBuilder = <
   SceneAudioAsset extends AudioAsset,
   SceneImageAsset extends ImageAsset,
   SceneSpriteAsset extends SpriteAsset,
+  SceneImmovableImages extends Record<string, { asset: SceneImageAsset }>,
+  SceneImmovableImageGroups extends Record<string, { asset: SceneImageAsset }>,
+  SceneImmovableSprites extends Record<string, { asset: SceneSpriteAsset }>,
+  SceneMovableImages extends Record<string, { asset: SceneImageAsset }>,
+  SceneMovableSprites extends Record<string, { asset: SceneSpriteAsset }>,
 >(
   LevelClass: Constructor<
-    ISceneWithMap<SceneAudioAsset, SceneImageAsset, SceneSpriteAsset>
+    ISceneWithMap<
+      SceneAudioAsset,
+      SceneImageAsset,
+      SceneSpriteAsset,
+      SceneImmovableImages,
+      SceneImmovableImageGroups,
+      SceneImmovableSprites,
+      SceneMovableImages,
+      SceneMovableSprites
+    >
   >,
   level: Level,
   groundTypes: readonly SceneImageAsset[]
@@ -48,6 +64,10 @@ export const withMapBuilder = <
       /** used in combination with other hotkeys */
       shift: Phaser.Input.Keyboard.Key;
     };
+    private sceneObjectToMove:
+      | Immovable<Phaser.GameObjects.Image>
+      | Movable<Phaser.GameObjects.Image>
+      | undefined;
     private _ready = false;
 
     constructor() {
@@ -64,12 +84,19 @@ export const withMapBuilder = <
       this.changeCoordinates$
         .pipe(distinctUntilChanged(isEqual))
         .subscribe((coordinates) => {
-          this.changeMapImage(coordinates);
+          if (this.sceneObjectToMove) {
+            this.moveSceneObject(coordinates);
+          } else {
+            this.changeMapImage(coordinates);
+          }
         });
       this.input.on("pointerdown", (pointer: Phaser.Input.Pointer) => {
         this.handlePointerDown(pointer);
       });
       this.input.on("pointerup", () => {
+        this.pointerIsDown = false;
+      });
+      this.input.on("pointerout", () => {
         this.pointerIsDown = false;
       });
       this.input.on("pointermove", (pointer: Phaser.Input.Pointer) => {
@@ -190,6 +217,10 @@ export const withMapBuilder = <
       });
     }
 
+    private moveSceneObject(coordinates: Coordinates) {
+      this.sceneObjectToMove!.move(coordinates);
+    }
+
     private handlePointerDown(pointer: Phaser.Input.Pointer) {
       const [row, position] = pointerCoordinates(pointer, this.cameras.main);
       if ((pointer.event as MouseEvent).shiftKey) {
@@ -200,6 +231,11 @@ export const withMapBuilder = <
         console.error(
           `Out of bounds pointerdown: x: ${pointer.x} y: ${pointer.y} row: ${row} position: ${position}`
         );
+        return;
+      }
+      this.sceneObjectToMove = this.sceneObjectAt([row, position]);
+      if (this.sceneObjectToMove) {
+        this.pointerIsDown = true;
         return;
       }
       if (pointer.rightButtonDown()) {
@@ -223,6 +259,17 @@ export const withMapBuilder = <
       if (Phaser.Input.Keyboard.JustUp(this.hotkey.esc)) {
         this.scene.start(level);
       }
+    }
+
+    private sceneObjectAt(coordinates: Coordinates) {
+      const sceneObjects = [
+        ...Object.values(this.immovableImages),
+        ...Object.values(this.immovableImageGroups).flatMap((group) => group),
+        ...Object.values(this.immovableSprites),
+        ...Object.values(this.movableImages),
+        ...Object.values(this.movableSprites),
+      ];
+      return sceneObjects.find((object) => object.occupies(coordinates));
     }
   };
 };

@@ -16,6 +16,11 @@ export interface ISceneWithMap<
   SceneAudioAsset extends AudioAsset,
   SceneImageAsset extends ImageAsset,
   SceneSpriteAsset extends SpriteAsset,
+  SceneImmovableImages extends Record<string, { asset: SceneImageAsset }>,
+  SceneImmovableImageGroups extends Record<string, { asset: SceneImageAsset }>,
+  SceneImmovableSprites extends Record<string, { asset: SceneSpriteAsset }>,
+  SceneMovableImages extends Record<string, { asset: SceneImageAsset }>,
+  SceneMovableSprites extends Record<string, { asset: SceneSpriteAsset }>,
 > extends ISceneWithAssets<SceneAudioAsset, SceneImageAsset, SceneSpriteAsset> {
   friend: Friend;
   moves$: Observable<{ coordinates: Coordinates; move: Move }>;
@@ -26,6 +31,31 @@ export interface ISceneWithMap<
   }[][];
   mapWidth: number;
   mapHeight: number;
+  immovableImages:
+    | {
+        [Property in keyof SceneImmovableImages]: Immovable<Phaser.GameObjects.Image>;
+      }
+    | Record<string, never>;
+  immovableImageGroups:
+    | {
+        [Property in keyof SceneImmovableImageGroups]: Immovable<Phaser.GameObjects.Image>[];
+      }
+    | Record<string, never>;
+  immovableSprites:
+    | {
+        [Property in keyof SceneImmovableSprites]: Immovable<Phaser.GameObjects.Sprite>;
+      }
+    | Record<string, never>;
+  movableImages:
+    | {
+        [Property in keyof SceneMovableImages]: Movable<Phaser.GameObjects.Image>;
+      }
+    | Record<string, never>;
+  movableSprites:
+    | {
+        [Property in keyof SceneMovableSprites]: Movable<Phaser.GameObjects.Sprite>;
+      }
+    | Record<string, never>;
   createFriend<Asset extends SceneImageAsset | DefaultImageAsset>(params?: {
     asset?: Asset;
     coordinates: Coordinates;
