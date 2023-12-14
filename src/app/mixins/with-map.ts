@@ -1,5 +1,6 @@
 import Phaser from "phaser";
 import { Subject, debounceTime, filter, map, share } from "rxjs";
+import { set } from "lodash";
 import {
   createMapImage,
   fetchMap,
@@ -122,7 +123,7 @@ export function withMap<
       } | null;
     } | null>;
     private mapJson: ImageAsset[][] = [];
-    private mapObjectsJson?: {
+    mapObjectsJson!: {
       immovableImages: {
         [Property in keyof SceneImmovableImages]: {
           asset: SceneImageAsset;
@@ -176,7 +177,7 @@ export function withMap<
         width?: number;
         height?: number;
       }[];
-    } | null;
+    };
     // @ts-expect-error Type '{}' is not assignable to type '{ [Property in keyof SceneImmovableSprites]: Immovable<Sprite>; }'.ts(2322)
     immovableImages: {
       [Property in keyof SceneImmovableImages]: Immovable<Phaser.GameObjects.Image>;
@@ -197,6 +198,10 @@ export function withMap<
     movableSprites: {
       [Property in keyof SceneMovableSprites]: Movable<Phaser.GameObjects.Sprite>;
     } = {};
+    private sceneObjectConfigPath = new Map<
+      Immovable<Phaser.GameObjects.Image> | Movable<Phaser.GameObjects.Image>,
+      string
+    >();
     private _moves$ = new Subject<Move>();
     private allMoveCoordinates$ = this._moves$.asObservable().pipe(
       map((move) => ({
@@ -214,7 +219,7 @@ export function withMap<
       Phaser.GameObjects.Image | Phaser.GameObjects.Sprite
     >[] = [];
 
-    private interactables: Interactable<
+    interactables: Interactable<
       SceneAudioAsset,
       SceneImageAsset,
       SceneSpriteAsset
@@ -254,6 +259,16 @@ export function withMap<
       this.setMapDimensions();
     }
 
+    updateSceneObjectCoordinates(
+      sceneObject:
+        | Immovable<Phaser.GameObjects.Image>
+        | Movable<Phaser.GameObjects.Image>,
+      coordinates: Coordinates
+    ) {
+      const path = this.sceneObjectConfigPath.get(sceneObject)!;
+      set(this.mapObjectsJson!, `${path}`, coordinates);
+    }
+
     async create() {
       await this.pendingMapJson;
       this.map = loadMap(this, this.mapJson);
@@ -261,32 +276,50 @@ export function withMap<
         for (const [key, _options] of Object.entries(
           this.mapObjectsJson.immovableSprites
         )) {
+          const immovableSprite = this.createImmovableSprite(_options);
           this.immovableSprites[key as keyof SceneImmovableSprites] =
-            this.createImmovableSprite(_options);
+            immovableSprite;
+          this.sceneObjectConfigPath.set(
+            immovableSprite,
+            `immovableSprites.${key}.coordinates`
+          );
         }
       }
       if (this.mapObjectsJson?.movableImages) {
         for (const [key, _options] of Object.entries(
           this.mapObjectsJson.movableImages
         )) {
-          this.movableImages[key as keyof SceneMovableImages] =
-            this.createMovableImage(_options);
+          const movableImage = this.createMovableImage(_options);
+          this.movableImages[key as keyof SceneMovableImages] = movableImage;
+          this.sceneObjectConfigPath.set(
+            movableImage,
+            `movableImages.${key}.coordinates`
+          );
         }
       }
       if (this.mapObjectsJson?.movableSprites) {
         for (const [key, _options] of Object.entries(
           this.mapObjectsJson.movableSprites
         )) {
-          this.movableSprites[key as keyof SceneMovableSprites] =
-            this.createMovableSprite(_options);
+          const movableSprite = this.createMovableSprite(_options);
+          this.movableSprites[key as keyof SceneMovableSprites] = movableSprite;
+          this.sceneObjectConfigPath.set(
+            movableSprite,
+            `movableSprites.${key}.coordinates`
+          );
         }
       }
       if (this.mapObjectsJson?.immovableImages) {
         for (const [key, _options] of Object.entries(
           this.mapObjectsJson.immovableImages
         )) {
+          const immovableImage = this.createMovableImage(_options);
           this.immovableImages[key as keyof SceneImmovableImages] =
-            this.createMovableImage(_options);
+            immovableImage;
+          this.sceneObjectConfigPath.set(
+            immovableImage,
+            `immovableImages.${key}.coordinates`
+          );
         }
       }
       if (this.mapObjectsJson?.immovableImageGroups) {
@@ -294,14 +327,29 @@ export function withMap<
           this.mapObjectsJson.immovableImageGroups
         )) {
           this.immovableImageGroups[key as keyof SceneImmovableImageGroups] =
-            _options.coordinates.map((coordinates) =>
-              this.createImmovableImage({ ..._options, coordinates })
-            );
+            _options.coordinates.map((coordinates, i) => {
+              const immovableImage = this.createImmovableImage({
+                ..._options,
+                coordinates,
+              });
+              this.sceneObjectConfigPath.set(
+                immovableImage,
+                `immovableImageGroups.${key}.coordinates.${i}`
+              );
+              return immovableImage;
+            });
         }
       }
       if (this.mapObjectsJson?.interactables) {
-        this.interactables = this.mapObjectsJson.interactables.map((_options) =>
-          this.createInteractable(_options)
+        this.interactables = this.mapObjectsJson.interactables.map(
+          (_options, i) => {
+            const interactable = this.createInteractable(_options);
+            this.sceneObjectConfigPath.set(
+              interactable,
+              `interactables.${i}.coordinates`
+            );
+            return interactable;
+          }
         );
       }
       this.cursors = this.input.keyboard!.createCursorKeys();

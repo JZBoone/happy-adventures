@@ -25,15 +25,19 @@ app.post("/map/:level", async (req, res) => {
   if (!level || !level.startsWith("level")) {
     return res.status(400).send({ message: "Invalid level" });
   }
-  const body = req.body;
-  if (!Array.isArray(body) || !Array.isArray(body[0])) {
+  const { map, mapObjects } = req.body;
+  if (!Array.isArray(map) || !Array.isArray(map[0])) {
     return res.status(400).send({ message: "Invalid map" });
   }
   writeFileSync(
     join(__dirname, `./assets/map/${level}.json`),
-    JSON.stringify(body, null, 2)
+    JSON.stringify(map, null, 2)
   );
-  return res.status(200).send({ message: "success", map: body });
+  writeFileSync(
+    join(__dirname, `./assets/map/${level}-objects.json`),
+    JSON.stringify(mapObjects, null, 2)
+  );
+  return res.status(200).send({ message: "success", map, mapObjects });
 });
 
 app.use("/assets", express.static(join(__dirname, "assets")));

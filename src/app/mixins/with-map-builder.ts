@@ -130,7 +130,7 @@ export const withMapBuilder = <
       }
       this.maybeGrowMap();
       this.maybeShiftCamera();
-      this.maybePrintMap();
+      this.maybeSaveMap();
       this.maybeZoom();
       this.maybeLaunchLevel();
     }
@@ -150,12 +150,13 @@ export const withMapBuilder = <
       }
     }
 
-    private async maybePrintMap() {
+    private async maybeSaveMap() {
       if (Phaser.Input.Keyboard.JustDown(this.hotkey.s)) {
         try {
           await saveMap(
             level,
-            this.map.map((row) => row.map((position) => position.asset))
+            this.map.map((row) => row.map((position) => position.asset)),
+            this.mapObjectsJson
           );
           toast(this, "Saved map.");
         } catch (e) {
@@ -218,7 +219,11 @@ export const withMapBuilder = <
     }
 
     private moveSceneObject(coordinates: Coordinates) {
+      if (!this.sceneObjectToMove) {
+        throw new Error("Cannot move scene object. No object to move!");
+      }
       this.sceneObjectToMove!.move(coordinates);
+      this.updateSceneObjectCoordinates(this.sceneObjectToMove, coordinates);
     }
 
     private handlePointerDown(pointer: Phaser.Input.Pointer) {
@@ -268,6 +273,7 @@ export const withMapBuilder = <
         ...Object.values(this.immovableSprites),
         ...Object.values(this.movableImages),
         ...Object.values(this.movableSprites),
+        ...Object.values(this.interactables),
       ];
       return sceneObjects.find((object) => object.occupies(coordinates));
     }

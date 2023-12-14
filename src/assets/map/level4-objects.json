@@ -1,13 +1,19 @@
 {
   "immovableImages": {
     "landingPad": {
-      "coordinates": [15, 14],
+      "coordinates": [
+        15,
+        14
+      ],
       "asset": "landing-pad",
       "width": 2,
       "height": 2
     },
     "magicTree": {
-      "coordinates": [12, 18],
+      "coordinates": [
+        12,
+        18
+      ],
       "asset": "magic-tree",
       "width": 2,
       "height": 2
@@ -17,98 +23,269 @@
     "trees": {
       "asset": "tree",
       "coordinates": [
-        [2, 1],
-        [12, 4],
-        [17, 25],
-        [22, 10],
-        [28, 28],
-        [2, 2],
-        [12, 5],
-        [17, 26],
-        [22, 11],
-        [28, 29],
-        [3, 1],
-        [13, 4],
-        [16, 25],
-        [23, 10],
-        [29, 28],
-        [3, 2],
-        [13, 5],
-        [16, 26],
-        [23, 11],
-        [29, 29]
+        [
+          2,
+          1
+        ],
+        [
+          12,
+          4
+        ],
+        [
+          17,
+          25
+        ],
+        [
+          22,
+          10
+        ],
+        [
+          28,
+          28
+        ],
+        [
+          2,
+          2
+        ],
+        [
+          12,
+          5
+        ],
+        [
+          17,
+          26
+        ],
+        [
+          22,
+          11
+        ],
+        [
+          28,
+          29
+        ],
+        [
+          3,
+          1
+        ],
+        [
+          13,
+          4
+        ],
+        [
+          16,
+          25
+        ],
+        [
+          23,
+          10
+        ],
+        [
+          29,
+          28
+        ],
+        [
+          3,
+          2
+        ],
+        [
+          13,
+          5
+        ],
+        [
+          16,
+          26
+        ],
+        [
+          23,
+          11
+        ],
+        [
+          29,
+          29
+        ]
       ]
     },
     "cactus": {
       "asset": "cactus",
       "coordinates": [
-        [8, 11],
-        [8, 17],
-        [12, 11],
-        [17, 12],
-        [17, 18],
-        [13, 20]
+        [
+          8,
+          11
+        ],
+        [
+          8,
+          17
+        ],
+        [
+          12,
+          11
+        ],
+        [
+          17,
+          12
+        ],
+        [
+          17,
+          18
+        ],
+        [
+          13,
+          20
+        ]
       ]
     },
     "boobyTrap": {
       "asset": "booby-trap",
       "coordinates": [
-        [8, 12],
-        [8, 18],
-        [13, 11],
-        [17, 13],
-        [17, 19],
-        [12, 20]
+        [
+          8,
+          12
+        ],
+        [
+          8,
+          18
+        ],
+        [
+          13,
+          11
+        ],
+        [
+          17,
+          13
+        ],
+        [
+          17,
+          19
+        ],
+        [
+          12,
+          20
+        ]
       ]
     },
     "threeSpikes": {
       "asset": "three-spikes",
       "coordinates": [
-        [8, 13],
-        [8, 19],
-        [11, 11],
-        [14, 11],
-        [17, 14],
-        [17, 20],
-        [11, 20]
+        [
+          8,
+          13
+        ],
+        [
+          8,
+          19
+        ],
+        [
+          11,
+          11
+        ],
+        [
+          14,
+          11
+        ],
+        [
+          17,
+          14
+        ],
+        [
+          17,
+          20
+        ],
+        [
+          11,
+          20
+        ]
       ]
     },
     "mountainSpikes": {
       "asset": "mountain-spikes",
       "coordinates": [
-        [8, 14],
-        [8, 20],
-        [15, 11],
-        [17, 15],
-        [16, 20],
-        [10, 20]
+        [
+          8,
+          14
+        ],
+        [
+          8,
+          20
+        ],
+        [
+          15,
+          11
+        ],
+        [
+          17,
+          15
+        ],
+        [
+          16,
+          20
+        ],
+        [
+          10,
+          20
+        ]
       ]
     },
     "spikeBench": {
       "asset": "spike-bench",
       "coordinates": [
-        [8, 15],
-        [9, 11],
-        [16, 11],
-        [17, 16],
-        [15, 20],
-        [9, 20]
+        [
+          8,
+          15
+        ],
+        [
+          9,
+          11
+        ],
+        [
+          16,
+          11
+        ],
+        [
+          17,
+          16
+        ],
+        [
+          15,
+          20
+        ],
+        [
+          9,
+          20
+        ]
       ]
     },
     "squareSpike": {
       "asset": "square-spike",
       "coordinates": [
-        [8, 16],
-        [10, 11],
-        [17, 11],
-        [17, 17],
-        [14, 20]
+        [
+          8,
+          16
+        ],
+        [
+          10,
+          11
+        ],
+        [
+          17,
+          11
+        ],
+        [
+          17,
+          17
+        ],
+        [
+          14,
+          20
+        ]
       ]
     }
   },
   "movableSprites": {
     "miniPlane": {
-      "coordinates": [29, 29],
+      "coordinates": [
+        29,
+        29
+      ],
       "asset": "mini-plane",
       "width": 2,
       "height": 2
@@ -116,12 +293,18 @@
   },
   "interactables": [
     {
-      "coordinates": [5, 5],
+      "coordinates": [
+        5,
+        6
+      ],
       "asset": "spiky-guy",
       "message": "The magic tree needs your help! If you find my twin brother he can tell how to get there!"
     },
     {
-      "coordinates": [22, 13],
+      "coordinates": [
+        22,
+        13
+      ],
       "asset": "spiky-guy",
       "message": "You can't walk through the spikies to get to the magic tree! If you find my airplane maybe you could get there."
     }

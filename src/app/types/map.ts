@@ -29,6 +29,61 @@ export interface ISceneWithMap<
     asset: ImageAsset;
     image: Phaser.GameObjects.Image;
   }[][];
+  mapObjectsJson: {
+    immovableImages: {
+      [Property in keyof SceneImmovableImages]: {
+        asset: SceneImageAsset;
+        coordinates: Coordinates;
+        offsetY?: number;
+        width?: number;
+        height?: number;
+      };
+    };
+    immovableImageGroups: {
+      [Property in keyof SceneImmovableImageGroups]: {
+        asset: SceneImageAsset;
+        coordinates: Coordinates[];
+        offsetY?: number;
+        width?: number;
+        height?: number;
+      };
+    };
+    immovableSprites: {
+      [Property in keyof SceneImmovableSprites]: {
+        asset: SceneSpriteAsset;
+        coordinates: Coordinates;
+        offsetY?: number;
+        width?: number;
+        height?: number;
+      };
+    };
+    movableImages: {
+      [Property in keyof SceneMovableImages]: {
+        asset: SceneImageAsset;
+        coordinates: Coordinates;
+        offsetY?: number;
+        width?: number;
+        height?: number;
+      };
+    };
+    movableSprites: {
+      [Property in keyof SceneMovableSprites]: {
+        asset: SceneSpriteAsset;
+        coordinates: Coordinates;
+        offsetY?: number;
+        width?: number;
+        height?: number;
+      };
+    };
+    interactables: {
+      asset: SceneImageAsset;
+      coordinates: Coordinates;
+      message: string;
+      offsetY?: number;
+      width?: number;
+      height?: number;
+    }[];
+  };
   mapWidth: number;
   mapHeight: number;
   immovableImages:
@@ -56,6 +111,17 @@ export interface ISceneWithMap<
         [Property in keyof SceneMovableSprites]: Movable<Phaser.GameObjects.Sprite>;
       }
     | Record<string, never>;
+  interactables: Interactable<
+    SceneAudioAsset,
+    SceneImageAsset,
+    SceneSpriteAsset
+  >[];
+  updateSceneObjectCoordinates(
+    sceneObject:
+      | Immovable<Phaser.GameObjects.Image>
+      | Movable<Phaser.GameObjects.Image>,
+    coordinates: Coordinates
+  ): void;
   createFriend<Asset extends SceneImageAsset | DefaultImageAsset>(params?: {
     asset?: Asset;
     coordinates: Coordinates;
