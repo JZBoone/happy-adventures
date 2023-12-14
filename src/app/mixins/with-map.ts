@@ -25,8 +25,10 @@ export function withMap<
   SceneImageAsset extends ImageAsset,
   SceneSpriteAsset extends SpriteAsset,
   SceneImmovableImages extends Record<string, { asset: SceneImageAsset }>,
+  SceneImmovableImageGroups extends Record<string, { asset: SceneImageAsset }>,
   SceneImmovableSprites extends Record<string, { asset: SceneSpriteAsset }>,
   SceneMovableImages extends Record<string, { asset: SceneImageAsset }>,
+  SceneMovableSprites extends Record<string, { asset: SceneSpriteAsset }>,
 >(
   Base: Constructor<
     ISceneWithAssets<SceneAudioAsset, SceneImageAsset, SceneSpriteAsset>
@@ -34,8 +36,10 @@ export function withMap<
   options: {
     map: ImageAsset[][] | string;
     immovableImages?: SceneImmovableImages;
+    immovableImageGroups?: SceneImmovableImageGroups;
     immovableSprites?: SceneImmovableSprites;
     movableImages?: SceneMovableImages;
+    movableSprites?: SceneMovableSprites;
   }
 ) {
   return class SceneWithMap
@@ -54,6 +58,15 @@ export function withMap<
     pendingMapJson!: Promise<{
       mapJson: ImageAsset[][] | null;
       mapObjectsJson: {
+        immovableImageGroups: {
+          [Property in keyof SceneImmovableImageGroups]: {
+            asset: SceneImageAsset;
+            coordinates: Coordinates[];
+            offsetY?: number;
+            width?: number;
+            height?: number;
+          };
+        };
         immovableImages: {
           [Property in keyof SceneImmovableImages]: {
             asset: SceneImageAsset;
@@ -81,6 +94,22 @@ export function withMap<
             height?: number;
           };
         };
+        movableSprites: {
+          [Property in keyof SceneMovableSprites]: {
+            asset: SceneSpriteAsset;
+            coordinates: Coordinates;
+            offsetY?: number;
+            width?: number;
+            height?: number;
+          };
+        };
+        interactables: {
+          asset: SceneImageAsset;
+          coordinates: Coordinates;
+          offsetY?: number;
+          width?: number;
+          height?: number;
+        }[];
       } | null;
     } | null>;
     private mapJson: ImageAsset[][] = [];
@@ -89,6 +118,15 @@ export function withMap<
         [Property in keyof SceneImmovableImages]: {
           asset: SceneImageAsset;
           coordinates: Coordinates;
+          offsetY?: number;
+          width?: number;
+          height?: number;
+        };
+      };
+      immovableImageGroups: {
+        [Property in keyof SceneImmovableImageGroups]: {
+          asset: SceneImageAsset;
+          coordinates: Coordinates[];
           offsetY?: number;
           width?: number;
           height?: number;
@@ -112,10 +150,31 @@ export function withMap<
           height?: number;
         };
       };
+      movableSprites: {
+        [Property in keyof SceneMovableSprites]: {
+          asset: SceneSpriteAsset;
+          coordinates: Coordinates;
+          offsetY?: number;
+          width?: number;
+          height?: number;
+        };
+      };
+      interactables: {
+        asset: SceneImageAsset;
+        coordinates: Coordinates;
+        message: string;
+        offsetY?: number;
+        width?: number;
+        height?: number;
+      }[];
     } | null;
     // @ts-expect-error Type '{}' is not assignable to type '{ [Property in keyof SceneImmovableSprites]: Immovable<Sprite>; }'.ts(2322)
     immovableImages: {
       [Property in keyof SceneImmovableImages]: Immovable<Phaser.GameObjects.Image>;
+    } = {};
+    // @ts-expect-error Type '{}' is not assignable to type '{ [Property in keyof SceneImmovableSprites]: Immovable<Sprite>; }'.ts(2322)
+    immovableImageGroups: {
+      [Property in keyof SceneImmovableImageGroups]: Immovable<Phaser.GameObjects.Image>[];
     } = {};
     // @ts-expect-error Type '{}' is not assignable to type '{ [Property in keyof SceneImmovableSprites]: Immovable<Sprite>; }'.ts(2322)
     immovableSprites: {
@@ -123,9 +182,11 @@ export function withMap<
     } = {};
     // @ts-expect-error Type '{}' is not assignable to type '{ [Property in keyof SceneImmovableSprites]: Immovable<Sprite>; }'.ts(2322)
     movableImages: {
-      [Property in keyof SceneMovableImages]: Movable<
-        Phaser.GameObjects.Sprite | Phaser.GameObjects.Image
-      >;
+      [Property in keyof SceneMovableImages]: Movable<Phaser.GameObjects.Image>;
+    } = {};
+    // @ts-expect-error Type '{}' is not assignable to type '{ [Property in keyof SceneImmovableSprites]: Immovable<Sprite>; }'.ts(2322)
+    movableSprites: {
+      [Property in keyof SceneMovableSprites]: Movable<Phaser.GameObjects.Sprite>;
     } = {};
     private _moves$ = new Subject<Move>();
     private allMoveCoordinates$ = this._moves$.asObservable().pipe(
@@ -161,8 +222,10 @@ export function withMap<
           SceneSpriteAsset,
           SceneImageAsset,
           SceneImmovableImages,
+          SceneImmovableImageGroups,
           SceneImmovableSprites,
-          SceneMovableImages
+          SceneMovableImages,
+          SceneMovableSprites
         >(options.map);
         this.pendingMapJson = pendingMapJson;
         const { mapJson, mapObjectsJson } = await pendingMapJson;
@@ -201,6 +264,14 @@ export function withMap<
             this.createMovableImage(_options);
         }
       }
+      if (this.mapObjectsJson?.movableSprites) {
+        for (const [key, _options] of Object.entries(
+          this.mapObjectsJson.movableSprites
+        )) {
+          this.movableSprites[key as keyof SceneMovableSprites] =
+            this.createMovableSprite(_options);
+        }
+      }
       if (this.mapObjectsJson?.immovableImages) {
         for (const [key, _options] of Object.entries(
           this.mapObjectsJson.immovableImages
@@ -208,6 +279,21 @@ export function withMap<
           this.immovableImages[key as keyof SceneImmovableImages] =
             this.createMovableImage(_options);
         }
+      }
+      if (this.mapObjectsJson?.immovableImageGroups) {
+        for (const [key, _options] of Object.entries(
+          this.mapObjectsJson.immovableImageGroups
+        )) {
+          this.immovableImageGroups[key as keyof SceneImmovableImageGroups] =
+            _options.coordinates.map((coordinates) =>
+              this.createImmovableImage({ ..._options, coordinates })
+            );
+        }
+      }
+      if (this.mapObjectsJson?.interactables) {
+        this.interactables = this.mapObjectsJson.interactables.map((_options) =>
+          this.createInteractable(_options)
+        );
       }
       this.cursors = this.input.keyboard!.createCursorKeys();
       this.allMoveCoordinates$

@@ -1,6 +1,8 @@
 import { ImageAsset } from "../types/image";
 
-export type GroundType = ImageAsset.Goo;
+export const groundTypes = [ImageAsset.Goo] as const;
+
+export type GroundType = (typeof groundTypes)[number];
 
 export const map: GroundType[][] = [];
 for (let y = 0; y < 12; y++) {

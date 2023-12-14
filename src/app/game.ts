@@ -3,8 +3,10 @@ import { Level1, Level1MapAndAssets } from "./level1/level1";
 import { groundTypes as level1GroundTypes } from "./level1/map";
 import { Level2, Level2MapAndAssets } from "./level2/level2";
 import { groundTypes as level2GroundTypes } from "./level2/map";
-import { Level3 } from "./level3/level3";
-import { Level4 } from "./level4/level4";
+import { Level3, Level3MapAndAssets } from "./level3/level3";
+import { groundTypes as level3GroundTypes } from "./level3/map";
+import { Level4, Level4MapAndAssets } from "./level4/level4";
+import { groundTypes as level4GroundTypes } from "./level4/map";
 import { withMapBuilder } from "./mixins/with-map-builder";
 import { Level } from "./types/level";
 
@@ -25,6 +27,8 @@ export default new Phaser.Game({
     Level2,
     withMapBuilder(Level2MapAndAssets, Level.Level2, level2GroundTypes),
     Level3,
+    withMapBuilder(Level3MapAndAssets, Level.Level3, level3GroundTypes),
     Level4,
+    withMapBuilder(Level4MapAndAssets, Level.Level4, level4GroundTypes),
   ],
 });

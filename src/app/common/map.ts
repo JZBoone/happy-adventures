@@ -119,8 +119,10 @@ async function fetchMapObjects<
   SceneSpriteAsset extends SpriteAsset,
   SceneImageAsset extends ImageAsset,
   SceneImmovableImages extends Record<string, { asset: SceneImageAsset }>,
+  SceneImmovableImageGroups extends Record<string, { asset: SceneImageAsset }>,
   SceneImmovableSprites extends Record<string, { asset: SceneSpriteAsset }>,
   SceneMovableImages extends Record<string, { asset: SceneImageAsset }>,
+  SceneMovableSprites extends Record<string, { asset: SceneSpriteAsset }>,
 >(mapName: string) {
   const result = await fetch(
     `${process.env.API_URL}/assets/map/${mapName}-objects.json`
@@ -130,6 +132,15 @@ async function fetchMapObjects<
       [Property in keyof SceneImmovableImages]: {
         asset: SceneImageAsset;
         coordinates: Coordinates;
+        offsetY?: number;
+        width?: number;
+        height?: number;
+      };
+    };
+    immovableImageGroups: {
+      [Property in keyof SceneImmovableImageGroups]: {
+        asset: SceneImageAsset;
+        coordinates: Coordinates[];
         offsetY?: number;
         width?: number;
         height?: number;
@@ -153,6 +164,23 @@ async function fetchMapObjects<
         height?: number;
       };
     };
+    movableSprites: {
+      [Property in keyof SceneMovableSprites]: {
+        asset: SceneSpriteAsset;
+        coordinates: Coordinates;
+        offsetY?: number;
+        width?: number;
+        height?: number;
+      };
+    };
+    interactables: {
+      asset: SceneImageAsset;
+      coordinates: Coordinates;
+      message: string;
+      offsetY?: number;
+      width?: number;
+      height?: number;
+    }[];
   } | null;
 }
 
@@ -160,6 +188,12 @@ export async function fetchMap<
   SceneSpriteAsset extends SpriteAsset,
   SceneImageAsset extends ImageAsset,
   SceneImmovableImages extends Record<
+    string,
+    {
+      asset: SceneImageAsset;
+    }
+  >,
+  SceneImmovableImageGroups extends Record<
     string,
     {
       asset: SceneImageAsset;
@@ -177,6 +211,7 @@ export async function fetchMap<
       asset: SceneImageAsset;
     }
   >,
+  SceneMovableSprites extends Record<string, { asset: SceneSpriteAsset }>,
 >(mapName: string) {
   const results = await Promise.allSettled([
     fetchMapJson(mapName),
@@ -184,8 +219,10 @@ export async function fetchMap<
       SceneSpriteAsset,
       SceneImageAsset,
       SceneImmovableImages,
+      SceneImmovableImageGroups,
       SceneImmovableSprites,
-      SceneMovableImages
+      SceneMovableImages,
+      SceneMovableSprites
     >(mapName),
   ]);
   return {

@@ -1,16 +1,12 @@
 import Phaser from "phaser";
-import { range } from "lodash";
-import { map } from "./map";
 import { Level } from "../types/level";
 import { showLevelStartText } from "../common/helpers";
 import { withAssets } from "../mixins/with-assets";
 import { withMap } from "../mixins/with-map";
-import { Immovable } from "../common/immovable";
 import { debounceTime } from "rxjs";
 import { ImageAsset } from "../types/image";
 import { MiniPlaneAnimation, SpriteAsset } from "../types/sprite";
 import { Coordinates, Move } from "../types/map";
-import { Movable } from "../common/movable";
 import { AudioAsset } from "../types/audio";
 
 export class Level4MapAndAssets extends withMap(
@@ -30,7 +26,23 @@ export class Level4MapAndAssets extends withMap(
     ] as const,
     audio: [AudioAsset.Motor] as const,
   }),
-  { map }
+  {
+    map: Level.Level4,
+    immovableImages: {
+      landingPad: { asset: ImageAsset.LandingPad },
+      magicTree: { asset: ImageAsset.MagicTree },
+    },
+    movableSprites: { miniPlane: { asset: SpriteAsset.MiniPlane } },
+    immovableImageGroups: {
+      trees: { asset: ImageAsset.Tree },
+      cactus: { asset: ImageAsset.Cactus },
+      boobyTrap: { asset: ImageAsset.BoobyTrap },
+      threeSpikes: { asset: ImageAsset.ThreeSpikes },
+      mountainSpikes: { asset: ImageAsset.MountainSpikes },
+      spikeBench: { asset: ImageAsset.SpikeBench },
+      squareSpike: { asset: ImageAsset.SquareSpike },
+    },
+  }
 ) {}
 
 export class Level4 extends Level4MapAndAssets {
@@ -38,94 +50,26 @@ export class Level4 extends Level4MapAndAssets {
     super({ key: Level.Level4 });
   }
 
-  private spikies: Immovable<Phaser.GameObjects.Image>[] = [];
-  private miniplane!: Movable<Phaser.GameObjects.Sprite>;
-  private landingPad!: Immovable<Phaser.GameObjects.Image>;
-  private trees: Immovable<Phaser.GameObjects.Image>[] = [];
   private motorSound!:
     | Phaser.Sound.NoAudioSound
     | Phaser.Sound.HTML5AudioSound
     | Phaser.Sound.WebAudioSound;
   private completedLevel = false;
-  private magicTree!: Immovable<Phaser.GameObjects.Image>;
+
+  private get spikies() {
+    return [
+      ...this.immovableImageGroups.cactus,
+      ...this.immovableImageGroups.boobyTrap,
+      ...this.immovableImageGroups.threeSpikes,
+      ...this.immovableImageGroups.mountainSpikes,
+      ...this.immovableImageGroups.spikeBench,
+      ...this.immovableImageGroups.squareSpike,
+    ];
+  }
 
   async create() {
     await super.create();
     this.completedLevel = false;
-    const spikyTypes = [
-      ImageAsset.Cactus,
-      ImageAsset.BoobyTrap,
-      ImageAsset.ThreeSpikes,
-      ImageAsset.MountainSpikes,
-      ImageAsset.SpikeBench,
-      ImageAsset.SquareSpike,
-    ] as const;
-    let spikyCounter = 0;
-    for (const row of range(8, 18)) {
-      for (const position of range(11, 21)) {
-        if (range(9, 17).includes(row) && range(12, 20).includes(position)) {
-          continue;
-        }
-        const asset = spikyTypes[spikyCounter % (spikyTypes.length - 1)];
-        this.spikies.push(
-          this.createImmovableImage({
-            coordinates: [row, position],
-            asset,
-          })
-        );
-        spikyCounter++;
-      }
-    }
-    this.landingPad = this.createImmovableImage({
-      coordinates: [15, 14],
-      height: 2,
-      width: 2,
-      asset: ImageAsset.LandingPad,
-    });
-    this.miniplane = this.createMovableSprite({
-      coordinates: [29, 29],
-      height: 2,
-      width: 2,
-      asset: SpriteAsset.MiniPlane,
-    });
-    this.createInteractable({
-      coordinates: [5, 5],
-      asset: ImageAsset.SpikyGuy,
-      message:
-        "The magic tree needs your help! If you find my twin brother he can tell how to get there!",
-    });
-    this.createInteractable({
-      coordinates: [22, 13],
-      asset: ImageAsset.SpikyGuy,
-      message:
-        "You can't walk through the spikies to get to the magic tree! If you find my airplane maybe you could get there.",
-    });
-    const treeClumps: [startRow: number, startPosition: number][] = [
-      [2, 1],
-      [12, 4],
-      [17, 25],
-      [22, 10],
-      [28, 28],
-    ];
-    for (const treeClump of treeClumps) {
-      for (const row of [treeClump[0], treeClump[0] + 1]) {
-        for (const position of [treeClump[1], treeClump[1] + 1]) {
-          this.trees.push(
-            this.createImmovableImage({
-              coordinates: [row, position],
-              asset: ImageAsset.Tree,
-            })
-          );
-        }
-      }
-    }
-
-    this.magicTree = this.createImmovableImage({
-      coordinates: [12, 18],
-      height: 2,
-      width: 2,
-      asset: ImageAsset.MagicTree,
-    });
     this.createFriend();
     this.moves$
       .pipe(debounceTime(10))
@@ -143,20 +87,31 @@ export class Level4 extends Level4MapAndAssets {
       return;
     }
 
-    if (!this.friend.mount && this.miniplane.occupies(coordinates)) {
-      this.friend.mountSprite(this.miniplane, this.miniplane.coordinates());
-      this.miniplane.phaserObject.anims.play(MiniPlaneAnimation.Fly);
+    if (
+      !this.friend.mount &&
+      this.movableSprites.miniPlane.occupies(coordinates)
+    ) {
+      this.friend.mountSprite(
+        this.movableSprites.miniPlane,
+        this.movableSprites.miniPlane.coordinates()
+      );
+      this.movableSprites.miniPlane.phaserObject.anims.play(
+        MiniPlaneAnimation.Fly
+      );
       this.motorSound.play();
-      this.trees.forEach((tree) => {
+      this.immovableImageGroups.trees.forEach((tree) => {
         tree.phaserObject.setDepth(0);
       });
-      this.miniplane.phaserObject.setDepth(10);
+      this.movableSprites.miniPlane.phaserObject.setDepth(10);
       return;
     }
-    if (this.friend.mount && this.landingPad.isAt(coordinates)) {
-      this.miniplane.phaserObject.anims.stop();
-      this.miniplane.phaserObject.setFrame(0);
-      await this.miniplane.move(coordinates);
+    if (
+      this.friend.mount &&
+      this.immovableImages.landingPad.isAt(coordinates)
+    ) {
+      this.movableSprites.miniPlane.phaserObject.anims.stop();
+      this.movableSprites.miniPlane.phaserObject.setFrame(0);
+      await this.movableSprites.miniPlane.move(coordinates);
       this.friend.unmountSprite();
       const [start, end] = this.unmountCoordinates(move);
       await this.friend.move(start, {
@@ -169,7 +124,7 @@ export class Level4 extends Level4MapAndAssets {
     if (
       !this.completedLevel &&
       !this.friend.mount &&
-      this.magicTree.occupies(coordinates)
+      this.immovableImages.magicTree.occupies(coordinates)
     ) {
       this.completedLevel = true;
       this.playSound(AudioAsset.Tada);
@@ -180,7 +135,8 @@ export class Level4 extends Level4MapAndAssets {
   private unmountCoordinates(
     move: Move
   ): [start: Coordinates, end: Coordinates] {
-    const [landingPadRow, landingPadPosition] = this.landingPad.coordinates();
+    const [landingPadRow, landingPadPosition] =
+      this.immovableImages.landingPad.coordinates();
     switch (move) {
       case "up":
         return [

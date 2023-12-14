@@ -1,0 +1,46 @@
+{
+  "immovableImages": {
+    "heart": {
+      "coordinates": [3, 12],
+      "asset": "heart",
+      "width": 3,
+      "height": 4
+    },
+    "lungs": {
+      "coordinates": [4, 7],
+      "asset": "lungs",
+      "width": 6,
+      "height": 5
+    },
+    "elasmosaurus": {
+      "coordinates": [10, 13],
+      "asset": "elasmosaurus",
+      "width": 8,
+      "height": 4
+    },
+    "smallElasmosaurus": {
+      "coordinates": [11, 11],
+      "asset": "small-elasmosaurus",
+      "width": 4,
+      "height": 2
+    }
+  },
+  "immovableImageGroups": {
+    "bones": {
+      "asset": "bones",
+      "width": 2,
+      "height": 2,
+      "coordinates": [
+        [9, 3],
+        [7, 11]
+      ]
+    }
+  },
+  "movableImages": {
+    "bomb": {
+      "coordinates": [11, 1],
+      "asset": "bomb",
+      "offsetY": 25
+    }
+  }
+}
