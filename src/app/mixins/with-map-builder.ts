@@ -286,13 +286,15 @@ export const withMapBuilder = <
     }
 
     private sceneObjectAt(coordinates: Coordinates) {
+      // reverse order of the order in which they were created so that you move
+      // or clone the object that is on the top
       const sceneObjects = [
-        ...Object.values(this.immovableImages),
-        ...Object.values(this.immovableImageGroups).flatMap((group) => group),
-        ...Object.values(this.immovableSprites),
-        ...Object.values(this.movableImages),
-        ...Object.values(this.movableSprites),
         ...Object.values(this.interactables),
+        ...Object.values(this.movableSprites),
+        ...Object.values(this.movableImages),
+        ...Object.values(this.immovableSprites),
+        ...Object.values(this.immovableImageGroups).flatMap((group) => group),
+        ...Object.values(this.immovableImages),
       ];
       return sceneObjects.find((object) => object.occupies(coordinates));
     }
