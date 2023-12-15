@@ -248,6 +248,34 @@ export function withMap<
       throw new Error("This should never happen");
     }
 
+    deleteSceneObject(
+      sceneObject:
+        | Immovable<Phaser.GameObjects.Image>
+        | Movable<Phaser.GameObjects.Image>
+    ): void {
+      if (!this.sceneObjectIsClonable(sceneObject)) {
+        throw new Error(
+          "Cannot delete scene object because it is not clonable!"
+        );
+      }
+      const path = this.sceneObjectConfigPath.get(sceneObject)!;
+      if (path.startsWith("interactables")) {
+        const [, i] = path.split(".");
+        this.interactables.splice(+i, 1);
+        this.mapObjectsJson!.interactables.splice(+i, 1);
+      }
+      if (path.startsWith("immovableImageGroups")) {
+        const [, key, , i] = path.split(".");
+        this.immovableImageGroups[key].splice(+i, 1);
+        this.mapObjectsJson!.immovableImageGroups[key].coordinates.splice(
+          +i,
+          1
+        );
+      }
+      this.sceneObjectConfigPath.delete(sceneObject);
+      sceneObject.phaserObject.destroy();
+    }
+
     async create() {
       await this.pendingMapJson;
       this.map = loadMap(this, this.mapJson);

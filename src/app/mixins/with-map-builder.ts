@@ -59,6 +59,8 @@ export const withMapBuilder = <
       t: Phaser.Input.Keyboard.Key;
       /** w + shift for (make) wider */
       w: Phaser.Input.Keyboard.Key;
+      /** d + alt/option + click to delete scene object */
+      d: Phaser.Input.Keyboard.Key;
       /** exit map builder and return to level */
       esc: Phaser.Input.Keyboard.Key;
       /** used in combination with other hotkeys */
@@ -113,6 +115,7 @@ export const withMapBuilder = <
         o: this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.O),
         t: this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.T),
         w: this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.W),
+        d: this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.D),
         esc: this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.ESC),
         shift: this.input.keyboard!.addKey(
           Phaser.Input.Keyboard.KeyCodes.SHIFT
@@ -241,6 +244,13 @@ export const withMapBuilder = <
       }
       this.sceneObjectToMove = this.sceneObjectAt([row, position]);
       if (this.sceneObjectToMove) {
+        if (
+          this.sceneObjectIsClonable(this.sceneObjectToMove) &&
+          this.hotkey.d.isDown
+        ) {
+          this.deleteSceneObject(this.sceneObjectToMove);
+          return;
+        }
         if (
           pointer.event.altKey &&
           this.sceneObjectIsClonable(this.sceneObjectToMove)

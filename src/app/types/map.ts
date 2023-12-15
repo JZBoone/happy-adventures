@@ -197,4 +197,10 @@ export interface ISceneWithMap<
       | Immovable<Phaser.GameObjects.Image>
       | Movable<Phaser.GameObjects.Image>
   ): Immovable<Phaser.GameObjects.Image> | Movable<Phaser.GameObjects.Image>;
+  /** map builder */
+  deleteSceneObject(
+    sceneObject:
+      | Immovable<Phaser.GameObjects.Image>
+      | Movable<Phaser.GameObjects.Image>
+  ): void;
 }
