@@ -170,7 +170,7 @@ export const withMapBuilder = <
     }
 
     private maybeShiftCamera() {
-      const cameraSpeed = 5; // Speed of the camera movement
+      const cameraSpeed = 20; // Speed of the camera movement
       const cam = this.cameras.main;
       if (this.cursors.up.isDown && cam.scrollY > 0) {
         cam.scrollY = Math.max(cam.scrollY - cameraSpeed, 0);

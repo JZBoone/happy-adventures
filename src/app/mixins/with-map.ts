@@ -211,15 +211,17 @@ export function withMap<
       const path = this.sceneObjectConfigPath.get(sceneObject)!;
       if (path.startsWith("interactables")) {
         const [, i] = path.split(".");
-        const config = this.mapObjectsJson!.interactables[
-          +i
-        ] as InteractableParams<SceneImageAsset>;
+        const config = {
+          ...this.mapObjectsJson!.interactables[+i],
+        } as InteractableParams<SceneImageAsset>;
         const interactable = this.createInteractable(config);
         this.interactables.push(interactable);
         this.mapObjectsJson!.interactables.push(config);
         this.sceneObjectConfigPath.set(
           interactable,
-          `interactables.${+i + 1}.coordinates`
+          `interactables.${
+            this.mapObjectsJson!.interactables.length - 1
+          }.coordinates`
         );
         return interactable;
       }
