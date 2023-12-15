@@ -174,15 +174,27 @@ export interface ISceneWithMap<
   ): Movable<Phaser.GameObjects.Image>;
   preload(): void | Promise<void>;
   create(): void | Promise<void>;
-  /** for map builder */
+  /** map builder */
   makeMapTaller(groundType: SceneImageAsset): void;
-  /** for map builder */
+  /** map builder */
   makeMapWider(groundType: SceneImageAsset): void;
-  /** for map builder */
+  /** map builder */
   updateSceneObjectCoordinates(
     sceneObject:
       | Immovable<Phaser.GameObjects.Image>
       | Movable<Phaser.GameObjects.Image>,
     coordinates: Coordinates
   ): void;
+  /** map builder */
+  sceneObjectIsClonable(
+    sceneObject:
+      | Immovable<Phaser.GameObjects.Image>
+      | Movable<Phaser.GameObjects.Image>
+  ): boolean;
+  /** map builder */
+  cloneSceneObject(
+    sceneObject:
+      | Immovable<Phaser.GameObjects.Image>
+      | Movable<Phaser.GameObjects.Image>
+  ): Immovable<Phaser.GameObjects.Image> | Movable<Phaser.GameObjects.Image>;
 }

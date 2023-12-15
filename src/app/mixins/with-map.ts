@@ -186,6 +186,68 @@ export function withMap<
       set(this.mapObjectsJson!, `${path}`, coordinates);
     }
 
+    sceneObjectIsClonable(
+      sceneObject:
+        | Immovable<Phaser.GameObjects.Image>
+        | Movable<Phaser.GameObjects.Image>
+    ): boolean {
+      const path = this.sceneObjectConfigPath.get(sceneObject)!;
+      return (
+        path.startsWith("interactables") ||
+        path.startsWith("immovableImageGroups")
+      );
+    }
+
+    cloneSceneObject(
+      sceneObject:
+        | Immovable<Phaser.GameObjects.Image>
+        | Movable<Phaser.GameObjects.Image>
+    ): Immovable<Phaser.GameObjects.Image> | Movable<Phaser.GameObjects.Image> {
+      if (!this.sceneObjectIsClonable(sceneObject)) {
+        throw new Error(
+          "Cannot clone scene object because it is not clonable!"
+        );
+      }
+      const path = this.sceneObjectConfigPath.get(sceneObject)!;
+      if (path.startsWith("interactables")) {
+        const [, i] = path.split(".");
+        const config = this.mapObjectsJson!.interactables[
+          +i
+        ] as InteractableParams<SceneImageAsset>;
+        const interactable = this.createInteractable(config);
+        this.interactables.push(interactable);
+        this.mapObjectsJson!.interactables.push(config);
+        this.sceneObjectConfigPath.set(
+          interactable,
+          `interactables.${+i + 1}.coordinates`
+        );
+        return interactable;
+      }
+      if (path.startsWith("immovableImageGroups")) {
+        // create immovable image
+        const [, key, , i] = path.split(".");
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        const { coordinates, ...config } =
+          this.mapObjectsJson!.immovableImageGroups[key];
+        const cloneCoordinates =
+          this.mapObjectsJson!.immovableImageGroups[key].coordinates[+i];
+        const immovableImage = this.createImmovableImage({
+          ...config,
+          coordinates: cloneCoordinates,
+        });
+        this.sceneObjectConfigPath.set(
+          immovableImage,
+          `immovableImageGroups.${key}.coordinates.${+i + 1}`
+        );
+        this.mapObjectsJson!.immovableImageGroups[key].coordinates.push(
+          cloneCoordinates
+        );
+        this.immovableImageGroups[key].push(immovableImage);
+        return immovableImage;
+      }
+      throw new Error("This should never happen");
+    }
+
     async create() {
       await this.pendingMapJson;
       this.map = loadMap(this, this.mapJson);

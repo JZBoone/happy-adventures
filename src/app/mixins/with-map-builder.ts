@@ -216,6 +216,7 @@ export const withMapBuilder = <
         asset: this.selectedImageAsset,
         coordinates: [row, position],
       });
+      this.map[row][position].image.setDepth(-1);
     }
 
     private moveSceneObject(coordinates: Coordinates) {
@@ -240,6 +241,14 @@ export const withMapBuilder = <
       }
       this.sceneObjectToMove = this.sceneObjectAt([row, position]);
       if (this.sceneObjectToMove) {
+        if (
+          pointer.event.altKey &&
+          this.sceneObjectIsClonable(this.sceneObjectToMove)
+        ) {
+          this.sceneObjectToMove = this.cloneSceneObject(
+            this.sceneObjectToMove
+          );
+        }
         this.pointerIsDown = true;
         return;
       }
