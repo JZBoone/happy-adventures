@@ -4,7 +4,7 @@ import { ImageAsset } from "../types/image";
 import { Coordinates } from "../types/map";
 import { SpriteAsset } from "../types/sprite";
 import { worldPosition } from "./map";
-import { Immovable } from "./immovable";
+import { Immovable, ImmovableOptions } from "./immovable";
 
 export class Movable<
   T extends
@@ -26,12 +26,7 @@ export class Movable<
   constructor(
     public scene: ISceneWithAssets<AudioAsset, ImageAsset, SpriteAsset>,
     public phaserObject: T,
-    options?: {
-      offsetX?: number;
-      offsetY?: number;
-      height?: number;
-      width?: number;
-    }
+    options?: ImmovableOptions
   ) {
     super(phaserObject, options);
   }

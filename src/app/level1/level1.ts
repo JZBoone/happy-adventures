@@ -26,7 +26,7 @@ export class Level1MapAndAssets extends withMap(
     sprites: [SpriteAsset.Castle] as const,
   }),
   {
-    map: Level.Level1,
+    level: Level.Level1,
     immovableSprites: {
       castle: { asset: SpriteAsset.Castle },
     } as const,

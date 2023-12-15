@@ -28,7 +28,7 @@ export class Level3MapAndAssets extends withMap(
     ] as const,
   }),
   {
-    map: Level.Level3,
+    level: Level.Level3,
     immovableImages: {
       lungs: { asset: ImageAsset.Lungs },
       heart: { asset: ImageAsset.Heart },

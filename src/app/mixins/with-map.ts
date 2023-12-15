@@ -11,7 +11,15 @@ import {
 } from "../common/map";
 import { Movable } from "../common/movable";
 import { Immovable } from "../common/immovable";
-import { Coordinates, ISceneWithMap, Move } from "../types/map";
+import {
+  Coordinates,
+  FriendParams,
+  ISceneWithMap,
+  InteractableParams,
+  MapObjectsJson,
+  Move,
+  SceneObjectParams,
+} from "../types/map";
 import { AudioAsset } from "../types/audio";
 import { DefaultImageAsset, ImageAsset } from "../types/image";
 import { DefaultSpriteAsset, SpriteAsset } from "../types/sprite";
@@ -35,7 +43,7 @@ export function withMap<
     ISceneWithAssets<SceneAudioAsset, SceneImageAsset, SceneSpriteAsset>
   >,
   options: {
-    map: ImageAsset[][] | string;
+    level: Level;
     immovableImages?: SceneImmovableImages;
     immovableImageGroups?: SceneImmovableImageGroups;
     immovableSprites?: SceneImmovableSprites;
@@ -67,117 +75,26 @@ export function withMap<
     mapHeight!: number;
     pendingMapJson!: Promise<{
       mapJson: ImageAsset[][] | null;
-      mapObjectsJson: {
-        immovableImageGroups: {
-          [Property in keyof SceneImmovableImageGroups]: {
-            asset: SceneImageAsset;
-            coordinates: Coordinates[];
-            offsetY?: number;
-            width?: number;
-            height?: number;
-          };
-        };
-        immovableImages: {
-          [Property in keyof SceneImmovableImages]: {
-            asset: SceneImageAsset;
-            coordinates: Coordinates;
-            offsetY?: number;
-            width?: number;
-            height?: number;
-          };
-        };
-        immovableSprites: {
-          [Property in keyof SceneImmovableSprites]: {
-            asset: SceneSpriteAsset;
-            coordinates: Coordinates;
-            offsetY?: number;
-            width?: number;
-            height?: number;
-          };
-        };
-        movableImages: {
-          [Property in keyof SceneMovableImages]: {
-            asset: SceneImageAsset;
-            coordinates: Coordinates;
-            offsetY?: number;
-            width?: number;
-            height?: number;
-          };
-        };
-        movableSprites: {
-          [Property in keyof SceneMovableSprites]: {
-            asset: SceneSpriteAsset;
-            coordinates: Coordinates;
-            offsetY?: number;
-            width?: number;
-            height?: number;
-          };
-        };
-        interactables: {
-          asset: SceneImageAsset;
-          coordinates: Coordinates;
-          offsetY?: number;
-          width?: number;
-          height?: number;
-        }[];
-      } | null;
-    } | null>;
+      mapObjectsJson: MapObjectsJson<
+        SceneImageAsset,
+        SceneSpriteAsset,
+        SceneImmovableImages,
+        SceneImmovableImageGroups,
+        SceneImmovableSprites,
+        SceneMovableImages,
+        SceneMovableSprites
+      > | null;
+    }>;
     private mapJson: ImageAsset[][] = [];
-    mapObjectsJson!: {
-      immovableImages: {
-        [Property in keyof SceneImmovableImages]: {
-          asset: SceneImageAsset;
-          coordinates: Coordinates;
-          offsetY?: number;
-          width?: number;
-          height?: number;
-        };
-      };
-      immovableImageGroups: {
-        [Property in keyof SceneImmovableImageGroups]: {
-          asset: SceneImageAsset;
-          coordinates: Coordinates[];
-          offsetY?: number;
-          width?: number;
-          height?: number;
-        };
-      };
-      immovableSprites: {
-        [Property in keyof SceneImmovableSprites]: {
-          asset: SceneSpriteAsset;
-          coordinates: Coordinates;
-          offsetY?: number;
-          width?: number;
-          height?: number;
-        };
-      };
-      movableImages: {
-        [Property in keyof SceneMovableImages]: {
-          asset: SceneImageAsset;
-          coordinates: Coordinates;
-          offsetY?: number;
-          width?: number;
-          height?: number;
-        };
-      };
-      movableSprites: {
-        [Property in keyof SceneMovableSprites]: {
-          asset: SceneSpriteAsset;
-          coordinates: Coordinates;
-          offsetY?: number;
-          width?: number;
-          height?: number;
-        };
-      };
-      interactables: {
-        asset: SceneImageAsset;
-        coordinates: Coordinates;
-        message: string;
-        offsetY?: number;
-        width?: number;
-        height?: number;
-      }[];
-    };
+    mapObjectsJson?: MapObjectsJson<
+      SceneImageAsset,
+      SceneSpriteAsset,
+      SceneImmovableImages,
+      SceneImmovableImageGroups,
+      SceneImmovableSprites,
+      SceneMovableImages,
+      SceneMovableSprites
+    >;
     // @ts-expect-error Type '{}' is not assignable to type '{ [Property in keyof SceneImmovableSprites]: Immovable<Sprite>; }'.ts(2322)
     immovableImages: {
       [Property in keyof SceneImmovableImages]: Immovable<Phaser.GameObjects.Image>;
@@ -222,7 +139,12 @@ export function withMap<
     interactables: Interactable<
       SceneAudioAsset,
       SceneImageAsset,
-      SceneSpriteAsset
+      SceneSpriteAsset,
+      SceneImmovableImages,
+      SceneImmovableImageGroups,
+      SceneImmovableSprites,
+      SceneMovableImages,
+      SceneMovableSprites
     >[] = [];
 
     private hotkey!: {
@@ -231,30 +153,25 @@ export function withMap<
 
     async preload() {
       super.preload();
-      if (typeof options.map === "string") {
-        const pendingMapJson = fetchMap<
-          SceneSpriteAsset,
-          SceneImageAsset,
-          SceneImmovableImages,
-          SceneImmovableImageGroups,
-          SceneImmovableSprites,
-          SceneMovableImages,
-          SceneMovableSprites
-        >(options.map);
-        this.pendingMapJson = pendingMapJson;
-        const { mapJson, mapObjectsJson } = await pendingMapJson;
-        if (!mapJson) {
-          throw new Error("mapJson not loaded");
-        }
-        this.mapJson = mapJson;
-        if (!mapObjectsJson) {
-          console.warn("mapObjectsJson not loaded");
-        } else {
-          this.mapObjectsJson = mapObjectsJson;
-        }
+      const pendingMapJson = fetchMap<
+        SceneSpriteAsset,
+        SceneImageAsset,
+        SceneImmovableImages,
+        SceneImmovableImageGroups,
+        SceneImmovableSprites,
+        SceneMovableImages,
+        SceneMovableSprites
+      >(options.level);
+      this.pendingMapJson = pendingMapJson;
+      const { mapJson, mapObjectsJson } = await pendingMapJson;
+      if (!mapJson) {
+        throw new Error("mapJson not loaded");
+      }
+      this.mapJson = mapJson;
+      if (!mapObjectsJson) {
+        console.warn("mapObjectsJson not loaded");
       } else {
-        this.mapJson = options.map;
-        this.pendingMapJson = Promise.resolve(null);
+        this.mapObjectsJson = mapObjectsJson;
       }
       this.setMapDimensions();
     }
@@ -369,10 +286,9 @@ export function withMap<
     update() {
       if (
         process.env.MAP_BUILDER_ENABLED &&
-        typeof options.map === "string" &&
         Phaser.Input.Keyboard.JustDown(this.hotkey.e)
       ) {
-        this.scene.start(mapEditorSceneKey(options.map as Level));
+        this.scene.start(mapEditorSceneKey(options.level));
         return;
       }
       const move = this.getMove();
@@ -382,100 +298,46 @@ export function withMap<
       this._moves$.next(move);
     }
 
-    createImmovableSprite<
-      Asset extends SceneSpriteAsset | DefaultSpriteAsset,
-    >(params: {
-      asset: Asset;
-      coordinates: Coordinates;
-      offsetX?: number;
-      offsetY?: number;
-      height?: number;
-      width?: number;
-    }): Immovable<Phaser.GameObjects.Sprite> {
-      const { asset, coordinates, offsetX, offsetY, height, width } = params;
-      if (!this.sprites.includes(asset)) {
+    createImmovableSprite<Asset extends SceneSpriteAsset | DefaultSpriteAsset>(
+      params: SceneObjectParams<Asset>
+    ): Immovable<Phaser.GameObjects.Sprite> {
+      if (!this.sprites.includes(params.asset)) {
         throw new Error(
-          `Immovable sprite not loaded. Did you forget to load ${asset}?`
+          `Immovable sprite not loaded. Did you forget to load ${params.asset}?`
         );
       }
-      const sprite = this.createSprite({
-        coordinates,
-        offsetX,
-        offsetY,
-        asset,
-        width,
-        height,
-      });
-      return new Immovable(sprite, {
-        offsetX,
-        offsetY,
-        width,
-        height,
-      });
+      const sprite = this.createSprite(params);
+      return new Immovable(sprite, params);
     }
 
-    createImmovableImage<
-      Asset extends SceneImageAsset | DefaultImageAsset,
-    >(params: {
-      asset: Asset;
-      coordinates: Coordinates;
-      offsetX?: number;
-      offsetY?: number;
-      height?: number;
-      width?: number;
-    }): Immovable<Phaser.GameObjects.Image> {
-      const { asset, coordinates, offsetX, offsetY, height, width } = params;
-      if (!this.images.includes(asset)) {
+    createImmovableImage<Asset extends SceneImageAsset | DefaultImageAsset>(
+      params: SceneObjectParams<Asset>
+    ): Immovable<Phaser.GameObjects.Image> {
+      if (!this.images.includes(params.asset)) {
         throw new Error(
-          `Immovable image not loaded. Did you forget to load ${asset}?`
+          `Immovable image not loaded. Did you forget to load ${params.asset}?`
         );
       }
-      const image = this.createImage({
-        coordinates,
-        offsetX,
-        offsetY,
-        asset,
-        width,
-        height,
-      });
-      return new Immovable(image, {
-        offsetX,
-        offsetY,
-        width,
-        height,
-      });
+      const image = this.createImage(params);
+      return new Immovable(image, params);
     }
 
     createFriend<Asset extends SceneImageAsset | DefaultImageAsset>(
-      params: {
-        asset?: Asset;
-        coordinates?: Coordinates;
-        offsetX?: number;
-        offsetY?: number;
-        width?: number;
-        height?: number;
-      } = {}
+      params?: FriendParams<Asset>
     ): Friend {
-      const { asset, coordinates, offsetX, offsetY, width, height } = params;
-      const assetOrDefault = ImageAsset.Friend || asset;
-      if (!this.images.includes(assetOrDefault)) {
+      const _params = {
+        ...params,
+        asset: params?.asset || (ImageAsset.Friend as const),
+        coordinates: params?.coordinates || [0, 0],
+      };
+      if (!this.images.includes(_params.asset)) {
         throw new Error(
-          `Friend image not loaded. Did you forget to load ${assetOrDefault}?`
+          `Friend image not loaded. Did you forget to load ${_params.asset}?`
         );
       }
-      const image = this.createImage({
-        coordinates: coordinates || [0, 0],
-        offsetX,
-        offsetY,
-        asset: assetOrDefault,
-        width,
-        height,
-      });
+      const image = this.createImage(_params);
       const friend = new Friend(this, image, {
-        offsetX,
-        offsetY,
-        width,
-        height,
+        ..._params,
         mapWidth: this.mapWidth,
         mapHeight: this.mapHeight,
       });
@@ -484,102 +346,60 @@ export function withMap<
       return this.friend;
     }
 
-    createInteractable<Asset extends SceneImageAsset>(params: {
-      asset: Asset;
-      coordinates: Coordinates;
-      offsetX?: number;
-      offsetY?: number;
-      width?: number;
-      height?: number;
-      message: string;
-    }): Interactable<SceneAudioAsset, SceneImageAsset, SceneSpriteAsset> {
-      const { asset, coordinates, offsetX, offsetY, width, height, message } =
-        params;
-      if (!this.images.includes(asset)) {
+    createInteractable<Asset extends SceneImageAsset>(
+      params: InteractableParams<Asset>
+    ): Interactable<
+      SceneAudioAsset,
+      SceneImageAsset,
+      SceneSpriteAsset,
+      SceneImmovableImages,
+      SceneImmovableImageGroups,
+      SceneImmovableSprites,
+      SceneMovableImages,
+      SceneMovableSprites
+    > {
+      if (!this.images.includes(params.asset)) {
         throw new Error(
-          `Interactable image not loaded. Did you forget to load ${asset}?`
+          `Interactable image not loaded. Did you forget to load ${params.asset}?`
         );
       }
-      const image = this.createImage({
-        coordinates: coordinates,
-        offsetX,
-        offsetY,
-        asset,
-        width,
-        height,
-      });
-      const interactable = new Interactable(this, image, {
-        offsetX,
-        offsetY,
-        width,
-        height,
-        message,
-      });
+      const image = this.createImage(params);
+      const interactable = new Interactable(this, image, params);
       this.interactables.push(interactable);
       return interactable;
     }
 
-    createMovableSprite<
-      Asset extends SceneSpriteAsset | DefaultSpriteAsset,
-    >(params: {
-      asset: Asset;
-      coordinates: Coordinates;
-      offsetX?: number;
-      offsetY?: number;
-      width?: number;
-      height?: number;
-    }): Movable<Phaser.GameObjects.Sprite> {
-      const { asset, coordinates, offsetX, offsetY, width, height } = params;
-      if (!this.sprites.includes(asset)) {
+    createMovableSprite<Asset extends SceneSpriteAsset | DefaultSpriteAsset>(
+      params: SceneObjectParams<Asset>
+    ): Movable<Phaser.GameObjects.Sprite> {
+      if (!this.sprites.includes(params.asset)) {
         throw new Error(
-          `Movable sprite not loaded. Did you forget to load ${asset}?`
+          `Movable sprite not loaded. Did you forget to load ${params.asset}?`
         );
       }
-      const sprite = this.createSprite({
-        coordinates,
-        offsetX,
-        offsetY,
-        asset,
-        width,
-        height,
-      });
+      const sprite = this.createSprite(params);
       const movable: Movable<Phaser.GameObjects.Sprite> = new Movable(
         this,
         sprite,
-        { offsetX, offsetY, width, height }
+        params
       );
       this.movables.push(movable);
       return movable;
     }
 
-    createMovableImage<
-      Asset extends SceneImageAsset | DefaultImageAsset,
-    >(params: {
-      asset: Asset;
-      coordinates: Coordinates;
-      offsetX?: number;
-      offsetY?: number;
-      width?: number;
-      height?: number;
-    }): Movable<Phaser.GameObjects.Image> {
-      const { asset, coordinates, offsetX, offsetY, width, height } = params;
-      if (!this.images.includes(asset)) {
+    createMovableImage<Asset extends SceneImageAsset | DefaultImageAsset>(
+      params: SceneObjectParams<Asset>
+    ): Movable<Phaser.GameObjects.Image> {
+      if (!this.images.includes(params.asset)) {
         throw new Error(
-          `Movable image not loaded. Did you forget to load ${asset}?`
+          `Movable image not loaded. Did you forget to load ${params.asset}?`
         );
       }
-      const image = this.createImage({
-        coordinates,
-        offsetX,
-        offsetY,
-        asset,
-        width,
-        height,
-      });
+      const image = this.createImage(params);
       const movable: Movable<Phaser.GameObjects.Image> = new Movable(
         this,
         image,
-        { offsetX, offsetY, width, height }
+        params
       );
       this.movables.push(movable);
       return movable;
@@ -625,7 +445,7 @@ export function withMap<
         newPosition < 0 ||
         newPosition > this.map[0].length - 1 ||
         this.interactables.some((interactable) =>
-          interactable.isAt([newRow, newPosition])
+          interactable.occupies([newRow, newPosition])
         )
       );
     }

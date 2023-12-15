@@ -12,11 +12,16 @@ import { Coordinates } from "../types/map";
 
 export class Level2MapAndAssets extends withMap(
   withAssets(Phaser.Scene, {
-    images: [...groundTypes, ImageAsset.Monster, ImageAsset.Portal] as const,
+    images: [
+      ...groundTypes,
+      ImageAsset.Monster,
+      ImageAsset.Portal,
+      ImageAsset.Queen,
+    ] as const,
     audio: [AudioAsset.Chomp, AudioAsset.Fall, AudioAsset.Stomp] as const,
   }),
   {
-    map: Level.Level2,
+    level: Level.Level2,
     immovableImages: {
       monster: { asset: ImageAsset.Monster },
       portal: { asset: ImageAsset.Portal },

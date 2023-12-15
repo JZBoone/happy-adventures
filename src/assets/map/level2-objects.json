@@ -12,5 +12,14 @@
       "width": 2,
       "height": 2
     }
-  }
+  },
+  "interactables": [
+    {
+      "coordinates": [9, 1],
+      "asset": "queen",
+      "width": 2,
+      "height": 2,
+      "message": "If you get eaten by the monster there is a bomb that can destroy the heart"
+    }
+  ]
 }

@@ -2,8 +2,8 @@
   "immovableImages": {
     "landingPad": {
       "coordinates": [
-        15,
-        14
+        16,
+        16
       ],
       "asset": "landing-pad",
       "width": 2,
@@ -11,8 +11,8 @@
     },
     "magicTree": {
       "coordinates": [
-        12,
-        18
+        11,
+        16
       ],
       "asset": "magic-tree",
       "width": 2,
@@ -40,8 +40,8 @@
           10
         ],
         [
-          28,
-          28
+          26,
+          35
         ],
         [
           2,
@@ -57,11 +57,11 @@
         ],
         [
           22,
-          11
+          10
         ],
         [
-          28,
-          29
+          27,
+          36
         ],
         [
           3,
@@ -72,7 +72,7 @@
           4
         ],
         [
-          16,
+          18,
           25
         ],
         [
@@ -80,8 +80,8 @@
           10
         ],
         [
-          29,
-          28
+          27,
+          35
         ],
         [
           3,
@@ -92,7 +92,7 @@
           5
         ],
         [
-          16,
+          18,
           26
         ],
         [
@@ -100,8 +100,8 @@
           11
         ],
         [
-          29,
-          29
+          26,
+          36
         ]
       ]
     },
@@ -283,8 +283,8 @@
   "movableSprites": {
     "miniPlane": {
       "coordinates": [
-        29,
-        29
+        27,
+        36
       ],
       "asset": "mini-plane",
       "width": 2,
@@ -294,16 +294,16 @@
   "interactables": [
     {
       "coordinates": [
-        5,
-        6
+        3,
+        2
       ],
       "asset": "spiky-guy",
       "message": "The magic tree needs your help! If you find my twin brother he can tell how to get there!"
     },
     {
       "coordinates": [
-        22,
-        13
+        28,
+        2
       ],
       "asset": "spiky-guy",
       "message": "You can't walk through the spikies to get to the magic tree! If you find my airplane maybe you could get there."

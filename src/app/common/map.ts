@@ -1,6 +1,6 @@
 import { ImageAsset } from "../types/image";
 import { Level } from "../types/level";
-import { Coordinates, Move } from "../types/map";
+import { Coordinates, MapObjectsJson, Move } from "../types/map";
 import { SpriteAsset } from "../types/sprite";
 
 export const mapTileSizePx = 50;
@@ -127,90 +127,24 @@ async function fetchMapObjects<
   const result = await fetch(
     `${process.env.API_URL}/assets/map/${mapName}-objects.json`
   );
-  return (await result.json()) as {
-    immovableImages: {
-      [Property in keyof SceneImmovableImages]: {
-        asset: SceneImageAsset;
-        coordinates: Coordinates;
-        offsetY?: number;
-        width?: number;
-        height?: number;
-      };
-    };
-    immovableImageGroups: {
-      [Property in keyof SceneImmovableImageGroups]: {
-        asset: SceneImageAsset;
-        coordinates: Coordinates[];
-        offsetY?: number;
-        width?: number;
-        height?: number;
-      };
-    };
-    immovableSprites: {
-      [Property in keyof SceneImmovableSprites]: {
-        asset: SceneSpriteAsset;
-        coordinates: Coordinates;
-        offsetY?: number;
-        width?: number;
-        height?: number;
-      };
-    };
-    movableImages: {
-      [Property in keyof SceneMovableImages]: {
-        asset: SceneImageAsset;
-        coordinates: Coordinates;
-        offsetY?: number;
-        width?: number;
-        height?: number;
-      };
-    };
-    movableSprites: {
-      [Property in keyof SceneMovableSprites]: {
-        asset: SceneSpriteAsset;
-        coordinates: Coordinates;
-        offsetY?: number;
-        width?: number;
-        height?: number;
-      };
-    };
-    interactables: {
-      asset: SceneImageAsset;
-      coordinates: Coordinates;
-      message: string;
-      offsetY?: number;
-      width?: number;
-      height?: number;
-    }[];
-  } | null;
+  return (await result.json()) as MapObjectsJson<
+    SceneImageAsset,
+    SceneSpriteAsset,
+    SceneImmovableImages,
+    SceneImmovableImageGroups,
+    SceneImmovableSprites,
+    SceneMovableImages,
+    SceneMovableSprites
+  >;
 }
 
 export async function fetchMap<
   SceneSpriteAsset extends SpriteAsset,
   SceneImageAsset extends ImageAsset,
-  SceneImmovableImages extends Record<
-    string,
-    {
-      asset: SceneImageAsset;
-    }
-  >,
-  SceneImmovableImageGroups extends Record<
-    string,
-    {
-      asset: SceneImageAsset;
-    }
-  >,
-  SceneImmovableSprites extends Record<
-    string,
-    {
-      asset: SceneSpriteAsset;
-    }
-  >,
-  SceneMovableImages extends Record<
-    string,
-    {
-      asset: SceneImageAsset;
-    }
-  >,
+  SceneImmovableImages extends Record<string, { asset: SceneImageAsset }>,
+  SceneImmovableImageGroups extends Record<string, { asset: SceneImageAsset }>,
+  SceneImmovableSprites extends Record<string, { asset: SceneSpriteAsset }>,
+  SceneMovableImages extends Record<string, { asset: SceneImageAsset }>,
   SceneMovableSprites extends Record<string, { asset: SceneSpriteAsset }>,
 >(mapName: string) {
   const results = await Promise.allSettled([
@@ -238,7 +172,7 @@ export function mapEditorSceneKey(level: Level) {
 export async function saveMap(
   level: Level,
   map: ImageAsset[][],
-  mapObjects: object
+  mapObjects: object = {}
 ) {
   const response = await fetch(`${process.env.API_URL}/map/${level}`, {
     method: "POST",

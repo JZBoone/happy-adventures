@@ -3,6 +3,7 @@ import { AudioAsset } from "../types/audio";
 import { ImageAsset } from "../types/image";
 import { Coordinates } from "../types/map";
 import { SpriteAsset } from "../types/sprite";
+import { ImmovableOptions } from "./immovable";
 import { Movable } from "./movable";
 
 export class Friend extends Movable<Phaser.GameObjects.Image> {
@@ -13,11 +14,7 @@ export class Friend extends Movable<Phaser.GameObjects.Image> {
   constructor(
     public scene: ISceneWithAssets<AudioAsset, ImageAsset, SpriteAsset>,
     public phaserObject: InstanceType<typeof Phaser.GameObjects.Image>,
-    options: {
-      offsetX?: number;
-      offsetY?: number;
-      height?: number;
-      width?: number;
+    options: ImmovableOptions & {
       mapWidth: number;
       mapHeight: number;
     }

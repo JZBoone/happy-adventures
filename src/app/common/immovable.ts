@@ -2,6 +2,13 @@ import { isEqual, range } from "lodash";
 import { Coordinates } from "../types/map";
 import { mapCoordinates, worldPosition } from "./map";
 
+export type ImmovableOptions = {
+  offsetX?: number;
+  offsetY?: number;
+  height?: number;
+  width?: number;
+};
+
 export class Immovable<
   T extends
     | InstanceType<typeof Phaser.GameObjects.Image>
@@ -22,12 +29,7 @@ export class Immovable<
 
   constructor(
     public phaserObject: T,
-    options?: {
-      offsetX?: number;
-      offsetY?: number;
-      height?: number;
-      width?: number;
-    }
+    options?: ImmovableOptions
   ) {
     this.__offsetX = options?.offsetX ?? 0;
     this.__offsetY = options?.offsetY ?? 0;
@@ -108,7 +110,7 @@ export class Immovable<
       if (isEqual([rowBoundaries[0] - 1, position], coordinates)) {
         return true;
       }
-      if (isEqual([rowBoundaries[0] + 1, position], coordinates)) {
+      if (isEqual([rowBoundaries[1] + 1, position], coordinates)) {
         return true;
       }
     }
@@ -116,7 +118,7 @@ export class Immovable<
       if (isEqual([row, positionBoundaries[0] - 1], coordinates)) {
         return true;
       }
-      if (isEqual([row, positionBoundaries[0] + 1], coordinates)) {
+      if (isEqual([row, positionBoundaries[1] + 1], coordinates)) {
         return true;
       }
     }

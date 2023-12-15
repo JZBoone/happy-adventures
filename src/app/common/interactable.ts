@@ -2,13 +2,18 @@ import { AudioAsset } from "../types/audio";
 import { ImageAsset } from "../types/image";
 import { ISceneWithMap } from "../types/map";
 import { SpriteAsset } from "../types/sprite";
-import { Immovable } from "./immovable";
+import { Immovable, ImmovableOptions } from "./immovable";
 import { mapTileSizePx } from "./map";
 
 export class Interactable<
   SceneAudioAsset extends AudioAsset,
   SceneImageAsset extends ImageAsset,
   SceneSpriteAsset extends SpriteAsset,
+  SceneImmovableImages extends Record<string, { asset: SceneImageAsset }>,
+  SceneImmovableImageGroups extends Record<string, { asset: SceneImageAsset }>,
+  SceneImmovableSprites extends Record<string, { asset: SceneSpriteAsset }>,
+  SceneMovableImages extends Record<string, { asset: SceneImageAsset }>,
+  SceneMovableSprites extends Record<string, { asset: SceneSpriteAsset }>,
 > extends Immovable<Phaser.GameObjects.Image> {
   message: string;
   private bubbleText?: {
@@ -19,16 +24,15 @@ export class Interactable<
     public scene: ISceneWithMap<
       SceneAudioAsset,
       SceneImageAsset,
-      SceneSpriteAsset
+      SceneSpriteAsset,
+      SceneImmovableImages,
+      SceneImmovableImageGroups,
+      SceneImmovableSprites,
+      SceneMovableImages,
+      SceneMovableSprites
     >,
     public phaserObject: InstanceType<typeof Phaser.GameObjects.Image>,
-    options: {
-      offsetX?: number;
-      offsetY?: number;
-      height?: number;
-      width?: number;
-      message: string;
-    }
+    options: ImmovableOptions & { message: string }
   ) {
     super(phaserObject, options);
     this.message = options.message;

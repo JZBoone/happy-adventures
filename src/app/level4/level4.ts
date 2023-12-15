@@ -27,7 +27,7 @@ export class Level4MapAndAssets extends withMap(
     audio: [AudioAsset.Motor] as const,
   }),
   {
-    map: Level.Level4,
+    level: Level.Level4,
     immovableImages: {
       landingPad: { asset: ImageAsset.LandingPad },
       magicTree: { asset: ImageAsset.MagicTree },
