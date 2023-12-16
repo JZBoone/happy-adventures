@@ -36,7 +36,7 @@ export class Level2MapAndAssets extends withMap(
 ) {}
 
 export class Level2 extends Level2MapAndAssets {
-  private monsterIsDead = true;
+  private monsterIsDead = false;
   private didShutDown = false;
 
   constructor() {
