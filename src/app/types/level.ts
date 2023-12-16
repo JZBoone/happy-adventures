@@ -3,4 +3,6 @@ export enum Level {
   Level2 = "level2",
   Level3 = "level3",
   Level4 = "level4",
+  Credits = "credits",
+  TheEnd = "theend",
 }

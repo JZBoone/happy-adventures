@@ -9,6 +9,8 @@ import { Level4, Level4MapAndAssets } from "./level4/level4";
 import { groundTypes as level4GroundTypes } from "./level4/map";
 import { withMapBuilder } from "./mixins/with-map-builder";
 import { Level } from "./types/level";
+import { Credits } from "./credits/credits";
+import { TheEnd } from "./credits/the-end";
 
 export default new Phaser.Game({
   type: Phaser.AUTO,
@@ -30,5 +32,7 @@ export default new Phaser.Game({
     withMapBuilder(Level3MapAndAssets, Level.Level3, level3GroundTypes),
     Level4,
     withMapBuilder(Level4MapAndAssets, Level.Level4, level4GroundTypes),
+    Credits,
+    TheEnd,
   ],
 });

@@ -127,6 +127,7 @@ export class Level4 extends Level4MapAndAssets {
     ) {
       this.completedLevel = true;
       this.playSound(AudioAsset.Tada);
+      this.scene.start(Level.Credits);
     }
     this.friend.move(coordinates);
   }
