@@ -61,8 +61,9 @@ export class Level2 extends Level2MapAndAssets {
         height: 2,
         asset: ImageAsset.MonsterGuts,
       });
+    } else {
+      showLevelStartText(this, 2);
     }
-    showLevelStartText(this, 2);
     const startingCoordinates: Coordinates = this.monsterIsDead
       ? [monsterCoordinates[0], monsterCoordinates[1] - 2]
       : [0, 0];
