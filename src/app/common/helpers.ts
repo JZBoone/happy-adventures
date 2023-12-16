@@ -52,3 +52,63 @@ export function toast(scene: Phaser.Scene, text: string, duration = 5000) {
     },
   });
 }
+
+export function createEditableDialog(
+  scene: Phaser.Scene,
+  defaultText: string,
+  onSave: (message: string) => void,
+  onCancel: () => void
+) {
+  const x = scene.cameras.main.width / 2;
+  const y = scene.cameras.main.height / 2;
+
+  // Create a container for the dialog
+  const dialog = scene.add.container(x, y).setDepth(100).setScrollFactor(0);
+
+  // Create a background rectangle
+  const background = scene.add.rectangle(0, 0, 400, 150, 0x000000, 0.8);
+  dialog.add(background);
+
+  // Positioning the dialog
+  background.setOrigin(0.5, 0.5);
+
+  // Create an HTML input element
+  const inputElement = document.createElement("textarea");
+  inputElement.style.position = "absolute";
+  inputElement.value = defaultText;
+  inputElement.style.left = `${scene.game.canvas.offsetLeft + x - 175}px`;
+  inputElement.style.top = `${scene.game.canvas.offsetTop + y - 50}px`;
+  inputElement.style.width = "350px";
+  inputElement.style.height = "75px";
+
+  document.body.appendChild(inputElement);
+
+  // Focus the input element
+  inputElement.focus();
+
+  // Save button
+  const saveButton = scene.add
+    .text(50, 50, "Save", { font: "16px Arial", color: "#00ff00" })
+    .setInteractive()
+    .on("pointerdown", () => {
+      onSave(inputElement.value);
+      cleanup();
+    });
+
+  // Cancel button
+  const cancelButton = scene.add
+    .text(-50, 50, "Cancel", { font: "16px Arial", color: "#ff0000" })
+    .setInteractive()
+    .on("pointerdown", () => {
+      onCancel();
+      cleanup();
+    });
+
+  dialog.add([saveButton, cancelButton]);
+
+  // Cleanup function
+  function cleanup() {
+    inputElement.remove();
+    dialog.destroy();
+  }
+}

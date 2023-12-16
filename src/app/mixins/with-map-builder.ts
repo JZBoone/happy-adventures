@@ -13,9 +13,10 @@ import {
 import { Subject, distinctUntilChanged } from "rxjs";
 import { isEqual } from "lodash";
 import { Level } from "../types/level";
-import { toast } from "../common/helpers";
+import { createEditableDialog, toast } from "../common/helpers";
 import { Movable } from "../common/movable";
 import { Immovable } from "../common/immovable";
+import { Interactable } from "../common/interactable";
 
 export const withMapBuilder = <
   SceneAudioAsset extends AudioAsset,
@@ -71,6 +72,7 @@ export const withMapBuilder = <
       | Movable<Phaser.GameObjects.Image>
       | undefined;
     private _ready = false;
+    private dialogOpen = false;
 
     constructor() {
       super({ key: mapEditorSceneKey(level) });
@@ -128,6 +130,9 @@ export const withMapBuilder = <
     }
 
     async update() {
+      if (this.dialogOpen) {
+        return;
+      }
       if (!this._ready) {
         return;
       }
@@ -242,7 +247,26 @@ export const withMapBuilder = <
         );
         return;
       }
-      this.sceneObjectToMove = this.sceneObjectAt([row, position]);
+      const sceneObject = this.sceneObjectAt([row, position]);
+      if (sceneObject instanceof Interactable && this.hotkey.shift.isDown) {
+        this.dialogOpen = true;
+        this.input.keyboard!.disableGlobalCapture();
+        createEditableDialog(
+          this,
+          sceneObject.message,
+          (updatedMessage: string) => {
+            this.updateInteractableMessage(sceneObject, updatedMessage);
+            this.dialogOpen = false;
+            this.input.keyboard!.enableGlobalCapture();
+          },
+          () => {
+            this.dialogOpen = false;
+            this.input.keyboard!.enableGlobalCapture();
+          }
+        );
+        return;
+      }
+      this.sceneObjectToMove = sceneObject;
       if (this.sceneObjectToMove) {
         if (
           this.sceneObjectIsClonable(this.sceneObjectToMove) &&

@@ -278,6 +278,29 @@ export function withMap<
       sceneObject.phaserObject.destroy();
     }
 
+    updateInteractableMessage(
+      interactable: Interactable<
+        SceneAudioAsset,
+        SceneImageAsset,
+        SceneSpriteAsset,
+        SceneImmovableImages,
+        SceneImmovableImageGroups,
+        SceneImmovableSprites,
+        SceneMovableImages,
+        SceneMovableSprites
+      >,
+      message: string
+    ) {
+      const index = this.interactables.findIndex((i) => i === interactable);
+      if (index === -1) {
+        throw new Error(
+          "Cannot update interactable message. Interactable not found!"
+        );
+      }
+      interactable.message = message;
+      this.mapObjectsJson!.interactables[index].message = message;
+    }
+
     async create() {
       await this.pendingMapJson;
       this.map = loadMap(this, this.mapJson);

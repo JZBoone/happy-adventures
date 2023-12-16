@@ -203,4 +203,18 @@ export interface ISceneWithMap<
       | Immovable<Phaser.GameObjects.Image>
       | Movable<Phaser.GameObjects.Image>
   ): void;
+  /** map builder */
+  updateInteractableMessage(
+    interactable: Interactable<
+      SceneAudioAsset,
+      SceneImageAsset,
+      SceneSpriteAsset,
+      SceneImmovableImages,
+      SceneImmovableImageGroups,
+      SceneImmovableSprites,
+      SceneMovableImages,
+      SceneMovableSprites
+    >,
+    message: string
+  ): void;
 }
