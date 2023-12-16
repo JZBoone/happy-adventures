@@ -37,7 +37,7 @@ export class Level2MapAndAssets extends withMap(
 
 export class Level2 extends Level2MapAndAssets {
   private monsterIsDead = false;
-  private didShutDown = false;
+  private didFinishScene = false;
 
   constructor() {
     super({ key: Level.Level2 });
@@ -51,7 +51,7 @@ export class Level2 extends Level2MapAndAssets {
 
   async create() {
     await super.create();
-    this.didShutDown = false;
+    this.didFinishScene = false;
     const monsterCoordinates = this.immovableImages.monster.coordinates();
     if (this.monsterIsDead) {
       this.immovableImages.monster.phaserObject.setVisible(false);
@@ -68,7 +68,7 @@ export class Level2 extends Level2MapAndAssets {
       : [0, 0];
     this.createFriend({ coordinates: startingCoordinates });
     this.moves$
-      .pipe(takeWhile(() => !this.didShutDown))
+      .pipe(takeWhile(() => !this.didFinishScene))
       .subscribe(({ coordinates }) => this.handleMove(coordinates));
   }
 
@@ -107,7 +107,7 @@ export class Level2 extends Level2MapAndAssets {
   }
 
   private completeLevel(coordinates: Coordinates) {
-    this.didShutDown = true;
+    this.didFinishScene = true;
     this.friend.disappear();
     this.playSound(AudioAsset.Whoosh);
     this.time.addEvent({
@@ -120,7 +120,7 @@ export class Level2 extends Level2MapAndAssets {
   }
 
   private swallowFriend(coordinates: Coordinates) {
-    this.didShutDown = true;
+    this.didFinishScene = true;
     this.friend.move(coordinates);
     this.playSound(AudioAsset.Chomp);
     this.friend.disappear();
