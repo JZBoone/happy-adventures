@@ -86,29 +86,27 @@ export function createEditableDialog(
   // Focus the input element
   inputElement.focus();
 
-  // Save button
-  const saveButton = scene.add
-    .text(50, 50, "Save", { font: "16px Arial", color: "#00ff00" })
-    .setInteractive()
-    .on("pointerdown", () => {
+  inputElement.addEventListener("keydown", (event) => {
+    if (event.key === "Enter") {
       onSave(inputElement.value);
       cleanup();
-    });
+    }
+  });
 
-  // Cancel button
-  const cancelButton = scene.add
-    .text(-50, 50, "Cancel", { font: "16px Arial", color: "#ff0000" })
-    .setInteractive()
-    .on("pointerdown", () => {
-      onCancel();
-      cleanup();
-    });
-
-  dialog.add([saveButton, cancelButton]);
+  const onEscapeKeyup = (event: KeyboardEvent) => {
+    if (event.key === "Escape") {
+      setTimeout(() => {
+        onCancel();
+        cleanup();
+      }, 0);
+    }
+  };
+  document.addEventListener("keyup", onEscapeKeyup);
 
   // Cleanup function
   function cleanup() {
     inputElement.remove();
     dialog.destroy();
+    document.removeEventListener("keyup", onEscapeKeyup);
   }
 }

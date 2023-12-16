@@ -298,15 +298,7 @@
         2
       ],
       "asset": "spiky-guy",
-      "message": "The magic tree needs your help! If you find my twin brother he can tell how to get there!"
-    },
-    {
-      "coordinates": [
-        28,
-        2
-      ],
-      "asset": "spiky-guy",
-      "message": "You can't walk through the spikies to get to the magic tree! If you find my airplane maybe you could get there."
+      "message": "The magic tree needs your help. my airplane crashed into some trees maybe you could fly there, no Im serious you are gonna fly"
     }
   ]
 }

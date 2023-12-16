@@ -304,7 +304,7 @@ export const withMapBuilder = <
     }
 
     private maybeLaunchLevel() {
-      if (Phaser.Input.Keyboard.JustUp(this.hotkey.esc)) {
+      if (this.hotkey.esc.isDown) {
         this.scene.start(level);
       }
     }
