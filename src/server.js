@@ -3,6 +3,7 @@ const express = require("express");
 const { join } = require("path");
 const app = express();
 const esbuild = require("esbuild");
+const prettier = require("prettier");
 
 const { esbuildConfig } = require("../esbuild.config");
 
@@ -31,11 +32,11 @@ app.post("/map/:level", async (req, res) => {
   }
   writeFileSync(
     join(__dirname, `./assets/map/${level}.json`),
-    JSON.stringify(map, null, 2)
+    await prettier.format(JSON.stringify(map), { parser: "json" })
   );
   writeFileSync(
     join(__dirname, `./assets/map/${level}-objects.json`),
-    JSON.stringify(mapObjects, null, 2)
+    await prettier.format(JSON.stringify(mapObjects), { parser: "json" })
   );
   return res.status(200).send({ message: "success", map, mapObjects });
 });
