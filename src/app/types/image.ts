@@ -32,6 +32,7 @@ export enum ImageAsset {
   LandingPad = "landing-pad",
   SpikyGuy = "spiky-guy",
   Queen = "queen",
+  MonsterGuts = "monster-guts",
 }
 
 export const defaultImages = [ImageAsset.Friend] as const;

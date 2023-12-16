@@ -17,6 +17,7 @@ export class Level2MapAndAssets extends withMap(
       ImageAsset.Monster,
       ImageAsset.Portal,
       ImageAsset.Queen,
+      ImageAsset.MonsterGuts,
     ] as const,
     audio: [AudioAsset.Chomp, AudioAsset.Fall, AudioAsset.Stomp] as const,
   }),
@@ -46,12 +47,19 @@ export class Level2 extends Level2MapAndAssets {
   async create() {
     await super.create();
     this.didShutDown = false;
+    const monsterCoordinates = this.immovableImages.monster.coordinates();
     if (this.monsterIsDead) {
       this.immovableImages.monster.phaserObject.setVisible(false);
+      this.createImage({
+        coordinates: monsterCoordinates,
+        width: 2,
+        height: 2,
+        asset: ImageAsset.MonsterGuts,
+      });
     }
     showLevelStartText(this, 2);
     const startingCoordinates: Coordinates = this.monsterIsDead
-      ? [11, 13]
+      ? [monsterCoordinates[0], monsterCoordinates[1] - 2]
       : [0, 0];
     this.createFriend({ coordinates: startingCoordinates });
     this.moves$

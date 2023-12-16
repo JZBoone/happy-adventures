@@ -3,7 +3,6 @@ import { Level } from "../types/level";
 import { showLevelStartText } from "../common/helpers";
 import { withAssets } from "../mixins/with-assets";
 import { withMap } from "../mixins/with-map";
-import { debounceTime } from "rxjs";
 import { ImageAsset } from "../types/image";
 import { MiniPlaneAnimation, SpriteAsset } from "../types/sprite";
 import { Coordinates, Move } from "../types/map";
@@ -71,9 +70,9 @@ export class Level4 extends Level4MapAndAssets {
     await super.create();
     this.completedLevel = false;
     this.createFriend();
-    this.moves$
-      .pipe(debounceTime(10))
-      .subscribe(({ coordinates, move }) => this.handleMove(coordinates, move));
+    this.moves$.subscribe(({ coordinates, move }) =>
+      this.handleMove(coordinates, move)
+    );
     showLevelStartText(this, 4);
     this.motorSound = this.addSound(AudioAsset.Motor, { loop: true });
   }
