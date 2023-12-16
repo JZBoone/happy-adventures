@@ -13,6 +13,7 @@ export enum AudioAsset {
   Tada = "tada",
   Thump = "thump",
   Motor = "motor",
+  Whoosh = "whoosh",
 }
 
 export const defaultAudio = [AudioAsset.Thump, AudioAsset.Tada] as const;

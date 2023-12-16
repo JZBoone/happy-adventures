@@ -19,7 +19,12 @@ export class Level2MapAndAssets extends withMap(
       ImageAsset.Queen,
       ImageAsset.MonsterGuts,
     ] as const,
-    audio: [AudioAsset.Chomp, AudioAsset.Fall, AudioAsset.Stomp] as const,
+    audio: [
+      AudioAsset.Chomp,
+      AudioAsset.Fall,
+      AudioAsset.Stomp,
+      AudioAsset.Whoosh,
+    ] as const,
   }),
   {
     level: Level.Level2,
@@ -31,7 +36,7 @@ export class Level2MapAndAssets extends withMap(
 ) {}
 
 export class Level2 extends Level2MapAndAssets {
-  private monsterIsDead = false;
+  private monsterIsDead = true;
   private didShutDown = false;
 
   constructor() {
@@ -103,9 +108,10 @@ export class Level2 extends Level2MapAndAssets {
 
   private completeLevel(coordinates: Coordinates) {
     this.didShutDown = true;
-    this.playSound(AudioAsset.Tada);
+    this.friend.disappear();
+    this.playSound(AudioAsset.Whoosh);
     this.time.addEvent({
-      delay: 2_000,
+      delay: 6_000,
       callback: () => this.scene.start(Level.Level4),
       loop: false,
     });

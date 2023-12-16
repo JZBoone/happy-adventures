@@ -119,6 +119,11 @@
       "coordinates": [3, 2],
       "asset": "spiky-guy",
       "message": "The magic tree needs your help. my airplane crashed into some trees maybe you could fly there, no Im serious you are gonna fly"
+    },
+    {
+      "coordinates": [3, 5],
+      "asset": "little-sister",
+      "message": "YAY! MOMMY! MOMMY! MOMMY! MOMMY!"
     }
   ]
 }
