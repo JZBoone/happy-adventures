@@ -1,18 +1,18 @@
 export enum AudioAsset {
   BoardBoat = "board-boat",
+  CastleOpen = "door-open",
   Chomp = "chomp",
   Crunch = "crunch",
-  CastleOpen = "door-open",
   Explosion = "explosion",
   Fall = "fall",
   Grunt = "grunt",
+  Motor = "motor",
   SandStep = "sand-step",
   Splash = "splash",
   Splat = "splat",
   Stomp = "stomp",
   Tada = "tada",
   Thump = "thump",
-  Motor = "motor",
   Whoosh = "whoosh",
 }
 

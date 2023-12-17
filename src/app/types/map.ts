@@ -38,58 +38,24 @@ export type MapObjectsJson<
   SceneMovableSprites extends Record<string, { asset: SceneSpriteAsset }>,
 > = {
   immovableImages: {
-    [Property in keyof SceneImmovableImages]: {
-      asset: SceneImageAsset;
-      coordinates: Coordinates;
-      offsetY?: number;
-      width?: number;
-      height?: number;
-    };
+    [Property in keyof SceneImmovableImages]: SceneObjectParams<SceneImageAsset>;
   };
   immovableImageGroups: {
-    [Property in keyof SceneImmovableImageGroups]: {
-      asset: SceneImageAsset;
-      coordinates: Coordinates[];
-      offsetY?: number;
-      width?: number;
-      height?: number;
-    };
+    [Property in keyof SceneImmovableImageGroups]: Omit<
+      SceneObjectParams<SceneImageAsset>,
+      "coordinates"
+    > & { coordinates: Coordinates[] };
   };
   immovableSprites: {
-    [Property in keyof SceneImmovableSprites]: {
-      asset: SceneSpriteAsset;
-      coordinates: Coordinates;
-      offsetY?: number;
-      width?: number;
-      height?: number;
-    };
+    [Property in keyof SceneImmovableSprites]: SceneObjectParams<SceneSpriteAsset>;
   };
   movableImages: {
-    [Property in keyof SceneMovableImages]: {
-      asset: SceneImageAsset;
-      coordinates: Coordinates;
-      offsetY?: number;
-      width?: number;
-      height?: number;
-    };
+    [Property in keyof SceneMovableImages]: SceneObjectParams<SceneImageAsset>;
   };
   movableSprites: {
-    [Property in keyof SceneMovableSprites]: {
-      asset: SceneSpriteAsset;
-      coordinates: Coordinates;
-      offsetY?: number;
-      width?: number;
-      height?: number;
-    };
+    [Property in keyof SceneMovableSprites]: SceneObjectParams<SceneSpriteAsset>;
   };
-  interactables: {
-    asset: SceneImageAsset;
-    coordinates: Coordinates;
-    message: string;
-    offsetY?: number;
-    width?: number;
-    height?: number;
-  }[];
+  interactables: InteractableParams<SceneImageAsset>[];
 };
 
 export interface ISceneWithMap<
@@ -149,7 +115,7 @@ export interface ISceneWithMap<
     params?: SceneObjectParams<Asset>
   ): Friend;
   createInteractable<Asset extends SceneImageAsset>(
-    params: SceneObjectParams<Asset> & { message: string }
+    params: InteractableParams<Asset>
   ): Interactable<
     SceneAudioAsset,
     SceneImageAsset,
