@@ -12,8 +12,6 @@ module.exports.esbuildConfig = {
   target: ["chrome118"],
   define: {
     "process.env.API_URL": JSON.stringify(process.env.API_URL),
-    "process.env.MAP_BUILDER_ENABLED": JSON.stringify(
-      process.env.MAP_BUILDER_ENABLED
-    ),
+    "process.env.MAP_BUILDER_ENABLED": process.env.MAP_BUILDER_ENABLED,
   },
 };
