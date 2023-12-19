@@ -27,6 +27,6 @@ When running the app locally you can type `e` to edit the current level. This la
 - `left click + d on an object` - delete an object (works only for objects that are part of a group)
 - `shift + click on a talking object` - edit the message (in dialog press `enter` to save or `escape` to exit without saving)
 - `s` - save changes to map (updates the map and map objects json files locally)
-- `shift + T` - make map taller by one row
-- `shift + W` - make map wider by one row
+- `shift + t` - make map taller by one row
+- `shift + w` - make map wider by one row
 - `escape` - exit map builder and return to level (discards unsaved changes)
