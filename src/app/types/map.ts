@@ -110,6 +110,7 @@ export interface ISceneWithMap<
   interactables: Interactable<
     SceneAudioAsset,
     SceneImageAsset,
+    SceneGroundType,
     SceneSpriteAsset,
     SceneImmovableImages,
     SceneImmovableImageGroups,
@@ -125,6 +126,7 @@ export interface ISceneWithMap<
   ): Interactable<
     SceneAudioAsset,
     SceneImageAsset,
+    SceneGroundType,
     SceneSpriteAsset,
     SceneImmovableImages,
     SceneImmovableImageGroups,
@@ -180,6 +182,7 @@ export interface ISceneWithMap<
     interactable: Interactable<
       SceneAudioAsset,
       SceneImageAsset,
+      SceneGroundType,
       SceneSpriteAsset,
       SceneImmovableImages,
       SceneImmovableImageGroups,

@@ -8,6 +8,7 @@ import { mapTileSizePx } from "./map";
 export class Interactable<
   SceneAudioAsset extends AudioAsset,
   SceneImageAsset extends ImageAsset,
+  SceneGroundType extends SceneImageAsset,
   SceneSpriteAsset extends SpriteAsset,
   SceneImmovableImages extends Record<string, { asset: SceneImageAsset }>,
   SceneImmovableImageGroups extends Record<string, { asset: SceneImageAsset }>,
@@ -24,6 +25,7 @@ export class Interactable<
     public scene: ISceneWithMap<
       SceneAudioAsset,
       SceneImageAsset,
+      SceneGroundType,
       SceneSpriteAsset,
       SceneImmovableImages,
       SceneImmovableImageGroups,

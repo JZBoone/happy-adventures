@@ -154,6 +154,7 @@ export function withMap<
     interactables: Interactable<
       SceneAudioAsset,
       SceneImageAsset,
+      SceneGroundType,
       SceneSpriteAsset,
       SceneImmovableImages,
       SceneImmovableImageGroups,
@@ -298,6 +299,7 @@ export function withMap<
       interactable: Interactable<
         SceneAudioAsset,
         SceneImageAsset,
+        SceneGroundType,
         SceneSpriteAsset,
         SceneImmovableImages,
         SceneImmovableImageGroups,
@@ -482,6 +484,7 @@ export function withMap<
     ): Interactable<
       SceneAudioAsset,
       SceneImageAsset,
+      SceneGroundType,
       SceneSpriteAsset,
       SceneImmovableImages,
       SceneImmovableImageGroups,
