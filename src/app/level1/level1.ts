@@ -8,6 +8,7 @@ import { AudioAsset } from "../types/audio";
 import { ImageAsset } from "../types/image";
 import { CastleAnimation, SpriteAsset } from "../types/sprite";
 import { Coordinates } from "../types/map";
+import { GroundType } from "./map";
 
 export class Level1MapAndAssets extends withMap(
   withAssets(Phaser.Scene, {
@@ -49,24 +50,24 @@ export class Level1 extends Level1MapAndAssets {
     this.createFriend();
     this.moves$
       .pipe(takeWhile(() => !this.levelCompleted))
-      .subscribe(({ coordinates }) => this.handleMove(coordinates));
+      .subscribe(({ coordinates, groundType }) =>
+        this.handleMove(coordinates, groundType as GroundType)
+      );
   }
 
-  handleMove(coordinates: Coordinates): void {
+  handleMove(coordinates: Coordinates, groundType: GroundType): void {
     if (this.immovableSprites.castle.isAt(coordinates)) {
       this.completeLevel();
       return;
     }
     if (!this.isInWater()) {
-      this.handleOutOfWaterMove(coordinates);
+      this.handleOutOfWaterMove(coordinates, groundType);
     } else {
-      this.handleInWaterMove(coordinates);
+      this.handleInWaterMove(coordinates, groundType);
     }
   }
 
-  private handleInWaterMove(coordinates: Coordinates) {
-    const [row, position] = coordinates;
-    const groundType = this.map[row][position].asset;
+  private handleInWaterMove(coordinates: Coordinates, groundType: GroundType) {
     if (groundType === ImageAsset.Water) {
       this.friend.move(coordinates);
       this.movableImages.boat.move(coordinates);
@@ -80,9 +81,10 @@ export class Level1 extends Level1MapAndAssets {
     }
   }
 
-  private handleOutOfWaterMove(coordinates: Coordinates) {
-    const [row, position] = coordinates;
-    const groundType = this.map[row][position].asset;
+  private handleOutOfWaterMove(
+    coordinates: Coordinates,
+    groundType: GroundType
+  ) {
     if (groundType === ImageAsset.Sand) {
       this.friend.move(coordinates);
       this.playSound(AudioAsset.SandStep);

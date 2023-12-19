@@ -121,14 +121,25 @@ export function withMap<
     >();
     private _moves$ = new Subject<Move>();
     private allMoveCoordinates$ = this._moves$.asObservable().pipe(
-      map((move) => ({
-        move,
-        coordinates: moveCoordinates(move, this.friend.coordinates()),
-      })),
+      map((move) => {
+        return {
+          move,
+          coordinates: moveCoordinates(move, this.friend.coordinates()),
+        };
+      }),
       share()
     );
     moves$ = this.allMoveCoordinates$.pipe(
-      filter(({ coordinates }) => !this.moveIsIllegal(...coordinates))
+      filter(({ coordinates }) => !this.moveIsIllegal(...coordinates)),
+      map(({ coordinates, move }) => {
+        const groundType = this.map[coordinates[0]][coordinates[1]]
+          .asset as SceneImageAsset;
+        return {
+          move,
+          coordinates,
+          groundType,
+        };
+      })
     );
     invalidMoves$ = new Subject<void>();
 

@@ -69,7 +69,11 @@ export interface ISceneWithMap<
   SceneMovableSprites extends Record<string, { asset: SceneSpriteAsset }>,
 > extends ISceneWithAssets<SceneAudioAsset, SceneImageAsset, SceneSpriteAsset> {
   friend: Friend;
-  moves$: Observable<{ coordinates: Coordinates; move: Move }>;
+  moves$: Observable<{
+    coordinates: Coordinates;
+    move: Move;
+    groundType: SceneImageAsset;
+  }>;
   invalidMoves$: Subject<void>;
   map: {
     asset: ImageAsset;

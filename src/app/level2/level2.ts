@@ -1,6 +1,6 @@
 import Phaser from "phaser";
 import { takeWhile } from "rxjs";
-import { groundTypes } from "./map";
+import { GroundType, groundTypes } from "./map";
 import { Level } from "../types/level";
 import { showLevelStartText } from "../common/helpers";
 import { Level2Data } from "./data";
@@ -71,10 +71,12 @@ export class Level2 extends Level2MapAndAssets {
     this.createFriend({ coordinates: startingCoordinates });
     this.moves$
       .pipe(takeWhile(() => !this.didFinishScene))
-      .subscribe(({ coordinates }) => this.handleMove(coordinates));
+      .subscribe(({ coordinates, groundType }) =>
+        this.handleMove(coordinates, groundType as GroundType)
+      );
   }
 
-  private async handleMove(coordinates: Coordinates) {
+  private async handleMove(coordinates: Coordinates, groundType: GroundType) {
     if (this.isFalling) {
       return;
     }
@@ -92,8 +94,7 @@ export class Level2 extends Level2MapAndAssets {
       this.swallowFriend(coordinates);
       return;
     }
-    const [row, position] = coordinates;
-    switch (this.map[row][position].asset) {
+    switch (groundType) {
       case ImageAsset.Stone:
         this.friend.move(coordinates);
         this.playSound(AudioAsset.Stomp, { volume: 0.5 });
