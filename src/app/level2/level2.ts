@@ -38,6 +38,7 @@ export class Level2MapAndAssets extends withMap(
 export class Level2 extends Level2MapAndAssets {
   private monsterIsDead = false;
   private didFinishScene = false;
+  private isFalling = false;
 
   constructor() {
     super({ key: Level.Level2 });
@@ -73,7 +74,10 @@ export class Level2 extends Level2MapAndAssets {
       .subscribe(({ coordinates }) => this.handleMove(coordinates));
   }
 
-  private handleMove(coordinates: Coordinates) {
+  private async handleMove(coordinates: Coordinates) {
+    if (this.isFalling) {
+      return;
+    }
     if (
       this.monsterIsDead &&
       this.immovableImages.portal.occupies(coordinates)
@@ -95,14 +99,11 @@ export class Level2 extends Level2MapAndAssets {
         this.playSound(AudioAsset.Stomp, { volume: 0.5 });
         break;
       case ImageAsset.BlackHole:
+        this.isFalling = true;
         this.friend.move(coordinates);
         this.playSound(AudioAsset.Fall);
-        this.friend.disappear();
-        this.time.addEvent({
-          delay: 2_000,
-          callback: () => this.scene.start(Level.Level1),
-          loop: false,
-        });
+        await this.friend.disappear();
+        this.startOver();
         break;
     }
   }
@@ -130,5 +131,13 @@ export class Level2 extends Level2MapAndAssets {
       callback: () => this.scene.start(Level.Level3),
       loop: false,
     });
+  }
+
+  private startOver() {
+    this.friend.move([0, 0], { noAnimation: true });
+    this.friend.phaserObject.setVisible(true);
+    this.friend.phaserObject.scaleX = 1;
+    this.friend.phaserObject.scaleY = 1;
+    this.isFalling = false;
   }
 }
