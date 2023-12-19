@@ -56,6 +56,8 @@ export class Level4 extends Level4MapAndAssets {
     | Phaser.Sound.WebAudioSound;
   private completedLevel = false;
 
+  private isUnmounting = false;
+
   private get spikies() {
     return [
       ...this.immovableImageGroups.cactus,
@@ -107,8 +109,10 @@ export class Level4 extends Level4MapAndAssets {
     }
     if (
       this.friend.mount &&
-      this.immovableImages.landingPad.isAt(coordinates)
+      this.immovableImages.landingPad.isAt(coordinates) &&
+      !this.isUnmounting
     ) {
+      this.isUnmounting = true;
       this.movableSprites.miniPlane.phaserObject.anims.stop();
       this.movableSprites.miniPlane.phaserObject.setFrame(0);
       await this.movableSprites.miniPlane.move(coordinates);
@@ -119,6 +123,7 @@ export class Level4 extends Level4MapAndAssets {
       });
       await this.friend.move(end);
       this.motorSound.stop();
+      this.isUnmounting = false;
       return;
     }
     if (
@@ -130,7 +135,9 @@ export class Level4 extends Level4MapAndAssets {
       this.playSound(AudioAsset.Tada);
       this.scene.start(Level.Credits);
     }
-    this.friend.move(coordinates);
+    if (!this.isUnmounting) {
+      this.friend.move(coordinates);
+    }
   }
 
   private unmountCoordinates(
