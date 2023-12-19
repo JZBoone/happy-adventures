@@ -1,49 +1,9 @@
-import Phaser from "phaser";
 import { Level } from "../types/level";
 import { showLevelStartText } from "../common/helpers";
-import { withAssets } from "../mixins/with-assets";
-import { withMap } from "../mixins/with-map";
-import { ImageAsset } from "../types/image";
-import { MiniPlaneAnimation, SpriteAsset } from "../types/sprite";
+import { MiniPlaneAnimation } from "../types/sprite";
 import { Coordinates, Move } from "../types/map";
 import { AudioAsset } from "../types/audio";
-
-export class Level4MapAndAssets extends withMap(
-  withAssets(Phaser.Scene, {
-    images: [
-      ImageAsset.Forest,
-      ImageAsset.LandingPad,
-      ImageAsset.Tree,
-      ImageAsset.MagicTree,
-      ImageAsset.Cactus,
-      ImageAsset.BoobyTrap,
-      ImageAsset.ThreeSpikes,
-      ImageAsset.MountainSpikes,
-      ImageAsset.SpikeBench,
-      ImageAsset.SquareSpike,
-      ImageAsset.SpikyGuy,
-      ImageAsset.LittleSister,
-    ] as const,
-    audio: [AudioAsset.Motor] as const,
-  }),
-  {
-    level: Level.Level4,
-    immovableImages: {
-      landingPad: { asset: ImageAsset.LandingPad },
-      magicTree: { asset: ImageAsset.MagicTree },
-    },
-    movableSprites: { miniPlane: { asset: SpriteAsset.MiniPlane } },
-    immovableImageGroups: {
-      trees: { asset: ImageAsset.Tree },
-      cactus: { asset: ImageAsset.Cactus },
-      boobyTrap: { asset: ImageAsset.BoobyTrap },
-      threeSpikes: { asset: ImageAsset.ThreeSpikes },
-      mountainSpikes: { asset: ImageAsset.MountainSpikes },
-      spikeBench: { asset: ImageAsset.SpikeBench },
-      squareSpike: { asset: ImageAsset.SquareSpike },
-    },
-  }
-) {}
+import { Level4MapAndAssets } from "./level4-assets";
 
 export class Level4 extends Level4MapAndAssets {
   constructor() {

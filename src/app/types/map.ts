@@ -61,6 +61,7 @@ export type MapObjectsJson<
 export interface ISceneWithMap<
   SceneAudioAsset extends AudioAsset,
   SceneImageAsset extends ImageAsset,
+  SceneGroundType extends SceneImageAsset,
   SceneSpriteAsset extends SpriteAsset,
   SceneImmovableImages extends Record<string, { asset: SceneImageAsset }>,
   SceneImmovableImageGroups extends Record<string, { asset: SceneImageAsset }>,
@@ -72,7 +73,7 @@ export interface ISceneWithMap<
   moves$: Observable<{
     coordinates: Coordinates;
     move: Move;
-    groundType: SceneImageAsset;
+    groundType: SceneGroundType;
   }>;
   invalidMoves$: Subject<void>;
   map: {
@@ -88,6 +89,7 @@ export interface ISceneWithMap<
     SceneMovableImages,
     SceneMovableSprites
   >;
+  groundTypes: Readonly<SceneGroundType[]>;
   mapWidth: number;
   mapHeight: number;
   immovableImages: {

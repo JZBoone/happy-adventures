@@ -1,45 +1,10 @@
-import Phaser from "phaser";
 import { Level } from "../types/level";
 import { showLevelStartText } from "../common/helpers";
 import { Level2Data } from "../level2/data";
-import { withAssets } from "../mixins/with-assets";
-import { withMap } from "../mixins/with-map";
-import { ImageAsset } from "../types/image";
 import { AudioAsset } from "../types/audio";
 import { Coordinates } from "../types/map";
 import { takeWhile } from "rxjs";
-
-export class Level3MapAndAssets extends withMap(
-  withAssets(Phaser.Scene, {
-    images: [
-      ImageAsset.Goo,
-      ImageAsset.Heart,
-      ImageAsset.Lungs,
-      ImageAsset.Bones,
-      ImageAsset.Elasmosaurus,
-      ImageAsset.SmallElasmosaurus,
-      ImageAsset.Bomb,
-    ] as const,
-    audio: [
-      AudioAsset.Grunt,
-      AudioAsset.Explosion,
-      AudioAsset.Crunch,
-      AudioAsset.Splat,
-    ] as const,
-  }),
-  {
-    level: Level.Level3,
-    immovableImages: {
-      lungs: { asset: ImageAsset.Lungs },
-      heart: { asset: ImageAsset.Heart },
-      elasmosaurus: { asset: ImageAsset.Elasmosaurus },
-      smallElasmosaurus: { asset: ImageAsset.SmallElasmosaurus },
-    } as const,
-    immovableImageGroups: {
-      bones: { asset: ImageAsset.Bones },
-    } as const,
-  }
-) {}
+import { Level3MapAndAssets } from "./level3-assets";
 
 export class Level3 extends Level3MapAndAssets {
   private levelCompleted = false;

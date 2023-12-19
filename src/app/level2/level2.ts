@@ -1,39 +1,11 @@
-import Phaser from "phaser";
 import { takeWhile } from "rxjs";
-import { GroundType, groundTypes } from "./ground-type";
 import { Level } from "../types/level";
 import { showLevelStartText } from "../common/helpers";
 import { Level2Data } from "./data";
-import { withAssets } from "../mixins/with-assets";
-import { withMap } from "../mixins/with-map";
 import { ImageAsset } from "../types/image";
 import { AudioAsset } from "../types/audio";
 import { Coordinates } from "../types/map";
-
-export class Level2MapAndAssets extends withMap(
-  withAssets(Phaser.Scene, {
-    images: [
-      ...groundTypes,
-      ImageAsset.Monster,
-      ImageAsset.Portal,
-      ImageAsset.Queen,
-      ImageAsset.MonsterGuts,
-    ] as const,
-    audio: [
-      AudioAsset.Chomp,
-      AudioAsset.Fall,
-      AudioAsset.Stomp,
-      AudioAsset.Whoosh,
-    ] as const,
-  }),
-  {
-    level: Level.Level2,
-    immovableImages: {
-      monster: { asset: ImageAsset.Monster },
-      portal: { asset: ImageAsset.Portal },
-    } as const,
-  }
-) {}
+import { GroundType, Level2MapAndAssets } from "./level2-assets";
 
 export class Level2 extends Level2MapAndAssets {
   private monsterIsDead = false;
@@ -72,7 +44,7 @@ export class Level2 extends Level2MapAndAssets {
     this.moves$
       .pipe(takeWhile(() => !this.didFinishScene))
       .subscribe(({ coordinates, groundType }) =>
-        this.handleMove(coordinates, groundType as GroundType)
+        this.handleMove(coordinates, groundType)
       );
   }
 

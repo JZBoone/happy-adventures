@@ -21,6 +21,7 @@ import { Interactable } from "../common/interactable";
 export const withMapBuilder = <
   SceneAudioAsset extends AudioAsset,
   SceneImageAsset extends ImageAsset,
+  SceneGroundType extends SceneImageAsset,
   SceneSpriteAsset extends SpriteAsset,
   SceneImmovableImages extends Record<string, { asset: SceneImageAsset }>,
   SceneImmovableImageGroups extends Record<string, { asset: SceneImageAsset }>,
@@ -32,6 +33,7 @@ export const withMapBuilder = <
     ISceneWithMap<
       SceneAudioAsset,
       SceneImageAsset,
+      SceneGroundType,
       SceneSpriteAsset,
       SceneImmovableImages,
       SceneImmovableImageGroups,
@@ -40,12 +42,10 @@ export const withMapBuilder = <
       SceneMovableSprites
     >
   >,
-  level: Level,
-  groundTypes: readonly SceneImageAsset[]
+  level: Level
 ) => {
   return class MapBuilder extends LevelClass {
     private selectedImageAsset!: SceneImageAsset;
-    private mapImageAssets: readonly SceneImageAsset[] = groundTypes;
     private pointerIsDown = false;
     private changeCoordinates$ = new Subject<Coordinates>();
     private cursors!: Phaser.Types.Input.Keyboard.CursorKeys;
@@ -84,7 +84,7 @@ export const withMapBuilder = <
       this.mapHeight = this.map.length * mapTileSizePx;
       this.mapWidth = this.map[0].length * mapTileSizePx;
       this.input.mouse!.disableContextMenu();
-      this.selectedImageAsset = this.mapImageAssets[0];
+      this.selectedImageAsset = this.groundTypes[0];
       this.changeCoordinates$
         .pipe(distinctUntilChanged(isEqual))
         .subscribe((coordinates) => {
@@ -205,13 +205,13 @@ export const withMapBuilder = <
         Phaser.Input.Keyboard.JustUp(this.hotkey.t) &&
         this.hotkey.shift.isDown
       ) {
-        this.makeMapTaller(groundTypes[0]);
+        this.makeMapTaller(this.groundTypes[0]);
         this.cameras.main.setBounds(0, 0, this.mapWidth, this.mapHeight);
       } else if (
         Phaser.Input.Keyboard.JustUp(this.hotkey.w) &&
         this.hotkey.shift.isDown
       ) {
-        this.makeMapWider(groundTypes[0]);
+        this.makeMapWider(this.groundTypes[0]);
         this.cameras.main.setBounds(0, 0, this.mapWidth, this.mapHeight);
       }
     }
@@ -288,11 +288,9 @@ export const withMapBuilder = <
       }
       if (pointer.rightButtonDown()) {
         const currentAsset = this.map[row][position].asset;
-        const i = this.mapImageAssets.findIndex(
-          (image) => image === currentAsset
-        );
-        this.selectedImageAsset = this.mapImageAssets[
-          i === this.mapImageAssets.length - 1 ? 0 : i + 1
+        const i = this.groundTypes.findIndex((image) => image === currentAsset);
+        this.selectedImageAsset = this.groundTypes[
+          i === this.groundTypes.length - 1 ? 0 : i + 1
         ] as SceneImageAsset;
         this.changeMapImage([row, position]);
       } else {

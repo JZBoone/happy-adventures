@@ -23,7 +23,10 @@ export function createMapImage(
   );
 }
 
-export function loadMap(scene: Phaser.Scene, map: ImageAsset[][]) {
+export function loadMap<SceneGroundType extends ImageAsset>(
+  scene: Phaser.Scene,
+  map: SceneGroundType[][]
+) {
   return map.map((row, rowIndex) =>
     row.map((asset, positionIndex) => ({
       asset,
@@ -108,7 +111,10 @@ export function pointerCoordinates(
   return [row, position];
 }
 
-async function fetchMapJson(mapName: string): Promise<ImageAsset[][]> {
+async function fetchMapJson<
+  SceneImageAsset extends ImageAsset,
+  SceneGroundType extends SceneImageAsset,
+>(mapName: string): Promise<SceneGroundType[][]> {
   const result = await fetch(
     `${process.env.API_URL}/assets/map/${mapName}.json`
   );
@@ -141,6 +147,7 @@ async function fetchMapObjects<
 export async function fetchMap<
   SceneSpriteAsset extends SpriteAsset,
   SceneImageAsset extends ImageAsset,
+  SceneGroundType extends SceneImageAsset,
   SceneImmovableImages extends Record<string, { asset: SceneImageAsset }>,
   SceneImmovableImageGroups extends Record<string, { asset: SceneImageAsset }>,
   SceneImmovableSprites extends Record<string, { asset: SceneSpriteAsset }>,
@@ -148,7 +155,7 @@ export async function fetchMap<
   SceneMovableSprites extends Record<string, { asset: SceneSpriteAsset }>,
 >(mapName: string) {
   const results = await Promise.allSettled([
-    fetchMapJson(mapName),
+    fetchMapJson<SceneImageAsset, SceneGroundType>(mapName),
     fetchMapObjects<
       SceneSpriteAsset,
       SceneImageAsset,

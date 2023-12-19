@@ -32,6 +32,7 @@ import { Level } from "../types/level";
 export function withMap<
   SceneAudioAsset extends AudioAsset,
   SceneImageAsset extends ImageAsset,
+  SceneGroundType extends SceneImageAsset,
   SceneSpriteAsset extends SpriteAsset,
   SceneImmovableImages extends Record<string, { asset: SceneImageAsset }>,
   SceneImmovableImageGroups extends Record<string, { asset: SceneImageAsset }>,
@@ -44,6 +45,7 @@ export function withMap<
   >,
   options: {
     level: Level;
+    groundTypes: Readonly<SceneGroundType[]>;
     immovableImages?: SceneImmovableImages;
     immovableImageGroups?: SceneImmovableImageGroups;
     immovableSprites?: SceneImmovableSprites;
@@ -57,6 +59,7 @@ export function withMap<
       ISceneWithMap<
         SceneAudioAsset,
         SceneImageAsset,
+        SceneGroundType,
         SceneSpriteAsset,
         SceneImmovableImages,
         SceneImmovableImageGroups,
@@ -68,13 +71,13 @@ export function withMap<
     cursors!: Phaser.Types.Input.Keyboard.CursorKeys;
     friend!: Friend;
     map: {
-      asset: ImageAsset;
+      asset: SceneGroundType;
       image: Phaser.GameObjects.Image;
     }[][] = [];
     mapWidth!: number;
     mapHeight!: number;
     pendingMapJson!: Promise<{
-      mapJson: ImageAsset[][] | null;
+      mapJson: SceneGroundType[][] | null;
       mapObjectsJson: MapObjectsJson<
         SceneImageAsset,
         SceneSpriteAsset,
@@ -85,7 +88,7 @@ export function withMap<
         SceneMovableSprites
       > | null;
     }>;
-    private mapJson: ImageAsset[][] = [];
+    private mapJson: SceneGroundType[][] = [];
     mapObjectsJson?: MapObjectsJson<
       SceneImageAsset,
       SceneSpriteAsset,
@@ -95,6 +98,7 @@ export function withMap<
       SceneMovableImages,
       SceneMovableSprites
     >;
+    groundTypes = options.groundTypes;
     // @ts-expect-error Type '{}' is not assignable to type '{ [Property in keyof SceneImmovableSprites]: Immovable<Sprite>; }'.ts(2322)
     immovableImages: {
       [Property in keyof SceneImmovableImages]: Immovable<Phaser.GameObjects.Image>;
@@ -133,7 +137,7 @@ export function withMap<
       filter(({ coordinates }) => !this.moveIsIllegal(...coordinates)),
       map(({ coordinates, move }) => {
         const groundType = this.map[coordinates[0]][coordinates[1]]
-          .asset as SceneImageAsset;
+          .asset as SceneGroundType;
         return {
           move,
           coordinates,
@@ -167,6 +171,7 @@ export function withMap<
       const pendingMapJson = fetchMap<
         SceneSpriteAsset,
         SceneImageAsset,
+        SceneGroundType,
         SceneImmovableImages,
         SceneImmovableImageGroups,
         SceneImmovableSprites,
@@ -531,8 +536,8 @@ export function withMap<
       return movable;
     }
 
-    makeMapTaller(groundType: SceneImageAsset) {
-      const newRow: SceneImageAsset[] = [];
+    makeMapTaller(groundType: SceneGroundType) {
+      const newRow: SceneGroundType[] = [];
       for (let i = 0; i < this.mapJson[0].length; i++) {
         newRow.push(groundType);
       }
@@ -549,7 +554,7 @@ export function withMap<
       this.setMapDimensions();
     }
 
-    makeMapWider(groundType: SceneImageAsset) {
+    makeMapWider(groundType: SceneGroundType) {
       const positionIndex = this.map[0].length;
       for (let i = 0; i < this.mapJson.length; i++) {
         this.mapJson[i].push(groundType);

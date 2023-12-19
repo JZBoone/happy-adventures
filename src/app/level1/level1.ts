@@ -1,39 +1,11 @@
-import Phaser from "phaser";
 import { takeWhile } from "rxjs";
 import { Level } from "../types/level";
 import { showLevelStartText } from "../common/helpers";
-import { withAssets } from "../mixins/with-assets";
-import { withMap } from "../mixins/with-map";
 import { AudioAsset } from "../types/audio";
 import { ImageAsset } from "../types/image";
-import { CastleAnimation, SpriteAsset } from "../types/sprite";
+import { CastleAnimation } from "../types/sprite";
 import { Coordinates } from "../types/map";
-import { GroundType } from "./ground-type";
-
-export class Level1MapAndAssets extends withMap(
-  withAssets(Phaser.Scene, {
-    audio: [
-      AudioAsset.SandStep,
-      AudioAsset.BoardBoat,
-      AudioAsset.Splash,
-      AudioAsset.CastleOpen,
-    ] as const,
-    images: [
-      ImageAsset.Sand,
-      ImageAsset.Water,
-      ImageAsset.Boat,
-      ImageAsset.Forest,
-    ] as const,
-    sprites: [SpriteAsset.Castle] as const,
-  }),
-  {
-    level: Level.Level1,
-    immovableSprites: {
-      castle: { asset: SpriteAsset.Castle },
-    } as const,
-    movableImages: { boat: { asset: ImageAsset.Boat } } as const,
-  }
-) {}
+import { GroundType, Level1MapAndAssets } from "./level1-assets";
 
 export class Level1 extends Level1MapAndAssets {
   private levelCompleted = false;
@@ -51,7 +23,7 @@ export class Level1 extends Level1MapAndAssets {
     this.moves$
       .pipe(takeWhile(() => !this.levelCompleted))
       .subscribe(({ coordinates, groundType }) =>
-        this.handleMove(coordinates, groundType as GroundType)
+        this.handleMove(coordinates, groundType)
       );
   }
 
