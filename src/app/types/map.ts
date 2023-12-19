@@ -13,6 +13,8 @@ export type Coordinates = [row: number, position: number];
 
 export type Move = "up" | "down" | "left" | "right";
 
+const foo = "";
+
 export type SceneObjectParams<Asset extends ImageAsset | SpriteAsset> = {
   asset: Asset;
   coordinates: Coordinates;
