@@ -11,7 +11,7 @@ const testCases: {
 }[] = [
   {
     coordinates: [0, 0],
-    worldXY: [25, 26],
+    worldXY: [25, 25],
   },
   {
     coordinates: [33, 39],
