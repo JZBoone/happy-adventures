@@ -484,7 +484,6 @@ export function withMap<
     ): Interactable<
       SceneAudioAsset,
       SceneImageAsset,
-      SceneGroundType,
       SceneSpriteAsset,
       SceneImmovableImages,
       SceneImmovableImageGroups,
