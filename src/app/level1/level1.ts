@@ -8,7 +8,7 @@ import { AudioAsset } from "../types/audio";
 import { ImageAsset } from "../types/image";
 import { CastleAnimation, SpriteAsset } from "../types/sprite";
 import { Coordinates } from "../types/map";
-import { GroundType } from "./map";
+import { GroundType } from "./ground-type";
 
 export class Level1MapAndAssets extends withMap(
   withAssets(Phaser.Scene, {

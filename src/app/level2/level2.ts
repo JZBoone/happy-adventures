@@ -1,6 +1,6 @@
 import Phaser from "phaser";
 import { takeWhile } from "rxjs";
-import { GroundType, groundTypes } from "./map";
+import { GroundType, groundTypes } from "./ground-type";
 import { Level } from "../types/level";
 import { showLevelStartText } from "../common/helpers";
 import { Level2Data } from "./data";
