@@ -1,7 +1,7 @@
 import { takeWhile } from "rxjs";
 import { Level } from "../types/level";
 import { showLevelStartText } from "../common/helpers";
-import { Level2Data } from "./data";
+import { Level2InitData } from "./level2-init-data";
 import { ImageAsset } from "../types/image";
 import { AudioAsset } from "../types/audio";
 import { Coordinates } from "../types/map";
@@ -16,7 +16,7 @@ export class Level2 extends Level2MapAndAssets {
     super({ key: Level.Level2 });
   }
 
-  init(data: Level2Data) {
+  init(data: Level2InitData) {
     if (data.monsterIsDead) {
       this.monsterIsDead = true;
     }

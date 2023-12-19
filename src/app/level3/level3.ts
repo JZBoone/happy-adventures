@@ -1,6 +1,6 @@
 import { Level } from "../types/level";
 import { showLevelStartText } from "../common/helpers";
-import { Level2Data } from "../level2/data";
+import { Level2InitData } from "../level2/level2-init-data";
 import { AudioAsset } from "../types/audio";
 import { Coordinates } from "../types/map";
 import { takeWhile } from "rxjs";
@@ -91,7 +91,7 @@ export class Level3 extends Level3MapAndAssets {
       callback: () => this.playSound(AudioAsset.Tada),
       loop: false,
     });
-    const data: Level2Data = { monsterIsDead: true };
+    const data: Level2InitData = { monsterIsDead: true };
     this.time.addEvent({
       delay: 4_000,
       callback: () => this.scene.start(Level.Level2, data),
