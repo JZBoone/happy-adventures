@@ -136,8 +136,6 @@ export class Level2 extends Level2MapAndAssets {
   private startOver() {
     this.friend.move([0, 0], { noAnimation: true });
     this.friend.phaserObject.setVisible(true);
-    this.friend.phaserObject.scaleX = 1;
-    this.friend.phaserObject.scaleY = 1;
     this.isFalling = false;
   }
 }

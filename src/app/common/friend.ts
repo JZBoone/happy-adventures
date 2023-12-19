@@ -34,6 +34,9 @@ export class Friend extends Movable<Phaser.GameObjects.Image> {
         duration: 2000, // Duration of the tween in milliseconds
         onComplete: () => {
           this.phaserObject.setVisible(false); // Hide the sprite after scaling down
+          // reset these so that we can easily make visible again
+          this.phaserObject.scaleX = 1;
+          this.phaserObject.scaleY = 1;
           resolve();
         },
       });
