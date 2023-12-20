@@ -1,6 +1,6 @@
 import { takeWhile } from "rxjs";
 import { Level } from "../types/level";
-import { showLevelStartText } from "../common/helpers";
+import { showLevelStartText, wait } from "../common/helpers";
 import { AudioAsset } from "../types/audio";
 import { ImageAsset } from "../types/image";
 import { CastleAnimation } from "../types/sprite";
@@ -76,29 +76,12 @@ export class Level1 extends Level1MapAndAssets {
     return this.friend.isAt(this.movableImages.boat.coordinates());
   }
 
-  private completeLevel() {
+  private async completeLevel() {
     this.levelCompleted = true;
     this.immovableSprites.castle.phaserObject.anims.play(CastleAnimation.Open);
-    this.time.addEvent({
-      delay: 500,
-      callback: () =>
-        this.friend.move(this.immovableSprites.castle.coordinates()),
-      loop: false,
-    });
-    this.time.addEvent({
-      delay: 1_000,
-      callback: () => this.friend.disappear(),
-      loop: false,
-    });
-    this.time.addEvent({
-      delay: 1_500,
-      callback: () => this.playSound(AudioAsset.Tada),
-      loop: false,
-    });
-    this.time.addEvent({
-      delay: 3_000,
-      callback: () => this.scene.start(Level.Level2),
-      loop: false,
-    });
+    await this.friend.move(this.immovableSprites.castle.coordinates());
+    await this.friend.disappear();
+    this.playSound(AudioAsset.Tada);
+    await wait(this, 500, () => this.scene.start(Level.Level2));
   }
 }
