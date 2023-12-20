@@ -1,6 +1,6 @@
 import { takeWhile } from "rxjs";
 import { Level } from "../types/level";
-import { showLevelStartText } from "../common/helpers";
+import { showLevelStartText, wait } from "../common/helpers";
 import { Level2InitData } from "./level2-init-data";
 import { ImageAsset } from "../types/image";
 import { AudioAsset } from "../types/audio";
@@ -56,14 +56,14 @@ export class Level2 extends Level2MapAndAssets {
       this.monsterIsDead &&
       this.immovableImages.portal.occupies(coordinates)
     ) {
-      this.completeLevel(coordinates);
+      this.completeLevel();
       return;
     }
     if (
       !this.monsterIsDead &&
       this.immovableImages.monster.occupies(coordinates)
     ) {
-      this.swallowFriend(coordinates);
+      this.swallowFriend();
       return;
     }
     switch (groundType) {
@@ -81,29 +81,27 @@ export class Level2 extends Level2MapAndAssets {
     }
   }
 
-  private completeLevel(coordinates: Coordinates) {
+  private async completeLevel() {
     this.didFinishScene = true;
-    this.friend.disappear();
+    // center friend in the portal
+    this.friend.height = this.immovableImages.portal.height;
+    this.friend.width = this.immovableImages.portal.width;
+    this.friend.move(this.immovableImages.portal.coordinates());
     this.playSound(AudioAsset.Whoosh);
-    this.time.addEvent({
-      delay: 6_000,
-      callback: () => this.scene.start(Level.Level4),
-      loop: false,
-    });
-    this.friend.move(coordinates);
-    this.friend.disappear();
+    await this.friend.disappear();
+    await wait(this, 5_000, () => this.scene.start(Level.Level4));
   }
 
-  private swallowFriend(coordinates: Coordinates) {
+  private async swallowFriend() {
     this.didFinishScene = true;
-    this.friend.move(coordinates);
+    // center friend in monster's mouth
+    this.friend.height = this.immovableImages.monster.height;
+    this.friend.width = this.immovableImages.monster.width;
+    this.friend.setOffsetX(10);
+    await this.friend.move(this.immovableImages.monster.coordinates());
     this.playSound(AudioAsset.Chomp);
-    this.friend.disappear();
-    this.time.addEvent({
-      delay: 2_000,
-      callback: () => this.scene.start(Level.Level3),
-      loop: false,
-    });
+    await this.friend.disappear();
+    this.scene.start(Level.Level3);
   }
 
   private startOver() {

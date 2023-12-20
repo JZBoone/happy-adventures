@@ -1,5 +1,5 @@
 import { Level } from "../types/level";
-import { showLevelStartText } from "../common/helpers";
+import { showLevelStartText, wait } from "../common/helpers";
 import { Level2InitData } from "../level2/level2-init-data";
 import { AudioAsset } from "../types/audio";
 import { Coordinates } from "../types/map";
@@ -80,22 +80,14 @@ export class Level3 extends Level3MapAndAssets {
     );
   }
 
-  private explodeHeartAndCompleteLevel() {
+  private async explodeHeartAndCompleteLevel() {
     this.levelCompleted = true;
     this.playSound(AudioAsset.Explosion, { volume: 0.5 });
     this.immovableImages.heart.phaserObject.setVisible(false);
     this.movableImages.bomb.phaserObject.setVisible(false);
-    this.friend.disappear();
-    this.time.addEvent({
-      delay: 2_000,
-      callback: () => this.playSound(AudioAsset.Tada),
-      loop: false,
-    });
+    await this.friend.disappear();
+    this.playSound(AudioAsset.Tada);
     const data: Level2InitData = { monsterIsDead: true };
-    this.time.addEvent({
-      delay: 4_000,
-      callback: () => this.scene.start(Level.Level2, data),
-      loop: false,
-    });
+    await wait(this, 1_500, () => this.scene.start(Level.Level2, data));
   }
 }

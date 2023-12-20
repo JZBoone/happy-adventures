@@ -110,3 +110,21 @@ export function createEditableDialog(
     document.removeEventListener("keyup", onEscapeKeyup);
   }
 }
+
+export function wait(
+  scene: Phaser.Scene,
+  milliseconds: number,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  callback: () => any | Promise<any>
+): Promise<void> {
+  return new Promise((resolve) => {
+    scene.time.addEvent({
+      delay: milliseconds,
+      callback: async () => {
+        await callback();
+        resolve();
+      },
+      loop: false,
+    });
+  });
+}
