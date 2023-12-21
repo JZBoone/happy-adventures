@@ -11,6 +11,7 @@ import { withMapBuilder } from "./mixins/with-map-builder";
 import { Level } from "./types/level";
 import { Credits } from "./credits/credits";
 import { TheEnd } from "./credits/the-end";
+import { Tutorial } from "./tutorial";
 
 export default new Phaser.Game({
   type: Phaser.AUTO,
@@ -24,6 +25,7 @@ export default new Phaser.Game({
     },
   },
   scene: [
+    Tutorial,
     Level1,
     withMapBuilder(Level1MapAndAssets, Level.Level1),
     Level2,
