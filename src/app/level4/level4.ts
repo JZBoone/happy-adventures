@@ -94,7 +94,7 @@ export class Level4 extends Level4MapAndAssets {
       this.completedLevel = true;
       this.playSound(AudioAsset.Tada);
       await newPromiseLasting(this, 1_000, () =>
-        this.scene.start(Level.Credits)
+        this.scene.start(Level.Level5)
       );
     }
     if (!this.isUnmounting) {

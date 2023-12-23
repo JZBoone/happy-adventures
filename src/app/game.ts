@@ -26,8 +26,6 @@ export default new Phaser.Game({
     },
   },
   scene: [
-    Level5,
-    withMapBuilder(Level5MapAndAssets, Level.Level5),
     Level1,
     withMapBuilder(Level1MapAndAssets, Level.Level1),
     Level2,
@@ -36,6 +34,8 @@ export default new Phaser.Game({
     withMapBuilder(Level3MapAndAssets, Level.Level3),
     Level4,
     withMapBuilder(Level4MapAndAssets, Level.Level4),
+    Level5,
+    withMapBuilder(Level5MapAndAssets, Level.Level5),
     Credits,
     TheEnd,
   ],
