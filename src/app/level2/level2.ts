@@ -1,6 +1,6 @@
 import { takeWhile } from "rxjs";
 import { Level } from "../types/level";
-import { showLevelStartText, wait } from "../common/helpers";
+import { showLevelStartText, newPromiseLasting } from "../common/helpers";
 import { Level2InitData } from "./level2-init-data";
 import { ImageAsset } from "../types/image";
 import { AudioAsset } from "../types/audio";
@@ -89,7 +89,7 @@ export class Level2 extends Level2MapAndAssets {
     this.friend.move(this.immovableImages.portal.coordinates());
     this.playSound(AudioAsset.Whoosh);
     await this.friend.disappear();
-    await wait(this, 5_000, () => this.scene.start(Level.Level4));
+    await newPromiseLasting(this, 5_000, () => this.scene.start(Level.Level4));
   }
 
   private async swallowFriend() {

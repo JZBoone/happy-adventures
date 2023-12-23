@@ -4,6 +4,7 @@ import { withAssets } from "../mixins/with-assets";
 import { ImageAsset } from "../types/image";
 import { Level } from "../types/level";
 import { AudioAsset } from "../types/audio";
+import { SpriteAsset } from "../types/sprite";
 
 export const groundTypes = [
   ImageAsset.RainbowGlitter,
@@ -17,14 +18,22 @@ export class Level5MapAndAssets extends withMap(
     images: [
       ImageAsset.RainbowGlitter,
       ImageAsset.CrackedRainbowGlitter,
+      ImageAsset.Lollipop,
+      ImageAsset.GumDrop,
+      ImageAsset.Peppermint,
     ] as const,
+    sprites: [SpriteAsset.CandyCastle] as const,
     audio: [AudioAsset.RockDestroy, AudioAsset.Twinkle] as const,
   }),
   {
     level: Level.Level5,
     groundTypes,
-    immovableImages: {},
+    immovableSprites: { candyCastle: { asset: SpriteAsset.CandyCastle } },
     movableSprites: {},
-    immovableImageGroups: {},
-  }
+    immovableImageGroups: {
+      lollipops: { asset: ImageAsset.Lollipop },
+      gumdrops: { asset: ImageAsset.GumDrop },
+      peppermints: { asset: ImageAsset.GumDrop },
+    },
+  } as const
 ) {}

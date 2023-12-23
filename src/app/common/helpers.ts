@@ -111,7 +111,7 @@ export function createEditableDialog(
   }
 }
 
-export function wait(
+export function newPromiseLasting(
   scene: Phaser.Scene,
   milliseconds: number,
   // eslint-disable-next-line @typescript-eslint/no-explicit-any

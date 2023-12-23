@@ -1,5 +1,5 @@
 import { Level } from "../types/level";
-import { showLevelStartText, wait } from "../common/helpers";
+import { showLevelStartText, newPromiseLasting } from "../common/helpers";
 import { MiniPlaneAnimation } from "../types/sprite";
 import { Coordinates, Move } from "../types/map";
 import { AudioAsset } from "../types/audio";
@@ -93,7 +93,9 @@ export class Level4 extends Level4MapAndAssets {
     ) {
       this.completedLevel = true;
       this.playSound(AudioAsset.Tada);
-      await wait(this, 1_000, () => this.scene.start(Level.Credits));
+      await newPromiseLasting(this, 1_000, () =>
+        this.scene.start(Level.Credits)
+      );
     }
     if (!this.isUnmounting) {
       this.friend.move(coordinates);

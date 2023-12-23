@@ -1,5 +1,5 @@
 import { Level } from "../types/level";
-import { showLevelStartText, wait } from "../common/helpers";
+import { showLevelStartText, newPromiseLasting } from "../common/helpers";
 import { Level2InitData } from "../level2/level2-init-data";
 import { AudioAsset } from "../types/audio";
 import { Coordinates } from "../types/map";
@@ -88,6 +88,8 @@ export class Level3 extends Level3MapAndAssets {
     await this.friend.disappear();
     this.playSound(AudioAsset.Tada);
     const data: Level2InitData = { monsterIsDead: true };
-    await wait(this, 1_500, () => this.scene.start(Level.Level2, data));
+    await newPromiseLasting(this, 1_500, () =>
+      this.scene.start(Level.Level2, data)
+    );
   }
 }

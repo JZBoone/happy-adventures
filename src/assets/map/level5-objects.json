@@ -1,6 +1,20 @@
 {
   "immovableImages": {},
-  "immovableImageGroups": {},
+  "immovableSprites": {
+    "candyCastle": {
+      "asset": "candy-castle",
+      "coordinates": [7, 18],
+      "width": 7,
+      "height": 7,
+      "offsetY": 10,
+      "offsetX": 5
+    }
+  },
+  "immovableImageGroups": {
+    "lollipops": { "asset": "lollipop", "coordinates": [[2, 1]] },
+    "gumdrops": { "asset": "gum-drop", "coordinates": [[5, 2]] },
+    "peppermints": { "asset": "peppermint", "coordinates": [[7, 5]] }
+  },
   "movableSprites": {},
   "interactables": []
 }
