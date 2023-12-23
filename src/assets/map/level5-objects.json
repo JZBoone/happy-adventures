@@ -16,5 +16,13 @@
     "peppermints": { "asset": "peppermint", "coordinates": [[7, 5]] }
   },
   "movableSprites": {},
-  "interactables": []
+  "interactables": [
+    {
+      "coordinates": [10, 7],
+      "asset": "nice-old-lady",
+      "width": 2,
+      "height": 3,
+      "message": ""
+    }
+  ]
 }

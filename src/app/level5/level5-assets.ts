@@ -21,6 +21,7 @@ export class Level5MapAndAssets extends withMap(
       ImageAsset.Lollipop,
       ImageAsset.GumDrop,
       ImageAsset.Peppermint,
+      ImageAsset.NiceOldLady,
     ] as const,
     sprites: [SpriteAsset.CandyCastle] as const,
     audio: [AudioAsset.RockDestroy, AudioAsset.Twinkle] as const,

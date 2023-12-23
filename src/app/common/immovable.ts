@@ -77,10 +77,10 @@ export class Immovable<
     if (actualPosition === position) {
       return true;
     }
-    if (this.height === 1) {
+    if (this.width === 1) {
       return false;
     }
-    const adjacentPositions = this.height - 1;
+    const adjacentPositions = this.width - 1;
     return (
       actualPosition > position &&
       actualPosition <= position + adjacentPositions

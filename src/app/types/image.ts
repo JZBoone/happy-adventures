@@ -23,6 +23,7 @@ export enum ImageAsset {
   Monster = "monster",
   MonsterGuts = "monster-guts",
   MountainSpikes = "mountain-spikes",
+  NiceOldLady = "nice-old-lady",
   Peppermint = "peppermint",
   Platform = "platform",
   Portal = "portal",
