@@ -3,7 +3,7 @@
   "immovableSprites": {
     "candyCastle": {
       "asset": "candy-castle",
-      "coordinates": [25, 45],
+      "coordinates": [9, 96],
       "width": 7,
       "height": 7,
       "offsetY": 10,
