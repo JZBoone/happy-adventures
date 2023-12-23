@@ -3,6 +3,7 @@ import { AudioAsset } from "./audio";
 export enum SpriteAsset {
   Castle = "castle",
   MiniPlane = "mini-plane",
+  CandyCastle = "candy-castle",
 }
 
 export enum CastleAnimation {
@@ -10,11 +11,17 @@ export enum CastleAnimation {
   Close = "castle.close",
 }
 
+export enum CandyCastleAnimation {
+  Open = "candy-castle.open",
+  Close = "candy-castle.close",
+}
+
 export enum MiniPlaneAnimation {
   Fly = "mini-plane.fly",
 }
 
 export type CastleFrame = 0 | 1 | 2 | 3 | 4 | 5 | 6;
+export type CandyCastleFrame = 0 | 1 | 2 | 3 | 4 | 5;
 
 export type MiniPlaneFrame = 0 | 1 | 2 | 3;
 
@@ -58,6 +65,42 @@ export const SpriteAssets: Record<
       }
       sprite.on("animationstart", (anim: { key: string }) => {
         if (anim.key === CastleAnimation.Open) {
+          scene.sound.play(AudioAsset.CastleOpen);
+        }
+      });
+    },
+  },
+  [SpriteAsset.CandyCastle]: {
+    path: "assets/image/candy-castle.png",
+    frameConfig: {
+      frameWidth: 400,
+      frameHeight: 391,
+    },
+    audioAssets: [AudioAsset.CastleOpen],
+    anims: (scene, sprite) => {
+      if (!scene.anims.exists(CandyCastleAnimation.Open)) {
+        scene.anims.create({
+          key: CandyCastleAnimation.Open,
+          frames: scene.anims.generateFrameNumbers(SpriteAsset.CandyCastle, {
+            start: 0 satisfies CandyCastleFrame,
+            end: 5 satisfies CandyCastleFrame,
+          }),
+          frameRate: 15,
+          repeat: 0,
+        });
+
+        scene.anims.create({
+          key: CandyCastleAnimation.Close,
+          frames: scene.anims.generateFrameNumbers(SpriteAsset.CandyCastle, {
+            start: 5 satisfies CandyCastleFrame,
+            end: 0 satisfies CandyCastleFrame,
+          }),
+          frameRate: 15,
+          repeat: 0,
+        });
+      }
+      sprite.on("animationstart", (anim: { key: string }) => {
+        if (anim.key === CandyCastleAnimation.Open) {
           scene.sound.play(AudioAsset.CastleOpen);
         }
       });

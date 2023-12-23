@@ -1,0 +1,67 @@
+{
+  "immovableImages": {},
+  "immovableSprites": {
+    "candyCastle": {
+      "asset": "candy-castle",
+      "coordinates": [9, 96],
+      "width": 7,
+      "height": 7,
+      "offsetY": 10,
+      "offsetX": 5
+    }
+  },
+  "immovableImageGroups": {
+    "lollipops": {
+      "asset": "lollipop",
+      "coordinates": [
+        [9, 3],
+        [7, 3],
+        [18, 40],
+        [18, 41],
+        [14, 7],
+        [15, 7],
+        [13, 8],
+        [13, 7],
+        [14, 7]
+      ]
+    },
+    "gumdrops": {
+      "asset": "gum-drop",
+      "coordinates": [
+        [1, 0],
+        [2, 0],
+        [3, 0],
+        [4, 0],
+        [5, 0],
+        [18, 39],
+        [8, 6],
+        [7, 6],
+        [6, 1]
+      ]
+    },
+    "peppermints": {
+      "asset": "peppermint",
+      "coordinates": [
+        [8, 3],
+        [11, 1],
+        [18, 38],
+        [12, 3],
+        [12, 4],
+        [11, 1],
+        [12, 1],
+        [12, 3],
+        [12, 4]
+      ]
+    }
+  },
+  "movableSprites": {},
+  "interactables": [
+    {
+      "coordinates": [9, 5],
+      "asset": "nice-old-lady",
+      "width": 2,
+      "height": 3,
+      "message": "Welcome to Candy Land!  Have fun falling in the glitter cracks!"
+    }
+  ]
+}
