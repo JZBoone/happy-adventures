@@ -7,12 +7,14 @@ export enum AudioAsset {
   Fall = "fall",
   Grunt = "grunt",
   Motor = "motor",
+  RockDestroy = "rock-destroy",
   SandStep = "sand-step",
   Splash = "splash",
   Splat = "splat",
   Stomp = "stomp",
   Tada = "tada",
   Thump = "thump",
+  Twinkle = "twinkle",
   Whoosh = "whoosh",
 }
 
