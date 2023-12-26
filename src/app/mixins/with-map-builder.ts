@@ -160,17 +160,21 @@ export const withMapBuilder = <
 
     private async maybeSaveMap() {
       if (Phaser.Input.Keyboard.JustDown(this.hotkey.s)) {
-        try {
-          await saveMap(
-            level,
-            this.map.map((row) => row.map((position) => position.asset)),
-            this.mapObjectsJson
-          );
-          toast(this, "Saved map.");
-        } catch (e) {
-          toast(this, "Oops! Could not save map.");
-          console.error("Error saving map", e);
-        }
+        await this.saveMap();
+      }
+    }
+
+    private async saveMap() {
+      try {
+        await saveMap(
+          level,
+          this.map.map((row) => row.map((position) => position.asset)),
+          this.mapObjectsJson
+        );
+        toast(this, "Saved map.");
+      } catch (e) {
+        toast(this, "Oops! Could not save map.");
+        console.error("Error saving map", e);
       }
     }
 
@@ -301,8 +305,9 @@ export const withMapBuilder = <
       }
     }
 
-    private maybeLaunchLevel() {
+    private async maybeLaunchLevel() {
       if (this.hotkey.esc.isDown) {
+        await this.saveMap();
         this.scene.start(level);
       }
     }

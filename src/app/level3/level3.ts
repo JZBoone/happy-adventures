@@ -4,10 +4,12 @@ import { Level2InitData } from "../level2/level2-init-data";
 import { AudioAsset } from "../types/audio";
 import { Coordinates } from "../types/map";
 import { takeWhile } from "rxjs";
-import { Level3MapAndAssets } from "./level3-assets";
+import { GroundType, Level3MapAndAssets } from "./level3-assets";
+import { ImageAsset } from "../types/image";
 
 export class Level3 extends Level3MapAndAssets {
   private levelCompleted = false;
+  private isMelting = false;
 
   private readonly bomboffsetY = 25;
   private readonly hoistedBomboffsetY = 30;
@@ -39,11 +41,24 @@ export class Level3 extends Level3MapAndAssets {
     this.createFriend();
     this.moves$
       .pipe(takeWhile(() => !this.levelCompleted))
-      .subscribe(({ coordinates }) => this.handleMove(coordinates));
+      .subscribe(({ coordinates, groundType }) =>
+        this.handleMove(coordinates, groundType)
+      );
     showLevelStartText(this, 3);
   }
 
-  private handleMove(coordinates: Coordinates) {
+  private async handleMove(coordinates: Coordinates, groundType: GroundType) {
+    if (this.isMelting) {
+      return;
+    }
+    if (groundType === ImageAsset.PurpleAcid) {
+      this.isMelting = true;
+      await this.friend.move(coordinates);
+      this.playSound(AudioAsset.Sizzle);
+      await this.friend.disappear();
+      this.startOver();
+      return;
+    }
     if (
       this.isCarryingBomb() &&
       this.immovableImages.heart.occupies(coordinates)
@@ -91,5 +106,11 @@ export class Level3 extends Level3MapAndAssets {
     await newPromiseLasting(this, 1_500, () =>
       this.scene.start(Level.Level2, data)
     );
+  }
+
+  private startOver() {
+    this.friend.move([0, 0], { noAnimation: true });
+    this.friend.phaserObject.setVisible(true);
+    this.isMelting = false;
   }
 }

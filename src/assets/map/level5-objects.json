@@ -14,13 +14,13 @@
     "lollipops": {
       "asset": "lollipop",
       "coordinates": [
-        [9, 3],
+        [15, 7],
         [7, 3],
         [18, 40],
         [18, 41],
         [14, 7],
         [15, 7],
-        [13, 8],
+        [12, 17],
         [13, 7],
         [14, 7]
       ]
@@ -35,8 +35,11 @@
         [5, 0],
         [18, 39],
         [8, 6],
-        [7, 6],
-        [6, 1]
+        [9, 6],
+        [4, 14],
+        [8, 6],
+        [9, 6],
+        [9, 6]
       ]
     },
     "peppermints": {
@@ -55,13 +58,21 @@
     }
   },
   "movableSprites": {},
+  "movableImages": {
+    "magicLollipopKey": {
+      "coordinates": [28, 1],
+      "asset": "magic-lollipop-key",
+      "width": 2,
+      "height": 2
+    }
+  },
   "interactables": [
     {
-      "coordinates": [9, 5],
+      "coordinates": [4, 10],
       "asset": "nice-old-lady",
       "width": 2,
       "height": 3,
-      "message": "Welcome to Candy Land!  Have fun falling in the glitter cracks!"
+      "message": "Darkness is taking over Candy Land! Get to the castle to save it! to unlock the castle find the key!"
     }
   ]
 }
