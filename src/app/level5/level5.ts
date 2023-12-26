@@ -28,7 +28,9 @@ export class Level5 extends Level5MapAndAssets {
       return;
     }
     if (isEqual(this.castleDoorCoordinates(), coordinates)) {
-      this.completeLevel();
+      if (this.isCarryingMagicalLollipopKey()) {
+        this.completeLevel();
+      }
       return;
     }
     if (
@@ -46,21 +48,31 @@ export class Level5 extends Level5MapAndAssets {
       this.invalidMoves$.next();
       return;
     }
-    switch (groundType) {
-      case ImageAsset.CrackedRainbowGlitter:
-        this.isFalling = true;
-        await this.friend.move(coordinates);
-        this.playSound(AudioAsset.RockDestroy);
-        await this.friend.disappear();
-        this.startOver();
-        return;
-      case ImageAsset.RainbowGlitter:
-        this.playSound(AudioAsset.Twinkle, { volume: 0.3 });
-        this.friend.move(coordinates);
+    if (
+      this.movableImages.magicLollipopKey.occupies(coordinates) &&
+      !this.isCarryingMagicalLollipopKey()
+    ) {
+      await this.hoistMagicalLollipopKey();
     }
+    if (groundType === ImageAsset.CrackedRainbowGlitter) {
+      this.isFalling = true;
+      await this.friend.move(coordinates);
+      this.playSound(AudioAsset.RockDestroy);
+      await this.friend.disappear();
+      this.startOver();
+      return;
+    }
+    if (groundType === ImageAsset.RainbowGlitter) {
+      this.playSound(AudioAsset.Twinkle, { volume: 0.3 });
+    }
+    if (this.isCarryingMagicalLollipopKey()) {
+      this.movableImages.magicLollipopKey.move(coordinates);
+    }
+    this.friend.move(coordinates);
   }
 
   private startOver() {
+    this.movableImages.magicLollipopKey.setOffsetY(25);
     this.friend.move([0, 0], { noAnimation: true });
     this.friend.phaserObject.setVisible(true);
     this.isFalling = false;
@@ -73,6 +85,8 @@ export class Level5 extends Level5MapAndAssets {
     );
     this.friend.setOffsetY(5);
     await this.friend.move(this.castleDoorCoordinates());
+    this.movableImages.magicLollipopKey.phaserObject.setVisible(false);
+    this.playSound(AudioAsset.SparklingStar);
     await this.friend.disappear();
     this.playSound(AudioAsset.Tada);
     await newPromiseLasting(this, 500, () => this.scene.start(Level.Credits));
@@ -81,5 +95,14 @@ export class Level5 extends Level5MapAndAssets {
   private castleDoorCoordinates(): Coordinates {
     const [row, position] = this.immovableSprites.candyCastle.coordinates();
     return [row, position - 3];
+  }
+
+  private isCarryingMagicalLollipopKey() {
+    return this.friend.isAt(this.movableImages.magicLollipopKey.coordinates());
+  }
+
+  private async hoistMagicalLollipopKey() {
+    this.playSound(AudioAsset.SuccessBell);
+    await this.movableImages.magicLollipopKey.move(this.friend.coordinates());
   }
 }

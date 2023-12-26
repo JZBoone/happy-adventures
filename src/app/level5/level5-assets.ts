@@ -9,6 +9,7 @@ import { SpriteAsset } from "../types/sprite";
 export const groundTypes = [
   ImageAsset.RainbowGlitter,
   ImageAsset.CrackedRainbowGlitter,
+  ImageAsset.BlackHole,
 ] as const;
 
 export type GroundType = (typeof groundTypes)[number];
@@ -22,15 +23,25 @@ export class Level5MapAndAssets extends withMap(
       ImageAsset.GumDrop,
       ImageAsset.Peppermint,
       ImageAsset.NiceOldLady,
+      ImageAsset.BlackHole,
+      ImageAsset.MagicLollipopKey,
     ] as const,
     sprites: [SpriteAsset.CandyCastle] as const,
-    audio: [AudioAsset.RockDestroy, AudioAsset.Twinkle] as const,
+    audio: [
+      AudioAsset.RockDestroy,
+      AudioAsset.Twinkle,
+      AudioAsset.SparklingStar,
+      AudioAsset.SuccessBell,
+    ] as const,
   }),
   {
     level: Level.Level5,
     groundTypes,
     immovableSprites: { candyCastle: { asset: SpriteAsset.CandyCastle } },
     movableSprites: {},
+    movableImages: {
+      magicLollipopKey: { asset: ImageAsset.MagicLollipopKey },
+    },
     immovableImageGroups: {
       lollipops: { asset: ImageAsset.Lollipop },
       gumdrops: { asset: ImageAsset.GumDrop },
