@@ -26,7 +26,9 @@ export type InteractableParams<Asset extends ImageAsset> =
   SceneObjectParams<Asset> & { message: string };
 
 export type FriendParams<Asset extends ImageAsset | DefaultImageAsset> =
-  Optional<SceneObjectParams<Asset>, "asset" | "coordinates">;
+  Optional<SceneObjectParams<Asset>, "asset" | "coordinates"> & {
+    dontFollow?: boolean;
+  };
 
 export type MapObjectsJson<
   SceneImageAsset extends ImageAsset,
@@ -119,7 +121,7 @@ export interface ISceneWithMap<
     SceneMovableSprites
   >[];
   createFriend<Asset extends SceneImageAsset | DefaultImageAsset>(
-    params?: SceneObjectParams<Asset>
+    params?: SceneObjectParams<Asset> & { dontFollow?: boolean }
   ): Friend;
   createInteractable<Asset extends SceneImageAsset>(
     params: InteractableParams<Asset>

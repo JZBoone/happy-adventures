@@ -17,11 +17,14 @@ export class Friend extends Movable<Phaser.GameObjects.Image> {
     options: ImmovableOptions & {
       mapWidth: number;
       mapHeight: number;
+      dontFollow?: boolean;
     }
   ) {
     super(scene, phaserObject, options);
     this.sceneSize = { width: options.mapWidth, height: options.mapHeight };
-    this.initFollow();
+    if (!options.dontFollow) {
+      this.initFollow();
+    }
   }
 
   disappear(): Promise<void> {

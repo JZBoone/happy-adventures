@@ -5,6 +5,7 @@ export enum AudioAsset {
   Crunch = "crunch",
   Explosion = "explosion",
   Fall = "fall",
+  FunnyCry = "funny-cry",
   Grunt = "grunt",
   Motor = "motor",
   RockDestroy = "rock-destroy",

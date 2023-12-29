@@ -24,9 +24,9 @@ export class Level4MapAndAssets extends withMap(
       ImageAsset.SpikeBench,
       ImageAsset.SquareSpike,
       ImageAsset.SpikyGuy,
-      ImageAsset.LittleSister,
+      ImageAsset.EvilGuy,
     ] as const,
-    audio: [AudioAsset.Motor] as const,
+    audio: [AudioAsset.Motor, AudioAsset.FunnyCry] as const,
   }),
   {
     level: Scene.Level4,

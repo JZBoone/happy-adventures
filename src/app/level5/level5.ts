@@ -24,6 +24,12 @@ export class Level5 extends Level5MapAndAssets {
   }
 
   private async handleMove(coordinates: Coordinates, groundType: GroundType) {
+    const hackCoordinates: Coordinates = [8, 15];
+    const hackTransportCoordinates: Coordinates = [47, 90];
+    let isHacked = false;
+    if (isEqual(hackCoordinates, coordinates)) {
+      isHacked = true;
+    }
     if (this.isFalling || this.levelCompleted) {
       return;
     }
@@ -54,7 +60,7 @@ export class Level5 extends Level5MapAndAssets {
     ) {
       await this.hoistMagicalLollipopKey();
     }
-    if (groundType === ImageAsset.CrackedRainbowGlitter) {
+    if (groundType === ImageAsset.CrackedRainbowGlitter && !isHacked) {
       this.isFalling = true;
       await this.friend.move(coordinates);
       this.playSound(AudioAsset.RockDestroy);
@@ -65,10 +71,29 @@ export class Level5 extends Level5MapAndAssets {
     if (groundType === ImageAsset.RainbowGlitter) {
       this.playSound(AudioAsset.Twinkle, { volume: 0.3 });
     }
+    if (isHacked) {
+      this.isFalling = true;
+      const hasKey = this.isCarryingMagicalLollipopKey();
+      await Promise.all([
+        this.friend.move(coordinates),
+        hasKey
+          ? this.movableImages.magicLollipopKey.move(coordinates)
+          : Promise.resolve(),
+      ]);
+      this.playSound(AudioAsset.Whoosh);
+      await this.friend.disappear();
+      this.friend.phaserObject.setVisible(true);
+      await this.friend.move(hackTransportCoordinates);
+      this.isFalling = false;
+      if (hasKey) {
+        this.movableImages.magicLollipopKey.move(hackTransportCoordinates);
+      }
+      return;
+    }
     if (this.isCarryingMagicalLollipopKey()) {
       this.movableImages.magicLollipopKey.move(coordinates);
     }
-    this.friend.move(coordinates);
+    this.friend.move(isHacked ? hackTransportCoordinates : coordinates);
   }
 
   private startOver() {
@@ -89,7 +114,7 @@ export class Level5 extends Level5MapAndAssets {
     this.playSound(AudioAsset.SparklingStar);
     await this.friend.disappear();
     this.playSound(AudioAsset.Tada);
-    await newPromiseLasting(this, 500, () => this.scene.start(Scene.Credits));
+    await newPromiseLasting(this, 500, () => this.scene.start(Scene.Level6));
   }
 
   private castleDoorCoordinates(): Coordinates {

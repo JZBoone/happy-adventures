@@ -14,6 +14,8 @@ import { TheEnd } from "./credits/the-end";
 import { Level5 } from "./level5/level5";
 import { Level5MapAndAssets } from "./level5/level5-assets";
 import { PlayerSelection } from "./player-selection/player-selection";
+import { Level6 } from "./level6/level6";
+import { Level6MapAndAssets } from "./level6/level6-assets";
 
 export default new Phaser.Game({
   type: Phaser.AUTO,
@@ -34,6 +36,8 @@ export default new Phaser.Game({
     withMapBuilder(Level4MapAndAssets, Scene.Level4),
     Level5,
     withMapBuilder(Level5MapAndAssets, Scene.Level5),
+    Level6,
+    withMapBuilder(Level6MapAndAssets, Scene.Level6),
     Credits,
     TheEnd,
   ],
