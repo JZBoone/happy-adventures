@@ -5,6 +5,7 @@ export enum Scene {
   Level3 = "level3",
   Level4 = "level4",
   Level5 = "level5",
+  Level6 = "level6",
   Credits = "credits",
   TheEnd = "theend",
 }

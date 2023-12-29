@@ -29,16 +29,17 @@ export class PlayerSelection extends Phaser.Scene {
   }
 
   private makeOptions() {
-    const options = [
-      { offsetX: -100, image: ImageAsset.Friend },
-      { offsetX: 100, image: ImageAsset.CuteSpider },
+    const options: { offsetX: number; image: ImageAsset; name: string }[] = [
+      { offsetX: -150, image: ImageAsset.Friend, name: "Schneider Spider" },
+      { offsetX: 150, image: ImageAsset.CuteSpider, name: "Bad Bunny" },
     ];
-    for (const { offsetX, image } of options) {
+    for (const { offsetX, image, name } of options) {
       const phaserImage = this.add.image(
         this.cameras.main.centerX - offsetX,
         this.cameras.main.centerY,
         image
       );
+      phaserImage.setScale(2);
       phaserImage.setInteractive(
         new Phaser.Geom.Rectangle(0, 0, phaserImage.width, phaserImage.height),
         Phaser.Geom.Rectangle.Contains
@@ -46,6 +47,16 @@ export class PlayerSelection extends Phaser.Scene {
       phaserImage.on("pointerdown", () => {
         this.selectPlayer(image);
       });
+      this.add
+        .text(
+          this.cameras.main.centerX - offsetX,
+          this.cameras.main.centerY - 100,
+          name,
+          {
+            font: "32px Arial",
+          }
+        )
+        .setOrigin(0.5, 0.5);
     }
   }
 

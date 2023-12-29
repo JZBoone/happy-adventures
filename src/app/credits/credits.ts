@@ -18,7 +18,7 @@ export class Credits extends Phaser.Scene {
       .setOrigin(0.5, 0.5);
 
     const distanceY = creditsStartY + credits.height;
-    const speed = 0.1;
+    const speed = 0.05;
     const duration = distanceY / speed;
 
     this.tweens.add({

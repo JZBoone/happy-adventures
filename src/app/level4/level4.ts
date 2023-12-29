@@ -15,8 +15,10 @@ export class Level4 extends Level4MapAndAssets {
     | Phaser.Sound.HTML5AudioSound
     | Phaser.Sound.WebAudioSound;
   private completedLevel = false;
+  private isGettingSpiked = false;
 
   private isUnmounting = false;
+  private planeStartCoordinates!: Coordinates;
 
   private get spikies() {
     return [
@@ -38,14 +40,29 @@ export class Level4 extends Level4MapAndAssets {
     );
     showLevelStartText(this, 4);
     this.motorSound = this.addSound(AudioAsset.Motor, { loop: true });
+    this.planeStartCoordinates = this.movableSprites.miniPlane.coordinates();
   }
 
   private async handleMove(coordinates: Coordinates, move: Move) {
+    if (this.isGettingSpiked) {
+      return;
+    }
     if (
       !this.friend.mount &&
       this.spikies.some((spiky) => spiky.isAt(coordinates))
     ) {
-      this.invalidMoves$.next();
+      this.isGettingSpiked = true;
+      this.playSound(AudioAsset.FunnyCry);
+      await this.friend.move(coordinates);
+      this.tweens.add({
+        targets: this.friend.phaserObject,
+        y: this.friend.phaserObject.y - 300,
+        ease: Phaser.Math.Easing.Quadratic.Out,
+        duration: 1_000,
+        onComplete: () => {
+          this.startOver();
+        },
+      });
       return;
     }
 
@@ -129,5 +146,14 @@ export class Level4 extends Level4MapAndAssets {
           [landingPadRow, landingPadPosition + 1],
         ];
     }
+  }
+
+  private startOver() {
+    this.movableSprites.miniPlane.move(this.planeStartCoordinates, {
+      noAnimation: true,
+    });
+    this.friend.move([0, 0], { noAnimation: true });
+    this.friend.phaserObject.setVisible(true);
+    this.isGettingSpiked = false;
   }
 }

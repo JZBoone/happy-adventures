@@ -9,6 +9,7 @@ export enum ImageAsset {
   CrackedRainbowGlitter = "cracked-rainbow-glitter",
   CuteSpider = "cute-spider",
   Elasmosaurus = "elasmosaurus",
+  EvilGuy = "evil-guy",
   Forest = "forest",
   Friend = "friend",
   Goo = "goo",
