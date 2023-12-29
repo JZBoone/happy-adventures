@@ -3,7 +3,7 @@ import { withAssets } from "../mixins/with-assets";
 import { withMap } from "../mixins/with-map";
 import { AudioAsset } from "../types/audio";
 import { ImageAsset } from "../types/image";
-import { Level } from "../types/level";
+import { Scene } from "../types/scene";
 import { SpriteAsset } from "../types/sprite";
 
 export const groundTypes = [
@@ -31,7 +31,7 @@ export class Level1MapAndAssets extends withMap(
     sprites: [SpriteAsset.Castle] as const,
   }),
   {
-    level: Level.Level1,
+    level: Scene.Level1,
     groundTypes: groundTypes,
     immovableSprites: {
       castle: { asset: SpriteAsset.Castle },

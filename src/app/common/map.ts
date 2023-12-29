@@ -1,5 +1,5 @@
 import { ImageAsset } from "../types/image";
-import { Level } from "../types/level";
+import { Scene } from "../types/scene";
 import { Coordinates, MapObjectsJson, Move } from "../types/map";
 import { SpriteAsset } from "../types/sprite";
 
@@ -172,12 +172,12 @@ export async function fetchMap<
   };
 }
 
-export function mapEditorSceneKey(level: Level) {
+export function mapEditorSceneKey(level: Scene) {
   return `${level}MapEditor`;
 }
 
 export async function saveMap(
-  level: Level,
+  level: Scene,
   map: ImageAsset[][],
   mapObjects: object = {}
 ) {

@@ -2,7 +2,7 @@ import Phaser from "phaser";
 import { withMap } from "../mixins/with-map";
 import { withAssets } from "../mixins/with-assets";
 import { ImageAsset } from "../types/image";
-import { Level } from "../types/level";
+import { Scene } from "../types/scene";
 import { AudioAsset } from "../types/audio";
 import { SpriteAsset } from "../types/sprite";
 
@@ -35,7 +35,7 @@ export class Level5MapAndAssets extends withMap(
     ] as const,
   }),
   {
-    level: Level.Level5,
+    level: Scene.Level5,
     groundTypes,
     immovableSprites: { candyCastle: { asset: SpriteAsset.CandyCastle } },
     movableSprites: {},

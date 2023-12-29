@@ -8,11 +8,12 @@ import { Level3MapAndAssets } from "./level3/level3-assets";
 import { Level4 } from "./level4/level4";
 import { Level4MapAndAssets } from "./level4/level4-assets";
 import { withMapBuilder } from "./mixins/with-map-builder";
-import { Level } from "./types/level";
+import { Scene } from "./types/scene";
 import { Credits } from "./credits/credits";
 import { TheEnd } from "./credits/the-end";
 import { Level5 } from "./level5/level5";
 import { Level5MapAndAssets } from "./level5/level5-assets";
+import { PlayerSelection } from "./player-selection/player-selection";
 
 export default new Phaser.Game({
   type: Phaser.AUTO,
@@ -26,16 +27,17 @@ export default new Phaser.Game({
     },
   },
   scene: [
+    PlayerSelection,
     Level1,
-    withMapBuilder(Level1MapAndAssets, Level.Level1),
+    withMapBuilder(Level1MapAndAssets, Scene.Level1),
     Level2,
-    withMapBuilder(Level2MapAndAssets, Level.Level2),
+    withMapBuilder(Level2MapAndAssets, Scene.Level2),
     Level3,
-    withMapBuilder(Level3MapAndAssets, Level.Level3),
+    withMapBuilder(Level3MapAndAssets, Scene.Level3),
     Level4,
-    withMapBuilder(Level4MapAndAssets, Level.Level4),
+    withMapBuilder(Level4MapAndAssets, Scene.Level4),
     Level5,
-    withMapBuilder(Level5MapAndAssets, Level.Level5),
+    withMapBuilder(Level5MapAndAssets, Scene.Level5),
     Credits,
     TheEnd,
   ],

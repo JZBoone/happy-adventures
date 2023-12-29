@@ -1,9 +1,9 @@
 import Phaser from "phaser";
-import { Level } from "../types/level";
+import { Scene } from "../types/scene";
 
 export class TheEnd extends Phaser.Scene {
   constructor() {
-    super({ key: Level.TheEnd });
+    super({ key: Scene.TheEnd });
   }
 
   create() {

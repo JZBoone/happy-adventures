@@ -1,4 +1,4 @@
-import { Level } from "../types/level";
+import { Scene } from "../types/scene";
 import { showLevelStartText, newPromiseLasting } from "../common/helpers";
 import { MiniPlaneAnimation } from "../types/sprite";
 import { Coordinates, Move } from "../types/map";
@@ -7,7 +7,7 @@ import { Level4MapAndAssets } from "./level4-assets";
 
 export class Level4 extends Level4MapAndAssets {
   constructor() {
-    super({ key: Level.Level4 });
+    super({ key: Scene.Level4 });
   }
 
   private motorSound!:
@@ -94,7 +94,7 @@ export class Level4 extends Level4MapAndAssets {
       this.completedLevel = true;
       this.playSound(AudioAsset.Tada);
       await newPromiseLasting(this, 1_000, () =>
-        this.scene.start(Level.Level5)
+        this.scene.start(Scene.Level5)
       );
     }
     if (!this.isUnmounting) {

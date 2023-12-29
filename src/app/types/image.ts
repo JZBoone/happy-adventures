@@ -7,6 +7,7 @@ export enum ImageAsset {
   Cactus = "cactus",
   Cloud = "cloud",
   CrackedRainbowGlitter = "cracked-rainbow-glitter",
+  CuteSpider = "cute-spider",
   Elasmosaurus = "elasmosaurus",
   Forest = "forest",
   Friend = "friend",
@@ -44,5 +45,8 @@ export enum ImageAsset {
   Water = "water",
 }
 
-export const defaultImages = [ImageAsset.Friend] as const;
+export const defaultImages = [
+  ImageAsset.Friend,
+  ImageAsset.CuteSpider,
+] as const;
 export type DefaultImageAsset = (typeof defaultImages)[number];

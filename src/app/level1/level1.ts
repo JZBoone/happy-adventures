@@ -1,5 +1,5 @@
 import { takeWhile } from "rxjs";
-import { Level } from "../types/level";
+import { Scene } from "../types/scene";
 import { showLevelStartText, newPromiseLasting } from "../common/helpers";
 import { AudioAsset } from "../types/audio";
 import { ImageAsset } from "../types/image";
@@ -11,7 +11,7 @@ export class Level1 extends Level1MapAndAssets {
   private levelCompleted = false;
 
   constructor() {
-    super({ key: Level.Level1 });
+    super({ key: Scene.Level1 });
   }
 
   async create() {
@@ -82,6 +82,6 @@ export class Level1 extends Level1MapAndAssets {
     await this.friend.move(this.immovableSprites.castle.coordinates());
     await this.friend.disappear();
     this.playSound(AudioAsset.Tada);
-    await newPromiseLasting(this, 500, () => this.scene.start(Level.Level2));
+    await newPromiseLasting(this, 500, () => this.scene.start(Scene.Level2));
   }
 }
