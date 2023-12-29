@@ -318,7 +318,7 @@
   },
   "interactables": [
     {
-      "coordinates": [3, 2],
+      "coordinates": [2, 2],
       "asset": "spiky-guy",
       "message": "Aaaaaaaaaaaaaaaaaaaaaaaaaaaaaahhhh! it's the DarkLord! "
     },

@@ -27,6 +27,7 @@ export enum ImageAsset {
   MonsterGuts = "monster-guts",
   MountainSpikes = "mountain-spikes",
   NiceOldLady = "nice-old-lady",
+  OompaBall = "oompa-ball",
   Peppermint = "peppermint",
   Platform = "platform",
   Portal = "portal",
@@ -42,6 +43,7 @@ export enum ImageAsset {
   Star = "star",
   Stone = "stone",
   ThreeSpikes = "three-spikes",
+  ToddieTitan = "toddie-titan",
   Tree = "tree",
   Water = "water",
 }
@@ -49,5 +51,7 @@ export enum ImageAsset {
 export const defaultImages = [
   ImageAsset.Friend,
   ImageAsset.CuteSpider,
+  ImageAsset.OompaBall,
+  ImageAsset.ToddieTitan,
 ] as const;
 export type DefaultImageAsset = (typeof defaultImages)[number];

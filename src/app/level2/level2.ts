@@ -89,7 +89,7 @@ export class Level2 extends Level2MapAndAssets {
     this.friend.move(this.immovableImages.portal.coordinates());
     this.playSound(AudioAsset.Whoosh);
     await this.friend.disappear();
-    await newPromiseLasting(this, 5_000, () => this.scene.start(Scene.Level4));
+    await newPromiseLasting(this, 4_000, () => this.scene.start(Scene.Level4));
   }
 
   private async swallowFriend() {

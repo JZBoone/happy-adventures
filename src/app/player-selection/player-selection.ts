@@ -1,7 +1,7 @@
 import Phaser from "phaser";
 import { Scene } from "../types/scene";
 import { loadImages } from "../common/assets";
-import { ImageAsset } from "../types/image";
+import { ImageAsset, defaultImages } from "../types/image";
 import { PlayerStorageKey } from "../types/player";
 
 export class PlayerSelection extends Phaser.Scene {
@@ -12,7 +12,7 @@ export class PlayerSelection extends Phaser.Scene {
   }
 
   preload() {
-    loadImages(this, [ImageAsset.Friend, ImageAsset.CuteSpider]);
+    loadImages(this, defaultImages);
   }
 
   create() {
@@ -30,8 +30,10 @@ export class PlayerSelection extends Phaser.Scene {
 
   private makeOptions() {
     const options: { offsetX: number; image: ImageAsset; name: string }[] = [
-      { offsetX: -150, image: ImageAsset.Friend, name: "Schneider Spider" },
-      { offsetX: 150, image: ImageAsset.CuteSpider, name: "Bad Bunny" },
+      { offsetX: -450, image: ImageAsset.Friend, name: "Bad Bunny" },
+      { offsetX: -150, image: ImageAsset.CuteSpider, name: "Schneider Spider" },
+      { offsetX: 150, image: ImageAsset.OompaBall, name: "Bob" },
+      { offsetX: 450, image: ImageAsset.ToddieTitan, name: "Toddie Titan" },
     ];
     for (const { offsetX, image, name } of options) {
       const phaserImage = this.add.image(

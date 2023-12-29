@@ -115,7 +115,7 @@ export class Level4 extends Level4MapAndAssets {
       );
     }
     if (!this.isUnmounting) {
-      this.friend.move(coordinates);
+      await this.friend.move(coordinates);
     }
   }
 

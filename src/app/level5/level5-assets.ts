@@ -32,6 +32,7 @@ export class Level5MapAndAssets extends withMap(
       AudioAsset.Twinkle,
       AudioAsset.SparklingStar,
       AudioAsset.SuccessBell,
+      AudioAsset.Whoosh,
     ] as const,
   }),
   {
