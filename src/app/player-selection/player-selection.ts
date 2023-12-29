@@ -16,35 +16,37 @@ export class PlayerSelection extends Phaser.Scene {
   }
 
   create() {
+    this.makeHeading();
+    this.makeOptions();
+  }
+
+  private makeHeading() {
     this.add
       .text(this.cameras.main.centerX, 120, "Select Your Player", {
         font: "64px Arial",
       })
       .setOrigin(0.5, 0.5);
-    const friend = this.add.image(
-      this.cameras.main.centerX - 100,
-      this.cameras.main.centerY,
-      ImageAsset.Friend
-    );
-    friend.setInteractive(
-      new Phaser.Geom.Rectangle(0, 0, friend.width, friend.height),
-      Phaser.Geom.Rectangle.Contains
-    );
-    friend.on("pointerdown", () => {
-      this.selectPlayer(ImageAsset.Friend);
-    });
-    const cuteSpider = this.add.image(
-      this.cameras.main.centerX + 100,
-      this.cameras.main.centerY,
-      ImageAsset.CuteSpider
-    );
-    cuteSpider.setInteractive(
-      new Phaser.Geom.Rectangle(0, 0, cuteSpider.width, cuteSpider.height),
-      Phaser.Geom.Rectangle.Contains
-    );
-    cuteSpider.on("pointerdown", () => {
-      this.selectPlayer(ImageAsset.CuteSpider);
-    });
+  }
+
+  private makeOptions() {
+    const options = [
+      { offsetX: -100, image: ImageAsset.Friend },
+      { offsetX: 100, image: ImageAsset.CuteSpider },
+    ];
+    for (const { offsetX, image } of options) {
+      const phaserImage = this.add.image(
+        this.cameras.main.centerX - offsetX,
+        this.cameras.main.centerY,
+        image
+      );
+      phaserImage.setInteractive(
+        new Phaser.Geom.Rectangle(0, 0, phaserImage.width, phaserImage.height),
+        Phaser.Geom.Rectangle.Contains
+      );
+      phaserImage.on("pointerdown", () => {
+        this.selectPlayer(image);
+      });
+    }
   }
 
   private selectPlayer(player: ImageAsset) {

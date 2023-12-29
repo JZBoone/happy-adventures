@@ -17,14 +17,10 @@ import { PlayerSelection } from "./player-selection/player-selection";
 
 export default new Phaser.Game({
   type: Phaser.AUTO,
-  width: "100%",
-  height: "100%",
-  physics: {
-    default: "arcade",
-    arcade: {
-      gravity: { y: 300 },
-      debug: false,
-    },
+  width: window.innerWidth,
+  height: window.innerHeight,
+  scale: {
+    mode: Phaser.Scale.RESIZE,
   },
   scene: [
     PlayerSelection,
