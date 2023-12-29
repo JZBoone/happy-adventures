@@ -1,4 +1,4 @@
-import { Level } from "../types/level";
+import { Scene } from "../types/scene";
 import { showLevelStartText, newPromiseLasting } from "../common/helpers";
 import { Level2InitData } from "../level2/level2-init-data";
 import { AudioAsset } from "../types/audio";
@@ -15,7 +15,7 @@ export class Level3 extends Level3MapAndAssets {
   private readonly hoistedBomboffsetY = 30;
 
   constructor() {
-    super({ key: Level.Level3 });
+    super({ key: Scene.Level3 });
   }
 
   get bones() {
@@ -104,7 +104,7 @@ export class Level3 extends Level3MapAndAssets {
     this.playSound(AudioAsset.Tada);
     const data: Level2InitData = { monsterIsDead: true };
     await newPromiseLasting(this, 1_500, () =>
-      this.scene.start(Level.Level2, data)
+      this.scene.start(Scene.Level2, data)
     );
   }
 

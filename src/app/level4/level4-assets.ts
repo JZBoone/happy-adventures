@@ -3,7 +3,7 @@ import { withMap } from "../mixins/with-map";
 import { withAssets } from "../mixins/with-assets";
 import { AudioAsset } from "../types/audio";
 import { ImageAsset } from "../types/image";
-import { Level } from "../types/level";
+import { Scene } from "../types/scene";
 import { SpriteAsset } from "../types/sprite";
 
 export const groundTypes = [ImageAsset.Forest] as const;
@@ -29,7 +29,7 @@ export class Level4MapAndAssets extends withMap(
     audio: [AudioAsset.Motor] as const,
   }),
   {
-    level: Level.Level4,
+    level: Scene.Level4,
     groundTypes,
     immovableImages: {
       landingPad: { asset: ImageAsset.LandingPad },

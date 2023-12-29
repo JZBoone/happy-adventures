@@ -1,4 +1,5 @@
-export enum Level {
+export enum Scene {
+  CharacterSelection = "character-selection",
   Level1 = "level1",
   Level2 = "level2",
   Level3 = "level3",

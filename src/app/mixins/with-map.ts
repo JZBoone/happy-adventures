@@ -27,7 +27,8 @@ import { ISceneWithAssets } from "../types/assets";
 import { Constructor } from "../types/util";
 import { Friend } from "../common/friend";
 import { Interactable } from "../common/interactable";
-import { Level } from "../types/level";
+import { Scene } from "../types/scene";
+import { PlayerStorageKey } from "../types/player";
 
 export function withMap<
   SceneAudioAsset extends AudioAsset,
@@ -44,7 +45,7 @@ export function withMap<
     ISceneWithAssets<SceneAudioAsset, SceneImageAsset, SceneSpriteAsset>
   >,
   options: {
-    level: Level;
+    level: Scene;
     groundTypes: Readonly<SceneGroundType[]>;
     immovableImages?: SceneImmovableImages;
     immovableImageGroups?: SceneImmovableImageGroups;
@@ -460,7 +461,9 @@ export function withMap<
     ): Friend {
       const _params = {
         ...params,
-        asset: params?.asset || (ImageAsset.Friend as const),
+        asset:
+          params?.asset ||
+          (localStorage.getItem(PlayerStorageKey) as DefaultImageAsset),
         coordinates: params?.coordinates || [0, 0],
       };
       if (!this.images.includes(_params.asset)) {

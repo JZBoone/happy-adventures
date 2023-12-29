@@ -12,7 +12,7 @@ import {
 } from "../common/map";
 import { Subject, distinctUntilChanged } from "rxjs";
 import { isEqual } from "lodash";
-import { Level } from "../types/level";
+import { Scene } from "../types/scene";
 import { createEditableDialog, toast } from "../common/helpers";
 import { Movable } from "../common/movable";
 import { Immovable } from "../common/immovable";
@@ -42,7 +42,7 @@ export const withMapBuilder = <
       SceneMovableSprites
     >
   >,
-  level: Level
+  level: Scene
 ) => {
   return class MapBuilder extends LevelClass {
     private selectedImageAsset!: SceneImageAsset;

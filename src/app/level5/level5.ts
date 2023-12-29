@@ -1,4 +1,4 @@
-import { Level } from "../types/level";
+import { Scene } from "../types/scene";
 import { showLevelStartText, newPromiseLasting } from "../common/helpers";
 import { Coordinates } from "../types/map";
 import { GroundType, Level5MapAndAssets } from "./level5-assets";
@@ -11,7 +11,7 @@ export class Level5 extends Level5MapAndAssets {
   private isFalling = false;
   private levelCompleted = false;
   constructor() {
-    super({ key: Level.Level5 });
+    super({ key: Scene.Level5 });
   }
 
   async create() {
@@ -89,7 +89,7 @@ export class Level5 extends Level5MapAndAssets {
     this.playSound(AudioAsset.SparklingStar);
     await this.friend.disappear();
     this.playSound(AudioAsset.Tada);
-    await newPromiseLasting(this, 500, () => this.scene.start(Level.Credits));
+    await newPromiseLasting(this, 500, () => this.scene.start(Scene.Credits));
   }
 
   private castleDoorCoordinates(): Coordinates {

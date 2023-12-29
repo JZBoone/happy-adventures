@@ -1,9 +1,9 @@
 import Phaser from "phaser";
-import { Level } from "../types/level";
+import { Scene } from "../types/scene";
 
 export class Credits extends Phaser.Scene {
   constructor() {
-    super({ key: Level.Credits });
+    super({ key: Scene.Credits });
   }
 
   create() {
@@ -25,7 +25,7 @@ export class Credits extends Phaser.Scene {
       ease: "Linear",
       duration: 12_000,
       onComplete: () => {
-        this.scene.start(Level.TheEnd);
+        this.scene.start(Scene.TheEnd);
       },
     });
   }
