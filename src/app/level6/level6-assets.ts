@@ -7,8 +7,8 @@ import { SpriteAsset } from "../types/sprite";
 import { AudioAsset } from "../types/audio";
 
 export const groundTypes = [
-  ImageAsset.Forest,
   ImageAsset.BlackHole,
+  ImageAsset.Forest,
   ImageAsset.RainbowGlitter,
 ] as const;
 

@@ -1,6 +1,6 @@
+import { isEqual } from "lodash";
 import { Scene } from "../types/scene";
 import { showLevelStartText, newPromiseLasting } from "../common/helpers";
-import { MiniPlaneAnimation } from "../types/sprite";
 import { Coordinates, Move } from "../types/map";
 import { AudioAsset } from "../types/audio";
 import { Level4MapAndAssets } from "./level4-assets";
@@ -17,6 +17,7 @@ export class Level4 extends Level4MapAndAssets {
   private completedLevel = false;
   private isGettingSpiked = false;
 
+  private isMounting = false;
   private isUnmounting = false;
   private planeStartCoordinates!: Coordinates;
 
@@ -40,15 +41,16 @@ export class Level4 extends Level4MapAndAssets {
     );
     showLevelStartText(this, 4);
     this.motorSound = this.addSound(AudioAsset.Motor, { loop: true });
-    this.planeStartCoordinates = this.movableSprites.miniPlane.coordinates();
+    this.planeStartCoordinates = this.movableImages.magicalCraft.coordinates();
   }
 
   private async handleMove(coordinates: Coordinates, move: Move) {
-    if (this.isGettingSpiked) {
+    console.log(coordinates);
+    if (this.isGettingSpiked || this.isUnmounting || this.isMounting) {
       return;
     }
     if (
-      !this.friend.mount &&
+      !this.isOnCraft() &&
       this.spikies.some((spiky) => spiky.isAt(coordinates))
     ) {
       this.isGettingSpiked = true;
@@ -66,35 +68,19 @@ export class Level4 extends Level4MapAndAssets {
       return;
     }
 
-    if (
-      !this.friend.mount &&
-      this.movableSprites.miniPlane.occupies(coordinates)
-    ) {
-      this.friend.mountSprite(
-        this.movableSprites.miniPlane,
-        this.movableSprites.miniPlane.coordinates()
-      );
-      this.movableSprites.miniPlane.phaserObject.anims.play(
-        MiniPlaneAnimation.Fly
-      );
-      this.motorSound.play();
-      this.immovableImageGroups.trees.forEach((tree) => {
-        tree.phaserObject.setDepth(0);
-      });
-      this.movableSprites.miniPlane.phaserObject.setDepth(10);
+    if (!this.isOnCraft() && this.isInPositionToMountCraft(coordinates)) {
+      this.mountMagicalCraft();
       return;
     }
     if (
-      this.friend.mount &&
+      this.isOnCraft() &&
       this.immovableImages.landingPad.isAt(coordinates) &&
       !this.isUnmounting
     ) {
       this.isUnmounting = true;
-      this.movableSprites.miniPlane.phaserObject.anims.stop();
-      this.movableSprites.miniPlane.phaserObject.setFrame(0);
-      await this.movableSprites.miniPlane.move(coordinates);
-      this.friend.unmountSprite();
+      await this.movableImages.magicalCraft.move(coordinates);
       const [start, end] = this.unmountCoordinates(move);
+      this.friend.setOffsetX(0);
       await this.friend.move(start, {
         noAnimation: true,
       });
@@ -105,7 +91,7 @@ export class Level4 extends Level4MapAndAssets {
     }
     if (
       !this.completedLevel &&
-      !this.friend.mount &&
+      !this.isOnCraft() &&
       this.immovableImages.magicTree.occupies(coordinates)
     ) {
       this.completedLevel = true;
@@ -114,9 +100,15 @@ export class Level4 extends Level4MapAndAssets {
         this.scene.start(Scene.Level5)
       );
     }
-    if (!this.isUnmounting) {
-      await this.friend.move(coordinates);
-    }
+    await Promise.all([
+      this.friend.move(coordinates),
+      this.isOnCraft()
+        ? this.movableImages.magicalCraft.move([
+            coordinates[0] + 1,
+            coordinates[1],
+          ])
+        : Promise.resolve(),
+    ]);
   }
 
   private unmountCoordinates(
@@ -148,12 +140,41 @@ export class Level4 extends Level4MapAndAssets {
     }
   }
 
-  private startOver() {
-    this.movableSprites.miniPlane.move(this.planeStartCoordinates, {
+  private async startOver() {
+    this.movableImages.magicalCraft.move(this.planeStartCoordinates, {
       noAnimation: true,
     });
-    this.friend.move([0, 0], { noAnimation: true });
+    await this.friend.move([0, 0], { noAnimation: true });
     this.friend.phaserObject.setVisible(true);
     this.isGettingSpiked = false;
+  }
+
+  private isInPositionToMountCraft(coordinates: Coordinates) {
+    const [craftRow, craftPosition] =
+      this.movableImages.magicalCraft.coordinates();
+    return (
+      isEqual([craftRow - 1, craftPosition], coordinates) ||
+      isEqual([craftRow - 1, craftPosition - 1], coordinates)
+    );
+  }
+
+  private isOnCraft() {
+    const craftCoordinates = this.movableImages.magicalCraft.coordinates();
+    const [friendRow, friendPosition] = this.friend.coordinates();
+    return isEqual(craftCoordinates, [friendRow + 1, friendPosition]);
+  }
+
+  private async mountMagicalCraft() {
+    this.isMounting = true;
+    const [craftRow, craftPosition] =
+      this.movableImages.magicalCraft.coordinates();
+    this.friend.setOffsetX(25);
+    await this.friend.move([craftRow - 1, craftPosition]);
+    this.motorSound.play();
+    this.immovableImageGroups.trees.forEach((tree) => {
+      tree.phaserObject.setDepth(0);
+    });
+    this.movableImages.magicalCraft.phaserObject.setDepth(10);
+    this.isMounting = false;
   }
 }

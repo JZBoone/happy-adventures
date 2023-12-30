@@ -20,6 +20,7 @@ export enum ImageAsset {
   LittleSister = "little-sister",
   Lollipop = "lollipop",
   Lungs = "lungs",
+  MagicalCraft = "magical-craft",
   MagicLollipopKey = "magic-lollipop-key",
   MagicTree = "magic-tree",
   Mine = "mine",

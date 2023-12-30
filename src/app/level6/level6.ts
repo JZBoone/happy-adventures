@@ -50,6 +50,9 @@ export class Level6 extends Level6MapAndAssets {
   }
 
   update() {
+    if (this.isDying) {
+      return;
+    }
     super.update();
     if (this.cameras.main.scrollX > this.friend.phaserObject.x - 25) {
       this.isDying = true;

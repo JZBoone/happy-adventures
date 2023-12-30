@@ -308,12 +308,12 @@
       ]
     }
   },
-  "movableSprites": {
-    "miniPlane": {
+  "movableImages": {
+    "magicalCraft": {
       "coordinates": [27, 36],
-      "asset": "mini-plane",
+      "asset": "magical-craft",
       "width": 2,
-      "height": 2
+      "height": 1
     }
   },
   "interactables": [
