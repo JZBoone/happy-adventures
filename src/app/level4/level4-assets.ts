@@ -4,7 +4,6 @@ import { withAssets } from "../mixins/with-assets";
 import { AudioAsset } from "../types/audio";
 import { ImageAsset } from "../types/image";
 import { Scene } from "../types/scene";
-import { SpriteAsset } from "../types/sprite";
 
 export const groundTypes = [ImageAsset.Forest] as const;
 
@@ -25,6 +24,7 @@ export class Level4MapAndAssets extends withMap(
       ImageAsset.SquareSpike,
       ImageAsset.SpikyGuy,
       ImageAsset.EvilGuy,
+      ImageAsset.MagicalCraft,
     ] as const,
     audio: [AudioAsset.Motor, AudioAsset.FunnyCry] as const,
   }),
@@ -35,7 +35,7 @@ export class Level4MapAndAssets extends withMap(
       landingPad: { asset: ImageAsset.LandingPad },
       magicTree: { asset: ImageAsset.MagicTree },
     },
-    movableSprites: { miniPlane: { asset: SpriteAsset.MiniPlane } },
+    movableImages: { magicalCraft: { asset: ImageAsset.MagicalCraft } },
     immovableImageGroups: {
       trees: { asset: ImageAsset.Tree },
       cactus: { asset: ImageAsset.Cactus },

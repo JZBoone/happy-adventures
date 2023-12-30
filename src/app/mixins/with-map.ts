@@ -336,18 +336,6 @@ export function withMap<
           );
         }
       }
-      if (this.mapObjectsJson?.movableImages) {
-        for (const [key, _options] of Object.entries(
-          this.mapObjectsJson.movableImages
-        )) {
-          const movableImage = this.createMovableImage(_options);
-          this.movableImages[key as keyof SceneMovableImages] = movableImage;
-          this.sceneObjectConfigPath.set(
-            movableImage,
-            `movableImages.${key}.coordinates`
-          );
-        }
-      }
       if (this.mapObjectsJson?.movableSprites) {
         for (const [key, _options] of Object.entries(
           this.mapObjectsJson.movableSprites
@@ -402,6 +390,18 @@ export function withMap<
             return interactable;
           }
         );
+      }
+      if (this.mapObjectsJson?.movableImages) {
+        for (const [key, _options] of Object.entries(
+          this.mapObjectsJson.movableImages
+        )) {
+          const movableImage = this.createMovableImage(_options);
+          this.movableImages[key as keyof SceneMovableImages] = movableImage;
+          this.sceneObjectConfigPath.set(
+            movableImage,
+            `movableImages.${key}.coordinates`
+          );
+        }
       }
       this.cursors = this.input.keyboard!.createCursorKeys();
       this.allMoveCoordinates$

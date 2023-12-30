@@ -2,7 +2,6 @@ import { AudioAsset } from "./audio";
 
 export enum SpriteAsset {
   Castle = "castle",
-  MiniPlane = "mini-plane",
   CandyCastle = "candy-castle",
 }
 
@@ -14,10 +13,6 @@ export enum CastleAnimation {
 export enum CandyCastleAnimation {
   Open = "candy-castle.open",
   Close = "candy-castle.close",
-}
-
-export enum MiniPlaneAnimation {
-  Fly = "mini-plane.fly",
 }
 
 export type CastleFrame = 0 | 1 | 2 | 3 | 4 | 5 | 6;
@@ -106,27 +101,7 @@ export const SpriteAssets: Record<
       });
     },
   },
-  [SpriteAsset.MiniPlane]: {
-    path: "assets/image/mini-plane.png",
-    frameConfig: {
-      frameWidth: 101,
-      frameHeight: 85.47,
-    },
-    anims: (scene) => {
-      if (!scene.anims.exists(MiniPlaneAnimation.Fly)) {
-        scene.anims.create({
-          key: MiniPlaneAnimation.Fly,
-          frames: scene.anims.generateFrameNumbers(SpriteAsset.MiniPlane, {
-            start: 1 satisfies MiniPlaneFrame,
-            end: 3 satisfies MiniPlaneFrame,
-          }),
-          frameRate: 50,
-          repeat: -1,
-        });
-      }
-    },
-  },
 };
 
-export const defaultSprites = [SpriteAsset.MiniPlane] as const;
+export const defaultSprites = [] as const;
 export type DefaultSpriteAsset = (typeof defaultSprites)[number];

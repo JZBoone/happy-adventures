@@ -46,26 +46,6 @@ export class Friend extends Movable<Phaser.GameObjects.Image> {
     });
   }
 
-  mountSprite(
-    movable: Movable<Phaser.GameObjects.Sprite>,
-    coordinates: Coordinates
-  ) {
-    this.phaserObject.setVisible(false);
-    this.move(coordinates);
-    this.mount = movable;
-    this.mount.move(coordinates);
-  }
-
-  unmountSprite(): Movable<Phaser.GameObjects.Sprite> {
-    if (!this.mount) {
-      throw new Error("Cannot unmount sprite because it is not mounted");
-    }
-    const mount = this.mount;
-    this.mount = null;
-    this.phaserObject.setVisible(true);
-    return mount;
-  }
-
   async move(
     coordinates: Coordinates,
     options: { noAnimation?: boolean } = {}
