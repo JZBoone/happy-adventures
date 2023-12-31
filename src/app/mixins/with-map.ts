@@ -418,6 +418,9 @@ export function withMap<
     }
 
     update() {
+      if (!this.map) {
+        return;
+      }
       if (
         process.env.MAP_BUILDER_ENABLED &&
         Phaser.Input.Keyboard.JustDown(this.hotkey.e)

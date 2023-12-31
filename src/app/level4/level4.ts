@@ -45,7 +45,6 @@ export class Level4 extends Level4MapAndAssets {
   }
 
   private async handleMove(coordinates: Coordinates, move: Move) {
-    console.log(coordinates);
     if (this.isGettingSpiked || this.isUnmounting || this.isMounting) {
       return;
     }
@@ -74,11 +73,20 @@ export class Level4 extends Level4MapAndAssets {
     }
     if (
       this.isOnCraft() &&
-      this.immovableImages.landingPad.isAt(coordinates) &&
+      this.immovableImages.landingPad.isAt([
+        coordinates[0] + 1,
+        coordinates[1],
+      ]) &&
       !this.isUnmounting
     ) {
       this.isUnmounting = true;
-      await this.movableImages.magicalCraft.move(coordinates);
+      await Promise.all([
+        this.movableImages.magicalCraft.move([
+          coordinates[0] + 1,
+          coordinates[1],
+        ]),
+        this.friend.move(coordinates),
+      ]);
       const [start, end] = this.unmountCoordinates(move);
       this.friend.setOffsetX(0);
       await this.friend.move(start, {
@@ -154,7 +162,9 @@ export class Level4 extends Level4MapAndAssets {
       this.movableImages.magicalCraft.coordinates();
     return (
       isEqual([craftRow - 1, craftPosition], coordinates) ||
-      isEqual([craftRow - 1, craftPosition - 1], coordinates)
+      isEqual([craftRow - 1, craftPosition - 1], coordinates) ||
+      isEqual([craftRow, craftPosition], coordinates) ||
+      isEqual([craftRow, craftPosition - 1], coordinates)
     );
   }
 
