@@ -69,7 +69,7 @@ export function withMap<
         SceneMovableSprites
       >
   {
-    cursors!: Phaser.Types.Input.Keyboard.CursorKeys;
+    cursors?: Phaser.Types.Input.Keyboard.CursorKeys;
     friend!: Friend;
     map: {
       asset: SceneGroundType;
@@ -591,6 +591,9 @@ export function withMap<
     }
 
     private getMove(): Move | null {
+      if (!this.cursors) {
+        return null;
+      }
       for (const movable of this.movables) {
         if (movable.isMoving()) {
           return null;

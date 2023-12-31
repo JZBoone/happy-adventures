@@ -10,12 +10,14 @@ export class Level6 extends Level6MapAndAssets {
   isFalling = false;
   isDying = false;
   didWin = false;
+  finishedCreate = false;
 
   constructor() {
     super({ key: Scene.Level6 });
   }
 
   async create() {
+    this.finishedCreate = false;
     await super.create();
     this.isDying = false;
     this.isFalling = false;
@@ -25,7 +27,10 @@ export class Level6 extends Level6MapAndAssets {
       this.handleMove(coordinates, groundType)
     );
     showLevelStartText(this, 6);
-    newPromiseLasting(this, 4_000, () => this.initCameraMovement());
+    this.finishedCreate = true;
+    newPromiseLasting(this, 4_000, () => {
+      this.initCameraMovement();
+    });
   }
 
   private async handleMove(coordinates: Coordinates, groundType: GroundType) {
@@ -50,7 +55,7 @@ export class Level6 extends Level6MapAndAssets {
   }
 
   update() {
-    if (this.isDying) {
+    if (this.isDying || !this.finishedCreate) {
       return;
     }
     super.update();

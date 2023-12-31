@@ -36,9 +36,10 @@ export class PlayerSelection extends Phaser.Scene {
       { offsetX: 450, image: ImageAsset.ToddieTitan, name: "Toddie Titan" },
     ];
     for (const { offsetX, image, name } of options) {
+      const imageY = Math.max(this.cameras.main.centerY, 375);
       const phaserImage = this.add.image(
         this.cameras.main.centerX - offsetX,
-        this.cameras.main.centerY,
+        imageY,
         image
       );
       phaserImage.setScale(2);
@@ -50,14 +51,9 @@ export class PlayerSelection extends Phaser.Scene {
         this.selectPlayer(image);
       });
       this.add
-        .text(
-          this.cameras.main.centerX - offsetX,
-          this.cameras.main.centerY - 100,
-          name,
-          {
-            font: "32px Arial",
-          }
-        )
+        .text(this.cameras.main.centerX - offsetX, imageY - 100, name, {
+          font: "32px Arial",
+        })
         .setOrigin(0.5, 0.5);
     }
   }
