@@ -9,7 +9,7 @@
     "build": "npm run build:dev",
     "build:dev": "NODE_ENV=development node build",
     "build:prod": "NODE_ENV=production node build",
-    "deploy": "npm run build:prod && gsutil -m cp -r ./dist/* gs://happy-adventures",
+    "deploy": "npm run build:prod && gsutil -m cp -r -z html,js,json ./dist/* gs://happy-adventures",
     "test": "npx jest"
   },
   "author": "",
