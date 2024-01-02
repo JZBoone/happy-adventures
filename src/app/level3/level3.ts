@@ -109,6 +109,7 @@ export class Level3 extends Level3MapAndAssets {
   }
 
   private startOver() {
+    this.movableImages.bomb.setOffsetY(this.bomboffsetY);
     this.friend.move([0, 0], { noAnimation: true });
     this.friend.phaserObject.setVisible(true);
     this.isMelting = false;

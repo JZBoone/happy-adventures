@@ -97,7 +97,6 @@ export class Level5 extends Level5MapAndAssets {
   }
 
   private startOver() {
-    this.movableImages.magicLollipopKey.setOffsetY(25);
     this.friend.move([0, 0], { noAnimation: true });
     this.friend.phaserObject.setVisible(true);
     this.isFalling = false;
