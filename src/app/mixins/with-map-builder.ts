@@ -29,7 +29,7 @@ export const withMapBuilder = <
   SceneMovableImages extends Record<string, { asset: SceneImageAsset }>,
   SceneMovableSprites extends Record<string, { asset: SceneSpriteAsset }>,
 >(
-  LevelClass: Constructor<
+  LevelAssetsClass: Constructor<
     ISceneWithMap<
       SceneAudioAsset,
       SceneImageAsset,
@@ -42,9 +42,22 @@ export const withMapBuilder = <
       SceneMovableSprites
     >
   >,
-  level: Scene
+  level: Scene,
+  LevelClass: Constructor<
+    ISceneWithMap<
+      SceneAudioAsset,
+      SceneImageAsset,
+      SceneGroundType,
+      SceneSpriteAsset,
+      SceneImmovableImages,
+      SceneImmovableImageGroups,
+      SceneImmovableSprites,
+      SceneMovableImages,
+      SceneMovableSprites
+    >
+  >
 ) => {
-  return class MapBuilder extends LevelClass {
+  return class MapBuilder extends LevelAssetsClass {
     private selectedImageAsset!: SceneImageAsset;
     private pointerIsDown = false;
     private changeCoordinates$ = new Subject<Coordinates>();
@@ -73,7 +86,7 @@ export const withMapBuilder = <
       | undefined;
     private _ready = false;
     private dialogOpen = false;
-
+    private isExiting = false;
     constructor() {
       super({ key: mapEditorSceneKey(level) });
     }
@@ -130,10 +143,7 @@ export const withMapBuilder = <
     }
 
     async update() {
-      if (this.dialogOpen) {
-        return;
-      }
-      if (!this._ready) {
+      if (this.isExiting || this.dialogOpen || !this._ready) {
         return;
       }
       this.maybeGrowMap();
@@ -164,16 +174,22 @@ export const withMapBuilder = <
       }
     }
 
-    private async saveMap() {
+    private async saveMap(
+      { noToast }: { noToast: boolean } = { noToast: false }
+    ) {
       try {
         await saveMap(
           level,
           this.map.map((row) => row.map((position) => position.asset)),
           this.mapObjectsJson
         );
-        toast(this, "Saved map.");
+        if (!noToast) {
+          await toast(this, "Saved map.");
+        }
       } catch (e) {
-        toast(this, "Oops! Could not save map.");
+        if (!noToast) {
+          await toast(this, "Oops! Could not save map.");
+        }
         console.error("Error saving map", e);
       }
     }
@@ -239,12 +255,8 @@ export const withMapBuilder = <
       this.updateSceneObjectCoordinates(this.sceneObjectToMove, coordinates);
     }
 
-    private handlePointerDown(pointer: Phaser.Input.Pointer) {
+    private async handlePointerDown(pointer: Phaser.Input.Pointer) {
       const [row, position] = pointerCoordinates(pointer, this.cameras.main);
-      if ((pointer.event as MouseEvent).shiftKey) {
-        console.info(row, position);
-        toast(this, `${row}, ${position}`, 2_000);
-      }
       if (!this.map[row][position]) {
         console.error(
           `Out of bounds pointerdown: x: ${pointer.x} y: ${pointer.y} row: ${row} position: ${position}`
@@ -268,6 +280,11 @@ export const withMapBuilder = <
             this.input.keyboard!.enableGlobalCapture();
           }
         );
+        return;
+      }
+      if ((pointer.event as MouseEvent).shiftKey) {
+        console.info(row, position);
+        await toast(this, `${row}, ${position}`, 2_000);
         return;
       }
       this.sceneObjectToMove = sceneObject;
@@ -307,8 +324,11 @@ export const withMapBuilder = <
 
     private async maybeLaunchLevel() {
       if (this.hotkey.esc.isDown) {
-        await this.saveMap();
-        this.scene.start(level);
+        this.isExiting = true;
+        await this.saveMap({ noToast: true });
+        this.scene.sleep();
+        this.scene.add(level, LevelClass, true);
+        this.isExiting = false;
       }
     }
 
