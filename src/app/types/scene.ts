@@ -8,4 +8,5 @@ export enum Scene {
   Level6 = "level6",
   Credits = "credits",
   TheEnd = "theend",
+  Instructions = "instructions",
 }

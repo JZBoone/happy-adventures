@@ -1,4 +1,5 @@
 export enum ImageAsset {
+  ArrowKeys = "arrow-keys",
   BlackHole = "black-hole",
   Boat = "boat",
   Bomb = "bomb",

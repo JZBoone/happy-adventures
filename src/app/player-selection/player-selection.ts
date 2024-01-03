@@ -65,6 +65,6 @@ export class PlayerSelection extends Phaser.Scene {
 
   private selectPlayer(player: ImageAsset) {
     localStorage.setItem(PlayerStorageKey, player);
-    this.scene.start(Scene.Level1);
+    this.scene.start(Scene.Instructions);
   }
 }
