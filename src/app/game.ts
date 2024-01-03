@@ -17,8 +17,6 @@ import { PlayerSelection } from "./player-selection/player-selection";
 import { Level6 } from "./level6/level6";
 import { Level6MapAndAssets } from "./level6/level6-assets";
 
-console.log("6:28pm");
-
 export default new Phaser.Game({
   type: Phaser.AUTO,
   width: window.innerWidth,

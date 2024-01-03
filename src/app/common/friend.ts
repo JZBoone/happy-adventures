@@ -1,14 +1,11 @@
 import { ISceneWithAssets } from "../types/assets";
 import { AudioAsset } from "../types/audio";
 import { ImageAsset } from "../types/image";
-import { Coordinates } from "../types/map";
 import { SpriteAsset } from "../types/sprite";
 import { ImmovableOptions } from "./immovable";
 import { Movable } from "./movable";
 
 export class Friend extends Movable<Phaser.GameObjects.Image> {
-  mount: Movable<Phaser.GameObjects.Sprite> | null = null;
-
   private sceneSize: { width: number; height: number };
 
   constructor(
@@ -44,31 +41,6 @@ export class Friend extends Movable<Phaser.GameObjects.Image> {
         },
       });
     });
-  }
-
-  async move(
-    coordinates: Coordinates,
-    options: { noAnimation?: boolean } = {}
-  ): Promise<void> {
-    if (!this.mount) {
-      return super.move(coordinates, options);
-    }
-    super.move(coordinates, options);
-    return this.mount.move(coordinates, options);
-  }
-
-  coordinates() {
-    if (this.mount) {
-      return this.mount.coordinates();
-    }
-    return super.coordinates();
-  }
-
-  isMoving(): boolean {
-    if (!this.mount) {
-      return super.isMoving();
-    }
-    return this.mount.isMoving();
   }
 
   private initFollow() {

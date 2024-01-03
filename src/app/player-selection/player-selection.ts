@@ -22,8 +22,13 @@ export class PlayerSelection extends Phaser.Scene {
 
   private makeHeading() {
     this.add
-      .text(this.cameras.main.centerX, 120, "Select Your Player", {
+      .text(this.cameras.main.centerX, 100, "Happy Adventures", {
         font: "64px Arial",
+      })
+      .setOrigin(0.5, 0.5);
+    this.add
+      .text(this.cameras.main.centerX, 250, "Choose Your Player", {
+        font: "48px Arial",
       })
       .setOrigin(0.5, 0.5);
   }
@@ -36,7 +41,7 @@ export class PlayerSelection extends Phaser.Scene {
       { offsetX: 450, image: ImageAsset.ToddieTitan, name: "Toddie Titan" },
     ];
     for (const { offsetX, image, name } of options) {
-      const imageY = Math.max(this.cameras.main.centerY, 375);
+      const imageY = Math.max(this.cameras.main.centerY, 500);
       const phaserImage = this.add.image(
         this.cameras.main.centerX - offsetX,
         imageY,

@@ -8,6 +8,10 @@ import { SpriteAsset } from "../types/sprite";
 
 export const groundTypes = [
   ImageAsset.Sand,
+  ImageAsset.SandUp,
+  ImageAsset.SandDown,
+  ImageAsset.SandLeft,
+  ImageAsset.SandRight,
   ImageAsset.Water,
   ImageAsset.Forest,
 ] as const;
@@ -24,6 +28,10 @@ export class Level1MapAndAssets extends withMap(
     ] as const,
     images: [
       ImageAsset.Sand,
+      ImageAsset.SandUp,
+      ImageAsset.SandDown,
+      ImageAsset.SandLeft,
+      ImageAsset.SandRight,
       ImageAsset.Water,
       ImageAsset.Boat,
       ImageAsset.Forest,

@@ -44,7 +44,7 @@ export class Level1 extends Level1MapAndAssets {
       this.friend.move(coordinates);
       this.movableImages.boat.move(coordinates);
       this.playSound(AudioAsset.Splash, { volume: 0.25 });
-    } else if (groundType === ImageAsset.Sand) {
+    } else if (this.isSand(groundType)) {
       this.playSound(AudioAsset.BoardBoat);
       this.friend.setOffsetY(0);
       this.friend.move(coordinates);
@@ -57,7 +57,7 @@ export class Level1 extends Level1MapAndAssets {
     coordinates: Coordinates,
     groundType: GroundType
   ) {
-    if (groundType === ImageAsset.Sand) {
+    if (this.isSand(groundType)) {
       this.friend.move(coordinates);
       this.playSound(AudioAsset.SandStep);
     } else if (
@@ -83,5 +83,15 @@ export class Level1 extends Level1MapAndAssets {
     await this.friend.disappear();
     this.playSound(AudioAsset.Tada);
     await newPromiseLasting(this, 500, () => this.scene.start(Scene.Level2));
+  }
+
+  private isSand(groundType: GroundType): boolean {
+    return [
+      ImageAsset.Sand,
+      ImageAsset.SandDown,
+      ImageAsset.SandUp,
+      ImageAsset.SandLeft,
+      ImageAsset.SandRight,
+    ].includes(groundType);
   }
 }
