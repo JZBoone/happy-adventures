@@ -164,7 +164,7 @@ export function withMap<
       SceneMovableSprites
     >[] = [];
 
-    private hotkey!: {
+    private hotkey?: {
       e: Phaser.Input.Keyboard.Key;
     };
 
@@ -418,14 +418,15 @@ export function withMap<
     }
 
     update() {
-      if (!this.map) {
+      if (!this.map || !this.hotkey) {
         return;
       }
       if (
         process.env.MAP_BUILDER_ENABLED &&
         Phaser.Input.Keyboard.JustDown(this.hotkey.e)
       ) {
-        this.scene.start(mapEditorSceneKey(options.level));
+        this.scene.remove(options.level);
+        this.scene.run(mapEditorSceneKey(options.level));
         return;
       }
       const move = this.getMove();
