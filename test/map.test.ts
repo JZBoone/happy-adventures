@@ -1,6 +1,13 @@
 import { readdirSync } from "fs";
+import { assert } from "typia";
 import { mapCoordinates, worldPosition } from "../src/app/common/map";
-import { Coordinates } from "../src/app/types/map";
+import {
+  Coordinates,
+  InteractableParams,
+  SceneObjectParams,
+} from "../src/app/types/map";
+import { ImageAsset } from "../src/app/types/image";
+import { SpriteAsset } from "../src/app/types/sprite";
 
 const testCases: {
   width?: number;
@@ -69,6 +76,28 @@ function levelDirectoryNames() {
     .map(({ name }) => name);
 }
 
+// Needs to be kept in sync with MapObjectsJson in map.ts
+type MapObjectsJson = {
+  immovableImages?: {
+    [key: string]: SceneObjectParams<ImageAsset>;
+  };
+  immovableImageGroups?: {
+    [key: string]: Omit<SceneObjectParams<ImageAsset>, "coordinates"> & {
+      coordinates: Coordinates[];
+    };
+  };
+  immovableSprites?: {
+    [key: string]: SceneObjectParams<SpriteAsset>;
+  };
+  movableImages?: {
+    [key: string]: SceneObjectParams<ImageAsset>;
+  };
+  movableSprites?: {
+    [key: string]: SceneObjectParams<SpriteAsset>;
+  };
+  interactables?: InteractableParams<ImageAsset>[];
+};
+
 describe("map schema", () => {
   test("ground types are valid", () => {
     for (const level of levelDirectoryNames()) {
@@ -85,7 +114,14 @@ describe("map schema", () => {
       }
     }
   });
-  test("objects are valid", () => {
+  test("objects schema is valid", () => {
+    for (const level of levelDirectoryNames()) {
+      // eslint-disable-next-line @typescript-eslint/no-var-requires
+      const mapObjects = require(`../src/assets/map/${level}-objects.json`);
+      assert<MapObjectsJson>(mapObjects);
+    }
+  });
+  test("objects json agrees with map options", () => {
     for (const level of levelDirectoryNames()) {
       // eslint-disable-next-line @typescript-eslint/no-var-requires
       const mapObjects = require(`../src/assets/map/${level}-objects.json`);

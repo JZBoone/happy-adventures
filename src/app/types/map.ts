@@ -30,6 +30,7 @@ export type FriendParams<Asset extends ImageAsset | DefaultImageAsset> =
     dontFollow?: boolean;
   };
 
+// Needs to be kept in sync with MapObjectsJson in map.test.ts
 export type MapObjectsJson<
   SceneImageAsset extends ImageAsset,
   SceneSpriteAsset extends SpriteAsset,
