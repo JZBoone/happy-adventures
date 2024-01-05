@@ -14,22 +14,22 @@ export const groundTypes = [
 
 export type GroundType = (typeof groundTypes)[number];
 
+export const assetOptions = {
+  images: [ImageAsset.Forest, ImageAsset.BlackHole, ImageAsset.RainbowGlitter],
+  sprites: [SpriteAsset.CandyCastle],
+  audio: [AudioAsset.Fall, AudioAsset.FunnyCry],
+} as const;
+
+export const mapOptions = {
+  level: Scene.Level6,
+  groundTypes,
+  immovableSprites: {},
+  movableSprites: {},
+  movableImages: {},
+  immovableImageGroups: {},
+} as const;
+
 export class Level6MapAndAssets extends withMap(
-  withAssets(Phaser.Scene, {
-    images: [
-      ImageAsset.Forest,
-      ImageAsset.BlackHole,
-      ImageAsset.RainbowGlitter,
-    ] as const,
-    sprites: [SpriteAsset.CandyCastle] as const,
-    audio: [AudioAsset.Fall, AudioAsset.FunnyCry] as const,
-  }),
-  {
-    level: Scene.Level6,
-    groundTypes,
-    immovableSprites: {},
-    movableSprites: {},
-    movableImages: {},
-    immovableImageGroups: {},
-  } as const
+  withAssets(Phaser.Scene, assetOptions),
+  mapOptions
 ) {}

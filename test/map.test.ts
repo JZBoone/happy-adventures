@@ -1,3 +1,4 @@
+import { readdirSync } from "fs";
 import { mapCoordinates, worldPosition } from "../src/app/common/map";
 import { Coordinates } from "../src/app/types/map";
 
@@ -59,4 +60,77 @@ describe("mapCoordinates()", () => {
       );
     }
   );
+});
+
+function levelDirectoryNames() {
+  const dirContents = readdirSync("./src/app", { withFileTypes: true });
+  return dirContents
+    .filter((item) => item.isDirectory() && item.name.startsWith("level"))
+    .map(({ name }) => name);
+}
+
+describe("map schema", () => {
+  test("ground types are valid", () => {
+    for (const level of levelDirectoryNames()) {
+      // eslint-disable-next-line @typescript-eslint/no-var-requires
+      const map = require(`../src/assets/map/${level}.json`);
+      // eslint-disable-next-line @typescript-eslint/no-var-requires
+      const { groundTypes } = require(`../src/app/${level}/${level}-assets`);
+      for (const row of map) {
+        for (const groundType of row) {
+          if (!groundTypes.includes(groundType)) {
+            throw new Error(`${level} has invalid ground type ${groundType}`);
+          }
+        }
+      }
+    }
+  });
+  test("objects are valid", () => {
+    for (const level of levelDirectoryNames()) {
+      // eslint-disable-next-line @typescript-eslint/no-var-requires
+      const mapObjects = require(`../src/assets/map/${level}-objects.json`);
+      // eslint-disable-next-line @typescript-eslint/no-var-requires
+      const { mapOptions } = require(`../src/app/${level}/${level}-assets`);
+      // eslint-disable-next-line @typescript-eslint/no-var-requires
+      const { assetOptions } = require(`../src/app/${level}/${level}-assets`);
+      expect(mapObjects).toBeDefined();
+      expect(mapOptions).toBeDefined();
+      expect(assetOptions).toBeDefined();
+      for (const [key, value] of Object.entries(
+        mapObjects.immovableSprites || {}
+      )) {
+        const objectSpec = mapOptions.immovableSprites[key];
+        expect(objectSpec).toBeDefined();
+        expect(objectSpec.asset).toBe((value as { asset: string }).asset);
+      }
+      for (const [key, value] of Object.entries(
+        mapObjects.movableImages || {}
+      )) {
+        const objectSpec = mapOptions.movableImages[key];
+        expect(objectSpec).toBeDefined();
+        expect(objectSpec.asset).toBe((value as { asset: string }).asset);
+      }
+      for (const [key, value] of Object.entries(
+        mapObjects.immovableImageGroups || {}
+      )) {
+        const objectSpec = mapOptions.immovableImageGroups[key];
+        expect(objectSpec).toBeDefined();
+        expect(objectSpec.asset).toBe((value as { asset: string }).asset);
+      }
+      for (const [key, value] of Object.entries(
+        mapObjects.immovableImages || {}
+      )) {
+        const objectSpec = mapOptions.immovableImages[key];
+        expect(objectSpec).toBeDefined();
+        expect(objectSpec.asset).toBe((value as { asset: string }).asset);
+      }
+      for (const interactable of mapObjects.interactables || []) {
+        if (!assetOptions.images.includes(interactable.asset)) {
+          throw new Error(
+            `${level} interactable asset ${interactable.asset} not loaded`
+          );
+        }
+      }
+    }
+  });
 });
