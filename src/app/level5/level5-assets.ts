@@ -14,39 +14,43 @@ export const groundTypes = [
 
 export type GroundType = (typeof groundTypes)[number];
 
+export const assetOptions = {
+  images: [
+    ImageAsset.RainbowGlitter,
+    ImageAsset.CrackedRainbowGlitter,
+    ImageAsset.Lollipop,
+    ImageAsset.GumDrop,
+    ImageAsset.Peppermint,
+    ImageAsset.NiceOldLady,
+    ImageAsset.BlackHole,
+    ImageAsset.MagicLollipopKey,
+  ],
+  sprites: [SpriteAsset.CandyCastle],
+  audio: [
+    AudioAsset.RockDestroy,
+    AudioAsset.Twinkle,
+    AudioAsset.SparklingStar,
+    AudioAsset.SuccessBell,
+    AudioAsset.Whoosh,
+  ],
+} as const;
+
+export const mapOptions = {
+  level: Scene.Level5,
+  groundTypes,
+  immovableSprites: { candyCastle: { asset: SpriteAsset.CandyCastle } },
+  movableSprites: {},
+  movableImages: {
+    magicLollipopKey: { asset: ImageAsset.MagicLollipopKey },
+  },
+  immovableImageGroups: {
+    lollipops: { asset: ImageAsset.Lollipop },
+    gumdrops: { asset: ImageAsset.GumDrop },
+    peppermints: { asset: ImageAsset.Peppermint },
+  },
+} as const;
+
 export class Level5MapAndAssets extends withMap(
-  withAssets(Phaser.Scene, {
-    images: [
-      ImageAsset.RainbowGlitter,
-      ImageAsset.CrackedRainbowGlitter,
-      ImageAsset.Lollipop,
-      ImageAsset.GumDrop,
-      ImageAsset.Peppermint,
-      ImageAsset.NiceOldLady,
-      ImageAsset.BlackHole,
-      ImageAsset.MagicLollipopKey,
-    ] as const,
-    sprites: [SpriteAsset.CandyCastle] as const,
-    audio: [
-      AudioAsset.RockDestroy,
-      AudioAsset.Twinkle,
-      AudioAsset.SparklingStar,
-      AudioAsset.SuccessBell,
-      AudioAsset.Whoosh,
-    ] as const,
-  }),
-  {
-    level: Scene.Level5,
-    groundTypes,
-    immovableSprites: { candyCastle: { asset: SpriteAsset.CandyCastle } },
-    movableSprites: {},
-    movableImages: {
-      magicLollipopKey: { asset: ImageAsset.MagicLollipopKey },
-    },
-    immovableImageGroups: {
-      lollipops: { asset: ImageAsset.Lollipop },
-      gumdrops: { asset: ImageAsset.GumDrop },
-      peppermints: { asset: ImageAsset.GumDrop },
-    },
-  } as const
+  withAssets(Phaser.Scene, assetOptions),
+  mapOptions
 ) {}
