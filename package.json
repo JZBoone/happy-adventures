@@ -10,7 +10,8 @@
     "build:dev": "NODE_ENV=development node build",
     "build:prod": "NODE_ENV=production node build",
     "deploy": "npm run build:prod && gsutil -m cp -r -z html,js,json ./dist/* gs://happy-adventures",
-    "test": "npx jest"
+    "test": "npx jest",
+    "prepare": "ts-patch install && typia patch"
   },
   "author": "",
   "license": "ISC",
@@ -36,7 +37,11 @@
     "jest": "^29.7.0",
     "jest-environment-jsdom": "^29.7.0",
     "phaser3spectorjs": "^0.0.8",
+    "text-encoding": "^0.7.0",
     "ts-jest": "^29.1.1",
-    "typescript": "^5.3.3"
+    "ts-node": "^10.9.2",
+    "ts-patch": "^3.1.1",
+    "typescript": "^5.3.2",
+    "typia": "^5.3.8"
   }
 }
