@@ -79,6 +79,7 @@ export interface ISceneWithMap<
     groundType: SceneGroundType;
   }>;
   invalidMoves$: Subject<void>;
+  movesDisabled: boolean;
   map: {
     asset: ImageAsset;
     image: Phaser.GameObjects.Image;
