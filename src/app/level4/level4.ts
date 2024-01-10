@@ -4,6 +4,7 @@ import { showLevelStartText, newPromiseLasting } from "../common/helpers";
 import { Coordinates, Move } from "../types/map";
 import { AudioAsset } from "../types/audio";
 import { Level4MapAndAssets } from "./level4-assets";
+import { takeWhile } from "rxjs";
 
 export class Level4 extends Level4MapAndAssets {
   constructor() {
@@ -15,10 +16,6 @@ export class Level4 extends Level4MapAndAssets {
     | Phaser.Sound.HTML5AudioSound
     | Phaser.Sound.WebAudioSound;
   private completedLevel = false;
-  private isGettingSpiked = false;
-
-  private isMounting = false;
-  private isUnmounting = false;
   private planeStartCoordinates!: Coordinates;
 
   private get spikies() {
@@ -36,23 +33,20 @@ export class Level4 extends Level4MapAndAssets {
     await super.create();
     this.completedLevel = false;
     this.createFriend();
-    this.moves$.subscribe(({ coordinates, move }) =>
-      this.handleMove(coordinates, move)
-    );
+    this.moves$
+      .pipe(takeWhile(() => !this.completedLevel))
+      .subscribe(({ coordinates, move }) => this.handleMove(coordinates, move));
     showLevelStartText(this, 4);
     this.motorSound = this.addSound(AudioAsset.Motor, { loop: true });
     this.planeStartCoordinates = this.movableImages.magicalCraft.coordinates();
   }
 
   private async handleMove(coordinates: Coordinates, move: Move) {
-    if (this.isGettingSpiked || this.isUnmounting || this.isMounting) {
-      return;
-    }
     if (
       !this.isOnCraft() &&
       this.spikies.some((spiky) => spiky.isAt(coordinates))
     ) {
-      this.isGettingSpiked = true;
+      this.movesDisabled = true;
       this.playSound(AudioAsset.FunnyCry);
       await this.friend.move(coordinates);
       this.tweens.add({
@@ -73,13 +67,9 @@ export class Level4 extends Level4MapAndAssets {
     }
     if (
       this.isOnCraft() &&
-      this.immovableImages.landingPad.isAt([
-        coordinates[0] + 1,
-        coordinates[1],
-      ]) &&
-      !this.isUnmounting
+      this.immovableImages.landingPad.isAt([coordinates[0] + 1, coordinates[1]])
     ) {
-      this.isUnmounting = true;
+      this.movesDisabled = true;
       await Promise.all([
         this.movableImages.magicalCraft.move([
           coordinates[0] + 1,
@@ -94,7 +84,7 @@ export class Level4 extends Level4MapAndAssets {
       });
       await this.friend.move(end);
       this.motorSound.stop();
-      this.isUnmounting = false;
+      this.movesDisabled = false;
       return;
     }
     if (
@@ -102,6 +92,7 @@ export class Level4 extends Level4MapAndAssets {
       !this.isOnCraft() &&
       this.immovableImages.magicTree.occupies(coordinates)
     ) {
+      this.friend.move(coordinates);
       this.completedLevel = true;
       this.playSound(AudioAsset.Tada);
       await newPromiseLasting(this, 1_000, () =>
@@ -154,7 +145,7 @@ export class Level4 extends Level4MapAndAssets {
     });
     await this.friend.move([0, 0], { noAnimation: true });
     this.friend.phaserObject.setVisible(true);
-    this.isGettingSpiked = false;
+    this.movesDisabled = false;
   }
 
   private isInPositionToMountCraft(coordinates: Coordinates) {
@@ -175,7 +166,7 @@ export class Level4 extends Level4MapAndAssets {
   }
 
   private async mountMagicalCraft() {
-    this.isMounting = true;
+    this.movesDisabled = true;
     const [craftRow, craftPosition] =
       this.movableImages.magicalCraft.coordinates();
     this.friend.setOffsetX(25);
@@ -185,6 +176,6 @@ export class Level4 extends Level4MapAndAssets {
       tree.phaserObject.setDepth(0);
     });
     this.movableImages.magicalCraft.phaserObject.setDepth(10);
-    this.isMounting = false;
+    this.movesDisabled = false;
   }
 }

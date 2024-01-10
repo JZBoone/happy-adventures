@@ -99,6 +99,7 @@ export function withMap<
       SceneMovableImages,
       SceneMovableSprites
     >;
+    movesDisabled = false;
     groundTypes = options.groundTypes;
     // @ts-expect-error Type '{}' is not assignable to type '{ [Property in keyof SceneImmovableSprites]: Immovable<Sprite>; }'.ts(2322)
     immovableImages: {
@@ -322,6 +323,7 @@ export function withMap<
 
     async create() {
       await this.pendingMapJson;
+      this.movesDisabled = false;
       this.map = loadMap(this, this.mapJson);
       if (this.mapObjectsJson?.immovableSprites) {
         for (const [key, _options] of Object.entries(
@@ -427,6 +429,9 @@ export function withMap<
       ) {
         this.scene.remove(options.level);
         this.scene.run(mapEditorSceneKey(options.level));
+        return;
+      }
+      if (this.movesDisabled) {
         return;
       }
       const move = this.getMove();

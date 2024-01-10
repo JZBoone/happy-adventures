@@ -10,7 +10,6 @@ import { GroundType, Level2MapAndAssets } from "./level2-assets";
 export class Level2 extends Level2MapAndAssets {
   private monsterIsDead = false;
   private didFinishScene = false;
-  private isFalling = false;
 
   constructor() {
     super({ key: Scene.Level2 });
@@ -49,9 +48,6 @@ export class Level2 extends Level2MapAndAssets {
   }
 
   private async handleMove(coordinates: Coordinates, groundType: GroundType) {
-    if (this.isFalling) {
-      return;
-    }
     if (
       this.monsterIsDead &&
       this.immovableImages.portal.occupies(coordinates)
@@ -72,7 +68,7 @@ export class Level2 extends Level2MapAndAssets {
         this.playSound(AudioAsset.Stomp, { volume: 0.5 });
         break;
       case ImageAsset.BlackHole:
-        this.isFalling = true;
+        this.movesDisabled = true;
         this.friend.move(coordinates);
         this.playSound(AudioAsset.Fall);
         await this.friend.disappear();
@@ -107,6 +103,6 @@ export class Level2 extends Level2MapAndAssets {
   private startOver() {
     this.friend.move([0, 0], { noAnimation: true });
     this.friend.phaserObject.setVisible(true);
-    this.isFalling = false;
+    this.movesDisabled = false;
   }
 }

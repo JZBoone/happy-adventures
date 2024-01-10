@@ -5,10 +5,9 @@ import { GroundType, Level6MapAndAssets } from "./level6-assets";
 import { AudioAsset } from "../types/audio";
 import { ImageAsset } from "../types/image";
 import { mapTileSizePx } from "../common/map";
+import { takeWhile } from "rxjs";
 
 export class Level6 extends Level6MapAndAssets {
-  isFalling = false;
-  isDying = false;
   didWin = false;
   finishedCreate = false;
 
@@ -19,13 +18,13 @@ export class Level6 extends Level6MapAndAssets {
   async create() {
     this.finishedCreate = false;
     await super.create();
-    this.isDying = false;
-    this.isFalling = false;
     this.didWin = false;
     this.createFriend({ coordinates: [8, 7], dontFollow: true });
-    this.moves$.subscribe(({ coordinates, groundType }) =>
-      this.handleMove(coordinates, groundType)
-    );
+    this.moves$
+      .pipe(takeWhile(() => !this.didWin))
+      .subscribe(({ coordinates, groundType }) =>
+        this.handleMove(coordinates, groundType)
+      );
     showLevelStartText(this, 6);
     this.finishedCreate = true;
     newPromiseLasting(this, 4_000, () => {
@@ -34,9 +33,6 @@ export class Level6 extends Level6MapAndAssets {
   }
 
   private async handleMove(coordinates: Coordinates, groundType: GroundType) {
-    if (this.isDying || this.isFalling) {
-      return;
-    }
     if (groundType === ImageAsset.RainbowGlitter && !this.didWin) {
       this.didWin = true;
       this.playSound(AudioAsset.Tada);
@@ -45,7 +41,7 @@ export class Level6 extends Level6MapAndAssets {
       return;
     }
     if (groundType === ImageAsset.BlackHole) {
-      this.isFalling = true;
+      this.movesDisabled = true;
       this.playSound(AudioAsset.Fall, { volume: 0.3 });
       this.friend.move(coordinates);
       await this.friend.disappear();
@@ -55,12 +51,12 @@ export class Level6 extends Level6MapAndAssets {
   }
 
   update() {
-    if (this.isDying || !this.finishedCreate) {
+    if (this.movesDisabled || !this.finishedCreate) {
       return;
     }
     super.update();
     if (this.cameras.main.scrollX > this.friend.phaserObject.x - 25) {
-      this.isDying = true;
+      this.movesDisabled = true;
       this.playSound(AudioAsset.FunnyCry);
       newPromiseLasting(this, 2_000, () => {
         this.scene.start(Scene.Level6);

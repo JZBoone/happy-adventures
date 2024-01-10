@@ -9,7 +9,6 @@ import { ImageAsset } from "../types/image";
 
 export class Level3 extends Level3MapAndAssets {
   private levelCompleted = false;
-  private isMelting = false;
 
   private readonly bomboffsetY = 25;
   private readonly hoistedBomboffsetY = 30;
@@ -48,11 +47,8 @@ export class Level3 extends Level3MapAndAssets {
   }
 
   private async handleMove(coordinates: Coordinates, groundType: GroundType) {
-    if (this.isMelting) {
-      return;
-    }
     if (groundType === ImageAsset.PurpleAcid) {
-      this.isMelting = true;
+      this.movesDisabled = true;
       await this.friend.move(coordinates);
       this.playSound(AudioAsset.Sizzle);
       await this.friend.disappear();
@@ -112,6 +108,6 @@ export class Level3 extends Level3MapAndAssets {
     this.movableImages.bomb.setOffsetY(this.bomboffsetY);
     this.friend.move([0, 0], { noAnimation: true });
     this.friend.phaserObject.setVisible(true);
-    this.isMelting = false;
+    this.movesDisabled = false;
   }
 }

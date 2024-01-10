@@ -6,10 +6,10 @@ import { AudioAsset } from "../types/audio";
 import { ImageAsset } from "../types/image";
 import { CandyCastleAnimation } from "../types/sprite";
 import { isEqual } from "lodash";
+import { takeWhile } from "rxjs";
 
 export class Level5 extends Level5MapAndAssets {
-  private isFalling = false;
-  private levelCompleted = false;
+  completedLevel = false;
   constructor() {
     super({ key: Scene.Level5 });
   }
@@ -17,9 +17,11 @@ export class Level5 extends Level5MapAndAssets {
   async create() {
     await super.create();
     this.createFriend();
-    this.moves$.subscribe(({ coordinates, groundType }) =>
-      this.handleMove(coordinates, groundType)
-    );
+    this.moves$
+      .pipe(takeWhile(() => !this.completedLevel))
+      .subscribe(({ coordinates, groundType }) =>
+        this.handleMove(coordinates, groundType)
+      );
     showLevelStartText(this, 5);
   }
 
@@ -29,9 +31,6 @@ export class Level5 extends Level5MapAndAssets {
     let isHacked = false;
     if (isEqual(hackCoordinates, coordinates)) {
       isHacked = true;
-    }
-    if (this.isFalling || this.levelCompleted) {
-      return;
     }
     if (isEqual(this.castleDoorCoordinates(), coordinates)) {
       if (this.isCarryingMagicalLollipopKey()) {
@@ -61,7 +60,7 @@ export class Level5 extends Level5MapAndAssets {
       await this.hoistMagicalLollipopKey();
     }
     if (groundType === ImageAsset.CrackedRainbowGlitter && !isHacked) {
-      this.isFalling = true;
+      this.movesDisabled = true;
       await this.friend.move(coordinates);
       this.playSound(AudioAsset.RockDestroy);
       await this.friend.disappear();
@@ -72,7 +71,7 @@ export class Level5 extends Level5MapAndAssets {
       this.playSound(AudioAsset.Twinkle, { volume: 0.3 });
     }
     if (isHacked) {
-      this.isFalling = true;
+      this.movesDisabled = true;
       const hasKey = this.isCarryingMagicalLollipopKey();
       await Promise.all([
         this.friend.move(coordinates),
@@ -84,7 +83,7 @@ export class Level5 extends Level5MapAndAssets {
       await this.friend.disappear();
       this.friend.phaserObject.setVisible(true);
       await this.friend.move(hackTransportCoordinates);
-      this.isFalling = false;
+      this.movesDisabled = false;
       if (hasKey) {
         this.movableImages.magicLollipopKey.move(hackTransportCoordinates);
       }
@@ -99,11 +98,11 @@ export class Level5 extends Level5MapAndAssets {
   private startOver() {
     this.friend.move([0, 0], { noAnimation: true });
     this.friend.phaserObject.setVisible(true);
-    this.isFalling = false;
+    this.movesDisabled = false;
   }
 
   private async completeLevel() {
-    this.levelCompleted = true;
+    this.completedLevel = true;
     this.immovableSprites.candyCastle.phaserObject.anims.play(
       CandyCastleAnimation.Open
     );
