@@ -1,7 +1,4 @@
 import { ISceneWithAssets } from "../types/assets";
-import { AudioAsset } from "../types/audio";
-import { ImageAsset } from "../types/image";
-import { SpriteAsset } from "../types/sprite";
 import { ImmovableOptions } from "./immovable";
 import { Movable } from "./movable";
 
@@ -9,7 +6,7 @@ export class Friend extends Movable<Phaser.GameObjects.Image> {
   private sceneSize: { width: number; height: number };
 
   constructor(
-    public scene: ISceneWithAssets<AudioAsset, ImageAsset, SpriteAsset>,
+    public scene: ISceneWithAssets,
     public phaserObject: InstanceType<typeof Phaser.GameObjects.Image>,
     options: ImmovableOptions & {
       mapWidth: number;

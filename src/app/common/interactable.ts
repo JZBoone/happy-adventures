@@ -1,38 +1,15 @@
-import { AudioAsset } from "../types/audio";
-import { ImageAsset } from "../types/image";
 import { ISceneWithMap } from "../types/map";
-import { SpriteAsset } from "../types/sprite";
 import { Immovable, ImmovableOptions } from "./immovable";
 import { mapTileSizePx } from "./map";
 
-export class Interactable<
-  SceneAudioAsset extends AudioAsset,
-  SceneImageAsset extends ImageAsset,
-  SceneGroundType extends SceneImageAsset,
-  SceneSpriteAsset extends SpriteAsset,
-  SceneImmovableImages extends Record<string, { asset: SceneImageAsset }>,
-  SceneImmovableImageGroups extends Record<string, { asset: SceneImageAsset }>,
-  SceneImmovableSprites extends Record<string, { asset: SceneSpriteAsset }>,
-  SceneMovableImages extends Record<string, { asset: SceneImageAsset }>,
-  SceneMovableSprites extends Record<string, { asset: SceneSpriteAsset }>,
-> extends Immovable<Phaser.GameObjects.Image> {
+export class Interactable extends Immovable<Phaser.GameObjects.Image> {
   message: string;
   private bubbleText?: {
     bubble: Phaser.GameObjects.Graphics;
     text: Phaser.GameObjects.Text;
   };
   constructor(
-    public scene: ISceneWithMap<
-      SceneAudioAsset,
-      SceneImageAsset,
-      SceneGroundType,
-      SceneSpriteAsset,
-      SceneImmovableImages,
-      SceneImmovableImageGroups,
-      SceneImmovableSprites,
-      SceneMovableImages,
-      SceneMovableSprites
-    >,
+    public scene: ISceneWithMap,
     public phaserObject: InstanceType<typeof Phaser.GameObjects.Image>,
     options: ImmovableOptions & { message: string }
   ) {

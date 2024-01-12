@@ -32,13 +32,28 @@ export type FriendParams<Asset extends ImageAsset | DefaultImageAsset> =
 
 // Needs to be kept in sync with MapObjectsJson in map.test.ts
 export type MapObjectsJson<
-  SceneImageAsset extends ImageAsset,
-  SceneSpriteAsset extends SpriteAsset,
-  SceneImmovableImages extends Record<string, { asset: SceneImageAsset }>,
-  SceneImmovableImageGroups extends Record<string, { asset: SceneImageAsset }>,
-  SceneImmovableSprites extends Record<string, { asset: SceneSpriteAsset }>,
-  SceneMovableImages extends Record<string, { asset: SceneImageAsset }>,
-  SceneMovableSprites extends Record<string, { asset: SceneSpriteAsset }>,
+  SceneImageAsset extends ImageAsset = ImageAsset,
+  SceneSpriteAsset extends SpriteAsset = SpriteAsset,
+  SceneImmovableImages extends Record<
+    string,
+    { asset: SceneImageAsset }
+  > = Record<string, never>,
+  SceneImmovableImageGroups extends Record<
+    string,
+    { asset: SceneImageAsset }
+  > = Record<string, never>,
+  SceneImmovableSprites extends Record<
+    string,
+    { asset: SceneSpriteAsset }
+  > = Record<string, never>,
+  SceneMovableImages extends Record<
+    string,
+    { asset: SceneImageAsset }
+  > = Record<string, never>,
+  SceneMovableSprites extends Record<
+    string,
+    { asset: SceneSpriteAsset }
+  > = Record<string, never>,
 > = {
   immovableImages: {
     [Property in keyof SceneImmovableImages]: SceneObjectParams<SceneImageAsset>;
@@ -62,15 +77,30 @@ export type MapObjectsJson<
 };
 
 export interface ISceneWithMap<
-  SceneAudioAsset extends AudioAsset,
-  SceneImageAsset extends ImageAsset,
-  SceneGroundType extends SceneImageAsset,
-  SceneSpriteAsset extends SpriteAsset,
-  SceneImmovableImages extends Record<string, { asset: SceneImageAsset }>,
-  SceneImmovableImageGroups extends Record<string, { asset: SceneImageAsset }>,
-  SceneImmovableSprites extends Record<string, { asset: SceneSpriteAsset }>,
-  SceneMovableImages extends Record<string, { asset: SceneImageAsset }>,
-  SceneMovableSprites extends Record<string, { asset: SceneSpriteAsset }>,
+  SceneAudioAsset extends AudioAsset = AudioAsset,
+  SceneImageAsset extends ImageAsset = ImageAsset,
+  SceneGroundType extends SceneImageAsset = SceneImageAsset,
+  SceneSpriteAsset extends SpriteAsset = SpriteAsset,
+  SceneImmovableImages extends Record<
+    string,
+    { asset: SceneImageAsset }
+  > = Record<string, never>,
+  SceneImmovableImageGroups extends Record<
+    string,
+    { asset: SceneImageAsset }
+  > = Record<string, never>,
+  SceneImmovableSprites extends Record<
+    string,
+    { asset: SceneSpriteAsset }
+  > = Record<string, never>,
+  SceneMovableImages extends Record<
+    string,
+    { asset: SceneImageAsset }
+  > = Record<string, never>,
+  SceneMovableSprites extends Record<
+    string,
+    { asset: SceneSpriteAsset }
+  > = Record<string, never>,
 > extends ISceneWithAssets<SceneAudioAsset, SceneImageAsset, SceneSpriteAsset> {
   friend: Friend;
   moves$: Observable<{
@@ -111,33 +141,13 @@ export interface ISceneWithMap<
   movableSprites: {
     [Property in keyof SceneMovableSprites]: Movable<Phaser.GameObjects.Sprite>;
   };
-  interactables: Interactable<
-    SceneAudioAsset,
-    SceneImageAsset,
-    SceneGroundType,
-    SceneSpriteAsset,
-    SceneImmovableImages,
-    SceneImmovableImageGroups,
-    SceneImmovableSprites,
-    SceneMovableImages,
-    SceneMovableSprites
-  >[];
+  interactables: Interactable[];
   createFriend<Asset extends SceneImageAsset | DefaultImageAsset>(
     params?: SceneObjectParams<Asset> & { dontFollow?: boolean }
   ): Friend;
   createInteractable<Asset extends SceneImageAsset>(
     params: InteractableParams<Asset>
-  ): Interactable<
-    SceneAudioAsset,
-    SceneImageAsset,
-    SceneGroundType,
-    SceneSpriteAsset,
-    SceneImmovableImages,
-    SceneImmovableImageGroups,
-    SceneImmovableSprites,
-    SceneMovableImages,
-    SceneMovableSprites
-  >;
+  ): Interactable;
   createImmovableSprite<Asset extends SceneSpriteAsset | DefaultSpriteAsset>(
     params: SceneObjectParams<Asset>
   ): Immovable<Phaser.GameObjects.Sprite>;
@@ -182,18 +192,5 @@ export interface ISceneWithMap<
       | Movable<Phaser.GameObjects.Image>
   ): void;
   /** map builder */
-  updateInteractableMessage(
-    interactable: Interactable<
-      SceneAudioAsset,
-      SceneImageAsset,
-      SceneGroundType,
-      SceneSpriteAsset,
-      SceneImmovableImages,
-      SceneImmovableImageGroups,
-      SceneImmovableSprites,
-      SceneMovableImages,
-      SceneMovableSprites
-    >,
-    message: string
-  ): void;
+  updateInteractableMessage(interactable: Interactable, message: string): void;
 }
