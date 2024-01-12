@@ -1,6 +1,7 @@
 import { ImageAsset } from "../types/image";
 import { Scene } from "../types/scene";
 import { Coordinates, MapObjectsJson, Move } from "../types/map";
+import { SpriteAsset } from "../types/sprite";
 
 export const mapTileSizePx = 50;
 export const halfMapTileSizePx = mapTileSizePx / 2;
@@ -110,24 +111,60 @@ export function pointerCoordinates(
   return [row, position];
 }
 
-async function fetchMapJson(mapName: string): Promise<ImageAsset[][]> {
+async function fetchMapJson<
+  SceneImageAsset extends ImageAsset,
+  SceneGroundType extends SceneImageAsset,
+>(mapName: string): Promise<SceneGroundType[][]> {
   const result = await fetch(
     `${process.env.API_URL}/assets/map/${mapName}.json`
   );
   return await result.json();
 }
 
-async function fetchMapObjects(mapName: string) {
+async function fetchMapObjects<
+  SceneSpriteAsset extends SpriteAsset,
+  SceneImageAsset extends ImageAsset,
+  SceneImmovableImages extends Record<string, { asset: SceneImageAsset }>,
+  SceneImmovableImageGroups extends Record<string, { asset: SceneImageAsset }>,
+  SceneImmovableSprites extends Record<string, { asset: SceneSpriteAsset }>,
+  SceneMovableImages extends Record<string, { asset: SceneImageAsset }>,
+  SceneMovableSprites extends Record<string, { asset: SceneSpriteAsset }>,
+>(mapName: string) {
   const result = await fetch(
     `${process.env.API_URL}/assets/map/${mapName}-objects.json`
   );
-  return (await result.json()) as MapObjectsJson;
+  return (await result.json()) as MapObjectsJson<
+    SceneImageAsset,
+    SceneSpriteAsset,
+    SceneImmovableImages,
+    SceneImmovableImageGroups,
+    SceneImmovableSprites,
+    SceneMovableImages,
+    SceneMovableSprites
+  >;
 }
 
-export async function fetchMap(mapName: string) {
+export async function fetchMap<
+  SceneSpriteAsset extends SpriteAsset,
+  SceneImageAsset extends ImageAsset,
+  SceneGroundType extends SceneImageAsset,
+  SceneImmovableImages extends Record<string, { asset: SceneImageAsset }>,
+  SceneImmovableImageGroups extends Record<string, { asset: SceneImageAsset }>,
+  SceneImmovableSprites extends Record<string, { asset: SceneSpriteAsset }>,
+  SceneMovableImages extends Record<string, { asset: SceneImageAsset }>,
+  SceneMovableSprites extends Record<string, { asset: SceneSpriteAsset }>,
+>(mapName: string) {
   const results = await Promise.allSettled([
-    fetchMapJson(mapName),
-    fetchMapObjects(mapName),
+    fetchMapJson<SceneImageAsset, SceneGroundType>(mapName),
+    fetchMapObjects<
+      SceneSpriteAsset,
+      SceneImageAsset,
+      SceneImmovableImages,
+      SceneImmovableImageGroups,
+      SceneImmovableSprites,
+      SceneMovableImages,
+      SceneMovableSprites
+    >(mapName),
   ]);
   return {
     mapJson: results[0].status === "fulfilled" ? results[0].value : null,
