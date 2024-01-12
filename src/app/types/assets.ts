@@ -4,9 +4,9 @@ import { Coordinates } from "./map";
 import { DefaultSpriteAsset, SpriteAsset } from "./sprite";
 
 export interface ISceneWithAssets<
-  SceneAudioAsset extends AudioAsset,
-  SceneImageAsset extends ImageAsset,
-  SceneSpriteAsset extends SpriteAsset,
+  SceneAudioAsset extends AudioAsset = AudioAsset,
+  SceneImageAsset extends ImageAsset = ImageAsset,
+  SceneSpriteAsset extends SpriteAsset = SpriteAsset,
 > extends Phaser.Scene {
   audio: readonly (SceneAudioAsset | DefaultAudioAsset)[];
   images: readonly (SceneImageAsset | DefaultImageAsset)[];

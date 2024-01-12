@@ -153,17 +153,7 @@ export function withMap<
       Phaser.GameObjects.Image | Phaser.GameObjects.Sprite
     >[] = [];
 
-    interactables: Interactable<
-      SceneAudioAsset,
-      SceneImageAsset,
-      SceneGroundType,
-      SceneSpriteAsset,
-      SceneImmovableImages,
-      SceneImmovableImageGroups,
-      SceneImmovableSprites,
-      SceneMovableImages,
-      SceneMovableSprites
-    >[] = [];
+    interactables: Interactable[] = [];
 
     private hotkey?: {
       e: Phaser.Input.Keyboard.Key;
@@ -297,20 +287,7 @@ export function withMap<
       sceneObject.phaserObject.destroy();
     }
 
-    updateInteractableMessage(
-      interactable: Interactable<
-        SceneAudioAsset,
-        SceneImageAsset,
-        SceneGroundType,
-        SceneSpriteAsset,
-        SceneImmovableImages,
-        SceneImmovableImageGroups,
-        SceneImmovableSprites,
-        SceneMovableImages,
-        SceneMovableSprites
-      >,
-      message: string
-    ) {
+    updateInteractableMessage(interactable: Interactable, message: string) {
       const index = this.interactables.findIndex((i) => i === interactable);
       if (index === -1) {
         throw new Error(
@@ -493,24 +470,18 @@ export function withMap<
 
     createInteractable<Asset extends SceneImageAsset>(
       params: InteractableParams<Asset>
-    ): Interactable<
-      SceneAudioAsset,
-      SceneImageAsset,
-      SceneGroundType,
-      SceneSpriteAsset,
-      SceneImmovableImages,
-      SceneImmovableImageGroups,
-      SceneImmovableSprites,
-      SceneMovableImages,
-      SceneMovableSprites
-    > {
+    ): Interactable {
       if (!this.images.includes(params.asset)) {
         throw new Error(
           `Interactable image not loaded. Did you forget to load ${params.asset}?`
         );
       }
       const image = this.createImage(params);
-      const interactable = new Interactable(this, image, params);
+      const interactable = new Interactable(
+        this as ISceneWithMap,
+        image,
+        params
+      );
       this.interactables.push(interactable);
       return interactable;
     }
