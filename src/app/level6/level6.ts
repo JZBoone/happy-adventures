@@ -5,11 +5,12 @@ import { GroundType, Level6MapAndAssets } from "./level6-assets";
 import { AudioAsset } from "../types/audio";
 import { ImageAsset } from "../types/image";
 import { mapTileSizePx } from "../common/map";
-import { takeWhile } from "rxjs";
+import { takeUntil, takeWhile } from "rxjs";
 
 export class Level6 extends Level6MapAndAssets {
   didWin = false;
   finishedCreate = false;
+  private cameraTween?: Phaser.Tweens.Tween;
 
   constructor() {
     super({ key: Scene.Level6 });
@@ -21,7 +22,10 @@ export class Level6 extends Level6MapAndAssets {
     this.didWin = false;
     this.createFriend({ coordinates: [8, 7], dontFollow: true });
     this.moves$
-      .pipe(takeWhile(() => !this.didWin))
+      .pipe(
+        takeWhile(() => !this.didWin),
+        takeUntil(this.shutdown$)
+      )
       .subscribe(({ coordinates, groundType }) =>
         this.handleMove(coordinates, groundType)
       );
@@ -45,7 +49,7 @@ export class Level6 extends Level6MapAndAssets {
       this.playSound(AudioAsset.Fall, { volume: 0.3 });
       this.friend.move(coordinates);
       await this.friend.disappear();
-      this.scene.start(Scene.Level6);
+      this.restart();
     }
     this.friend.move(coordinates);
   }
@@ -59,7 +63,7 @@ export class Level6 extends Level6MapAndAssets {
       this.movesDisabled = true;
       this.playSound(AudioAsset.FunnyCry);
       newPromiseLasting(this, 2_000, () => {
-        this.scene.start(Scene.Level6);
+        this.restart();
       });
       return;
     }
@@ -72,7 +76,7 @@ export class Level6 extends Level6MapAndAssets {
     const distance = this.map[0].length * mapTileSizePx; // The horizontal distance the camera should move
     const duration = this.map[0].length * 700;
 
-    this.tweens.add({
+    this.cameraTween = this.tweens.add({
       targets: camera,
       scrollX: camera.scrollX + distance,
       ease: "Linear", // 'Linear' for constant speed
@@ -94,5 +98,15 @@ export class Level6 extends Level6MapAndAssets {
       return maxScrollY;
     }
     return unboundedScrollY;
+  }
+
+  shutdown() {
+    this.shutdown$.next();
+    this.cameraTween?.destroy();
+  }
+
+  private async restart() {
+    this.shutdown();
+    this.scene.restart();
   }
 }
