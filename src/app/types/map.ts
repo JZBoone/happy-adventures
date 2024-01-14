@@ -193,4 +193,5 @@ export interface ISceneWithMap<
   ): void;
   /** map builder */
   updateInteractableMessage(interactable: Interactable, message: string): void;
+  shutdown$: Subject<void>;
 }

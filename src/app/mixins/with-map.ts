@@ -1,5 +1,5 @@
 import Phaser from "phaser";
-import { Subject, debounceTime, filter, map, share } from "rxjs";
+import { Subject, debounceTime, filter, map, share, takeUntil } from "rxjs";
 import { set } from "lodash";
 import {
   createMapImage,
@@ -154,6 +154,8 @@ export function withMap<
     >[] = [];
 
     interactables: Interactable[] = [];
+
+    shutdown$ = new Subject<void>();
 
     private hotkey?: {
       e: Phaser.Input.Keyboard.Key;
@@ -384,13 +386,18 @@ export function withMap<
       }
       this.cursors = this.input.keyboard!.createCursorKeys();
       this.allMoveCoordinates$
-        .pipe(filter(({ coordinates }) => this.moveIsIllegal(...coordinates)))
+        .pipe(
+          filter(({ coordinates }) => this.moveIsIllegal(...coordinates)),
+          takeUntil(this.shutdown$)
+        )
         .subscribe(() => {
           this.invalidMoves$.next();
         });
-      this.invalidMoves$.pipe(debounceTime(25)).subscribe(() => {
-        this.playSound(AudioAsset.Thump);
-      });
+      this.invalidMoves$
+        .pipe(debounceTime(25), takeUntil(this.shutdown$))
+        .subscribe(() => {
+          this.playSound(AudioAsset.Thump);
+        });
       this.hotkey = {
         e: this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.E),
       };
