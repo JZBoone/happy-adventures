@@ -46,6 +46,7 @@ export class Credits extends Phaser.Scene {
       lineBreak,
       "Testers",
       "Levi Boone",
+      "Chase Christ",
       lineBreak,
       "Developers",
       "Zach Boone",
