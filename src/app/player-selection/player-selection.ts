@@ -22,32 +22,36 @@ export class PlayerSelection extends Phaser.Scene {
 
   private makeHeading() {
     this.add
-      .text(this.cameras.main.centerX, 100, "Happy Adventures", {
+      .text(this.cameras.main.centerX, 50, "Happy Adventures", {
         font: "64px Arial",
       })
       .setOrigin(0.5, 0.5);
     this.add
-      .text(this.cameras.main.centerX, 250, "Choose Your Player", {
+      .text(this.cameras.main.centerX, 125, "Choose Your Player", {
         font: "48px Arial",
       })
       .setOrigin(0.5, 0.5);
   }
 
   private makeOptions() {
-    const options: { offsetX: number; image: ImageAsset; name: string }[] = [
-      { offsetX: -450, image: ImageAsset.Friend, name: "Bad Bunny" },
-      { offsetX: -150, image: ImageAsset.CuteSpider, name: "Schneider Spider" },
-      { offsetX: 150, image: ImageAsset.OompaBall, name: "Bob" },
-      { offsetX: 450, image: ImageAsset.ToddieTitan, name: "Toddie Titan" },
+    const options: { image: ImageAsset; name: string }[] = [
+      { image: ImageAsset.Friend, name: "Cutie Pie" },
+      { image: ImageAsset.CuteSpider, name: "Schneider Spider" },
+      { image: ImageAsset.OompaBall, name: "Bob" },
+      { image: ImageAsset.ToddieTitan, name: "Toddie Titan" },
+      { image: ImageAsset.MrRainbow, name: "Mr. Rainbow" },
+      { image: ImageAsset.Snaggletooth, name: "Snaggletooth" },
+      { image: ImageAsset.Bamboo, name: "Bamboo" },
+      { image: ImageAsset.PooGuy, name: "Poo Guy" },
+      { image: ImageAsset.Warewolf, name: "Boonewolf" },
     ];
-    for (const { offsetX, image, name } of options) {
-      const imageY = Math.max(this.cameras.main.centerY, 500);
-      const phaserImage = this.add.image(
-        this.cameras.main.centerX - offsetX,
-        imageY,
-        image
-      );
-      phaserImage.setScale(2);
+    let row = 0;
+    let position = 0;
+    for (const { image, name } of options) {
+      const imageY = 300 + row * 150;
+      const offsetX = this.cameras.main.centerX + (450 - position * 300);
+      const phaserImage = this.add.image(offsetX, imageY, image);
+      phaserImage.setScale(1);
       phaserImage.setInteractive(
         new Phaser.Geom.Rectangle(0, 0, phaserImage.width, phaserImage.height),
         Phaser.Geom.Rectangle.Contains
@@ -56,10 +60,16 @@ export class PlayerSelection extends Phaser.Scene {
         this.selectPlayer(image);
       });
       this.add
-        .text(this.cameras.main.centerX - offsetX, imageY - 100, name, {
+        .text(offsetX, imageY - 70, name, {
           font: "32px Arial",
         })
         .setOrigin(0.5, 0.5);
+      if (position >= 3) {
+        position = 0;
+        row++;
+      } else {
+        position++;
+      }
     }
   }
 

@@ -1,5 +1,6 @@
 export enum ImageAsset {
   ArrowKeys = "arrow-keys",
+  Bamboo = "bamboo",
   BlackHole = "black-hole",
   Boat = "boat",
   Bomb = "bomb",
@@ -18,6 +19,7 @@ export enum ImageAsset {
   GumDrop = "gum-drop",
   Heart = "heart",
   LandingPad = "landing-pad",
+  MrRainbow = "mr-rainbow",
   LittleSister = "little-sister",
   Lollipop = "lollipop",
   Lungs = "lungs",
@@ -32,6 +34,7 @@ export enum ImageAsset {
   OompaBall = "oompa-ball",
   Peppermint = "peppermint",
   Platform = "platform",
+  PooGuy = "poo-guy",
   Portal = "portal",
   PurpleAcid = "purple-acid",
   Queen = "queen",
@@ -43,6 +46,7 @@ export enum ImageAsset {
   SandRight = "sand-right",
   Sky = "sky",
   SmallElasmosaurus = "small-elasmosaurus",
+  Snaggletooth = "snaggletooth",
   SpikeBench = "spike-bench",
   SpikyGuy = "spiky-guy",
   SquareSpike = "square-spike",
@@ -51,6 +55,7 @@ export enum ImageAsset {
   ThreeSpikes = "three-spikes",
   ToddieTitan = "toddie-titan",
   Tree = "tree",
+  Warewolf = "warewolf",
   Water = "water",
 }
 
@@ -59,5 +64,10 @@ export const defaultImages = [
   ImageAsset.CuteSpider,
   ImageAsset.OompaBall,
   ImageAsset.ToddieTitan,
+  ImageAsset.MrRainbow,
+  ImageAsset.Snaggletooth,
+  ImageAsset.Bamboo,
+  ImageAsset.PooGuy,
+  ImageAsset.Warewolf,
 ] as const;
 export type DefaultImageAsset = (typeof defaultImages)[number];
