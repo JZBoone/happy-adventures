@@ -11,6 +11,7 @@ export enum AudioAsset {
   RockDestroy = "rock-destroy",
   SandStep = "sand-step",
   Sizzle = "sizzle",
+  SnowStep = "snow-step",
   SparklingStar = "sparkling-star",
   Splash = "splash",
   Splat = "splat",

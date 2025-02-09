@@ -29,4 +29,4 @@ When running the app locally you can type `e` to edit the current level. This la
 - `s` - save changes to map (updates the map and map objects json files locally)
 - `shift + t` - make map taller by one row
 - `shift + w` - make map wider by one row
-- `escape` - exit map builder and return to level (discards unsaved changes)
+- `escape` - exit map builder and return to level (saves your changes)

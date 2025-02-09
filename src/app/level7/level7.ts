@@ -4,8 +4,6 @@ import { Coordinates } from "../types/map";
 import { GroundType, Level7MapAndAssets } from "./level7-assets";
 import { AudioAsset } from "../types/audio";
 import { ImageAsset } from "../types/image";
-import { CandyCastleAnimation } from "../types/sprite";
-import { isEqual } from "lodash";
 import { takeWhile } from "rxjs";
 
 export class Level7 extends Level7MapAndAssets {
@@ -26,6 +24,9 @@ export class Level7 extends Level7MapAndAssets {
   }
 
   private async handleMove(coordinates: Coordinates, groundType: GroundType) {
+    if (groundType === ImageAsset.SnowBlock) {
+      this.playSound(AudioAsset.SnowStep);
+    }
     this.friend.move(coordinates);
   }
 

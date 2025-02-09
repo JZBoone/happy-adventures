@@ -47,6 +47,7 @@ export enum ImageAsset {
   Sky = "sky",
   SmallElasmosaurus = "small-elasmosaurus",
   Snaggletooth = "snaggletooth",
+  SnowBlock = "snow-block",
   SpikeBench = "spike-bench",
   SpikyGuy = "spiky-guy",
   SquareSpike = "square-spike",
@@ -55,6 +56,7 @@ export enum ImageAsset {
   ThreeSpikes = "three-spikes",
   ToddieTitan = "toddie-titan",
   Tree = "tree",
+  TunnelMountain = "tunnel-mountain",
   Warewolf = "warewolf",
   Water = "water",
 }

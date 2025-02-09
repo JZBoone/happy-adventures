@@ -1,8 +1,28 @@
 {
-  "immovableImages": {},
+  "immovableImages": {
+    "tunnelMountain": {
+      "coordinates": [14, 24],
+      "asset": "tunnel-mountain",
+      "width": 7,
+      "height": 5
+    }
+  },
   "immovableSprites": {},
   "immovableImageGroups": {},
   "movableSprites": {},
   "movableImages": {},
-  "interactables": []
+  "interactables": [
+    {
+      "coordinates": [4, 2],
+      "asset": "spiky-guy",
+      "message": "Hi! You've probably have met my identical twin in level 4. I am his brother. And you must have also met the DarkLord. "
+    },
+    {
+      "coordinates": [6, 8],
+      "asset": "evil-guy",
+      "height": 3,
+      "width": 2,
+      "message": "Don't save the tree it deserves this."
+    }
+  ]
 }
