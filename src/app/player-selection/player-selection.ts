@@ -1,8 +1,8 @@
 import Phaser from "phaser";
-import { Scene } from "../types/scene";
 import { loadImages } from "../common/assets";
 import { ImageAsset, defaultImages } from "../types/image";
 import { PlayerStorageKey } from "../types/player";
+import { Scene } from "../types/scene";
 
 export class PlayerSelection extends Phaser.Scene {
   constructor() {
@@ -44,6 +44,7 @@ export class PlayerSelection extends Phaser.Scene {
       { image: ImageAsset.Bamboo, name: "Bamboo" },
       { image: ImageAsset.PooGuy, name: "Poo Guy" },
       { image: ImageAsset.Warewolf, name: "Boonewolf" },
+      { image: ImageAsset.MrDung, name: "Mr. Dung" },
     ];
     let row = 0;
     let position = 0;
