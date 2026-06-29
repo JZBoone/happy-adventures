@@ -3,15 +3,74 @@ name: add-level
 description: >-
   Add a new level to the happy-adventures Phaser game. Use when the user wants to
   create a new level (e.g. "add level7", "create a new level", "scaffold the next
-  level"). Scaffolds the level + assets TypeScript files, creates the map JSON,
-  registers the scene, wires up the level flow from the previous level, and validates.
+  level"). FIRST interviews the player (an 8-year-old) in simple, playful language to
+  find out the story, goal, dangers, friends, look, and sounds, then scaffolds the
+  level + assets TypeScript files, creates the map JSON, registers the scene, wires up
+  the level flow from the previous level, and validates.
 ---
 
 # Add a new level
 
 This skill adds **level N** (the next number after the current highest level) to the
-`happy-adventures` Phaser 3 + TypeScript game. Follow the steps in order. Paths are
-relative to the repo root.
+`happy-adventures` Phaser 3 + TypeScript game.
+
+There are **two phases**:
+1. **The interview** — talk with the player (an 8-year-old) to find out what her level
+   is about and what it needs. Do this FIRST.
+2. **The build** — turn her ideas into the level using the numbered technical steps.
+   Paths are relative to the repo root.
+
+## Who you are talking to (read this!)
+
+The person designing this level is **an 8-year-old girl** (the game is for her). Her dad
+types her answers into the terminal, but **she reads what you write**, so:
+
+- Use **short sentences and simple, common words** an 8-year-old can read easily.
+- Be warm, silly, and excited — like a fun game-maker helping a kid build her dream level.
+- Ask **one question at a time** and wait for her answer. Don't dump a list of questions.
+- React to her answers with enthusiasm ("Whoa, a lava castle?! So cool!") before the
+  next question.
+- For **fun, call her "doodoo head" when you ask her a question** (she thinks it's funny).
+  Keep it kind and playful, e.g. "Okay doodoo head, what happens if she touches the lava?"
+- Save the technical words (enum, mixin, JSON, groundTypes) for yourself — never put them
+  in questions to her.
+
+## The interview (do this FIRST, before the numbered steps)
+
+Goal: find out the **story**, the **goal**, the **dangers**, the **friends**, the **look**,
+and the **sounds** — then quietly turn that into a build plan. Ask these one at a time, in
+your own kid-friendly words, using her earlier answers to make later questions specific.
+
+1. **Story / theme** — "What is your new level all about, doodoo head?"
+2. **Place / look** — "Where does it happen? What does the ground look like?" (beach, space,
+   candy land, jungle, lava…) → this becomes the **ground tiles**.
+3. **How you win** — "How do you finish the level? What do you have to do to win?"
+   (reach a castle, find a key, get to the other side…) → the **win condition**.
+4. **Dangers** — "Is anything trying to stop you? What happens if you touch it?"
+   (lava, holes, monsters…) → **hazard tiles / enemies** and what they do (restart, etc.).
+5. **Friends / characters** — "Do you meet anyone? Any friends or helpers?" → **objects/NPCs**.
+6. **Colors & cool stuff** — "What colors and fun things should be in it?" → look + extra art.
+7. **Sounds** — "Any fun sounds? What should it sound like when you win, or when something
+   bad happens?" → **audio**.
+
+When you have enough, **read it back to her in kid words and check it's right** before
+building, e.g.: *"So doodoo head, here's your level: you're on a candy beach, you have to
+find the golden key without falling in the chocolate holes, and a friendly gummy bear
+helps you. When you win, it goes ding! Did I get it right?"*
+
+### Turning her answers into the build plan (for you, not her)
+
+- Place / ground look → `groundTypes` + the tile images (Step 3, Step 8). Walkable ground
+  vs. hazard tiles.
+- How you win → the win condition logic in `handleMove` and the transition (Step 4).
+- Dangers → hazard tiles or enemy objects + what they trigger (e.g. `this.restart()` like
+  `level6.ts` does for `BlackHole`).
+- Friends / characters → `createFriend` and/or object collections in `mapOptions` (Step 3).
+- Colors / cool stuff / sounds → the asset list you import in Step 8 (reuse existing art
+  and sounds first!).
+
+Decide which assets already exist and which are new **before** you start building, so the
+interview drives the whole asset list.
 
 ## Background
 
@@ -280,6 +339,7 @@ Then add the enum member to `src/app/types/audio.ts` and reference it in
 
 ## Checklist
 
+- [ ] Interviewed the player (kid-friendly, one question at a time) and read the plan back to her
 - [ ] `Scene.LevelN` added to `src/app/types/scene.ts`
 - [ ] `src/app/levelN/levelN-assets.ts` created
 - [ ] `src/app/levelN/levelN.ts` created
