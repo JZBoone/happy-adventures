@@ -87,6 +87,10 @@ export class Level7 extends Level7MapAndAssets {
     }
     switch (groundType) {
       case ImageAsset.MossyStone:
+        // The cage is solid; you can't walk through it (mirrors ghostCanEnter).
+        if (this.immovableImages.cage.occupies(coordinates)) {
+          break;
+        }
         // Walkable maze path.
         this.friendCoordinates = coordinates;
         this.friend.move(coordinates);
