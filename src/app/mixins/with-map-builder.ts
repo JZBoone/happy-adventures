@@ -244,7 +244,6 @@ export const withMapBuilder = <
         asset: this.selectedImageAsset,
         coordinates: [row, position],
       });
-      this.map[row][position].image.setDepth(-1);
     }
 
     private moveSceneObject(coordinates: Coordinates) {
