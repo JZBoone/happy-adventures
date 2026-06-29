@@ -40,6 +40,8 @@
     {
       "coordinates": [15, 29],
       "asset": "evil-guy",
+      "width": 2,
+      "height": 3,
       "message": "GRRRRRRRRRRRRRRRRRRRRRRRRR!!! You might have beaten me THIS time but I'll be back babe..."
     }
   ]
