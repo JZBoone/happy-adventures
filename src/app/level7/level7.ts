@@ -1,13 +1,13 @@
-import { interval, takeUntil, takeWhile } from "rxjs";
 import { isEqual } from "lodash";
-import { Scene } from "../types/scene";
-import { showLevelStartText, newPromiseLasting } from "../common/helpers";
-import { AudioAsset } from "../types/audio";
-import { ImageAsset } from "../types/image";
-import { LeverAnimation } from "../types/sprite";
-import { Coordinates, Move } from "../types/map";
+import { interval, takeUntil, takeWhile } from "rxjs";
+import { newPromiseLasting, showLevelStartText } from "../common/helpers";
 import { moveCoordinates } from "../common/map";
 import { Movable } from "../common/movable";
+import { AudioAsset } from "../types/audio";
+import { ImageAsset } from "../types/image";
+import { Coordinates, Move } from "../types/map";
+import { Scene } from "../types/scene";
+import { LeverAnimation } from "../types/sprite";
 import { GroundType, Level7MapAndAssets } from "./level7-assets";
 
 // How often the ghost takes a step. Lower = scarier.
@@ -31,7 +31,7 @@ function oppositeMove(move: Move): Move {
 export class Level7 extends Level7MapAndAssets {
   private didWin = false;
   private readonly entrance: Coordinates = [1, 1];
-  private readonly ghostStart: Coordinates = [7, 3];
+  private readonly ghostStart: Coordinates = [10, 5];
 
   private ghost!: Movable<Phaser.GameObjects.Image>;
   private ghostCoordinates: Coordinates = this.ghostStart;
@@ -54,15 +54,15 @@ export class Level7 extends Level7MapAndAssets {
     this.moves$
       .pipe(
         takeWhile(() => !this.didWin),
-        takeUntil(this.shutdown$)
+        takeUntil(this.shutdown$),
       )
       .subscribe(({ coordinates, groundType }) =>
-        this.handleMove(coordinates, groundType)
+        this.handleMove(coordinates, groundType),
       );
     interval(GHOST_STEP_MS)
       .pipe(
         takeWhile(() => !this.didWin),
-        takeUntil(this.shutdown$)
+        takeUntil(this.shutdown$),
       )
       .subscribe(() => this.moveGhost());
   }
@@ -160,7 +160,10 @@ export class Level7 extends Level7MapAndAssets {
     this.startOver();
   }
 
-  private async sendBackToStart(coordinates: Coordinates, sound: AudioAsset) {
+  private async sendBackToStart(
+    coordinates: Coordinates,
+    sound: Parameters<this["playSound"]>[0],
+  ) {
     this.movesDisabled = true;
     this.playSound(sound, { volume: 0.5 });
     this.friend.move(coordinates);
