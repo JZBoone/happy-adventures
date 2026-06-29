@@ -110,7 +110,7 @@ export const SpriteAssets: Record<
   [SpriteAsset.Lever]: {
     path: "assets/image/lever.png",
     frameConfig: {
-      frameWidth: 40,
+      frameWidth: 76,
       frameHeight: 60,
     },
     audioAssets: [AudioAsset.LeverPull],
