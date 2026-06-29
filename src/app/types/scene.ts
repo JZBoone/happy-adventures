@@ -9,4 +9,5 @@ export enum Scene {
   Credits = "credits",
   TheEnd = "theend",
   Instructions = "instructions",
+  DevMenu = "dev-menu",
 }
