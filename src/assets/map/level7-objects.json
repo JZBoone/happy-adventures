@@ -23,12 +23,6 @@
       "asset": "nice-old-lady",
       "width": 1,
       "height": 1
-    },
-    "evilGuy": {
-      "coordinates": [15, 29],
-      "asset": "evil-guy",
-      "width": 1,
-      "height": 1
     }
   },
   "immovableSprites": {
@@ -42,5 +36,11 @@
   "immovableImageGroups": {},
   "movableSprites": {},
   "movableImages": {},
-  "interactables": []
+  "interactables": [
+    {
+      "coordinates": [15, 29],
+      "asset": "evil-guy",
+      "message": "GRRRRRRRRRRRRRRRRRRRRRRRRR!!! You might have beaten me THIS time but I'll be back babe..."
+    }
+  ]
 }

@@ -18,7 +18,6 @@ export type GroundType = (typeof groundTypes)[number];
 const cagedFriends = [
   ImageAsset.Queen,
   ImageAsset.NiceOldLady,
-  ImageAsset.EvilGuy,
   ImageAsset.SpikyGuy,
 ] as const;
 
@@ -32,15 +31,27 @@ export const mapOptions = {
     cage: { asset: ImageAsset.Cage },
     queen: { asset: ImageAsset.Queen },
     niceOldLady: { asset: ImageAsset.NiceOldLady },
-    evilGuy: { asset: ImageAsset.EvilGuy },
     spikyGuy: { asset: ImageAsset.SpikyGuy },
   },
 } as const;
 
 export const assetOptions = {
-  images: [...groundTypes, ImageAsset.Ghost, ImageAsset.Cage, ...cagedFriends],
+  images: [
+    ...groundTypes,
+    ImageAsset.Ghost,
+    ImageAsset.Cage,
+    // The Dark Lord — a talking object (Interactable). Edit his message in the
+    // map editor by holding shift and clicking him.
+    ImageAsset.EvilGuy,
+    ...cagedFriends,
+  ],
   sprites: [SpriteAsset.Lever],
-  audio: [AudioAsset.Cheer, AudioAsset.Sizzle, AudioAsset.FunnyCry],
+  audio: [
+    AudioAsset.Cheer,
+    AudioAsset.Sizzle,
+    AudioAsset.FunnyCry,
+    AudioAsset.EvilLaughter,
+  ],
 } as const;
 
 export class Level7MapAndAssets extends withMap(

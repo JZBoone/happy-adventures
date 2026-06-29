@@ -2,6 +2,7 @@ import { isEqual } from "lodash";
 import { interval, takeUntil, takeWhile } from "rxjs";
 import { newPromiseLasting, showLevelStartText } from "../common/helpers";
 import { moveCoordinates } from "../common/map";
+import { Interactable } from "../common/interactable";
 import { Movable } from "../common/movable";
 import { AudioAsset } from "../types/audio";
 import { ImageAsset } from "../types/image";
@@ -184,12 +185,54 @@ export class Level7 extends Level7MapAndAssets {
 
   private async completeLevel(coordinates: Coordinates) {
     this.didWin = true;
-    // Pull the lever, then the cage opens and the friends are free!
+    // Pull the lever, then the Dark Lord is defeated and the friends are free!
     this.immovableSprites.lever.phaserObject.anims.play(LeverAnimation.Pull);
     await this.friend.move(coordinates);
+    await this.vanquishEvilGuy();
     this.immovableImages.cage.phaserObject.setVisible(false);
     this.playSound(AudioAsset.Cheer);
     // This is the last level, so head to the credits.
     await newPromiseLasting(this, 2_000, () => this.scene.start(Scene.Credits));
+  }
+
+  private findEvilGuy(): Interactable | undefined {
+    return this.interactables.find(
+      (interactable) => interactable.phaserObject.texture.key === ImageAsset.EvilGuy,
+    );
+  }
+
+  // The Dark Lord blinks a few times, then shrinks away with a whoosh.
+  private vanquishEvilGuy(): Promise<void> {
+    const evilGuy = this.findEvilGuy();
+    if (!evilGuy) {
+      return Promise.resolve();
+    }
+    const target = evilGuy.phaserObject;
+    return new Promise((resolve) => {
+      // Flash: blink alpha a handful of times.
+      this.tweens.add({
+        targets: target,
+        alpha: 0,
+        duration: 120,
+        yoyo: true,
+        repeat: 5,
+        onComplete: () => {
+          // Poof: shrink to nothing + sound, then hide.
+          this.playSound(AudioAsset.EvilLaughter);
+          this.tweens.add({
+            targets: target,
+            scaleX: 0,
+            scaleY: 0,
+            alpha: 0,
+            ease: "Back.easeIn",
+            duration: 400,
+            onComplete: () => {
+              target.setVisible(false);
+              resolve();
+            },
+          });
+        },
+      });
+    });
   }
 }
