@@ -16,7 +16,12 @@ import { Level5MapAndAssets } from "./level5/level5-assets";
 import { PlayerSelection } from "./player-selection/player-selection";
 import { Level6 } from "./level6/level6";
 import { Level6MapAndAssets } from "./level6/level6-assets";
+import { Level7 } from "./level7/level7";
+import { Level7MapAndAssets } from "./level7/level7-assets";
 import { Instructions } from "./instructions/instructions";
+import { DevMenu } from "./dev-menu/dev-menu";
+
+const devMenuEnabled = !!process.env.DEV_MODE_ENABLED;
 
 export default new Phaser.Game({
   type: Phaser.AUTO,
@@ -26,6 +31,7 @@ export default new Phaser.Game({
     mode: Phaser.Scale.RESIZE,
   },
   scene: [
+    ...(devMenuEnabled ? [DevMenu] : []),
     PlayerSelection,
     Instructions,
     Level1,
@@ -40,6 +46,8 @@ export default new Phaser.Game({
     withMapBuilder(Level5MapAndAssets, Scene.Level5, Level5),
     Level6,
     withMapBuilder(Level6MapAndAssets, Scene.Level6, Level6),
+    Level7,
+    withMapBuilder(Level7MapAndAssets, Scene.Level7, Level7),
     Credits,
     TheEnd,
   ],

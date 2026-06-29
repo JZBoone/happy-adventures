@@ -408,7 +408,7 @@ export function withMap<
         return;
       }
       if (
-        process.env.MAP_BUILDER_ENABLED &&
+        process.env.DEV_MODE_ENABLED &&
         Phaser.Input.Keyboard.JustDown(this.hotkey.e)
       ) {
         this.scene.remove(options.level);

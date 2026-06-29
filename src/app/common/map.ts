@@ -16,11 +16,15 @@ export function createMapImage(
   params: { asset: ImageAsset; coordinates: Coordinates }
 ) {
   const { asset, coordinates } = params;
-  return scene.add.image(
-    coordinates[1] * mapTileSizePx + halfMapTileSizePx,
-    coordinates[0] * mapTileSizePx + halfMapTileSizePx,
-    asset
-  );
+  // Ground tiles are the bottom layer; keep them behind all scene objects
+  // (which default to depth 0) regardless of creation order.
+  return scene.add
+    .image(
+      coordinates[1] * mapTileSizePx + halfMapTileSizePx,
+      coordinates[0] * mapTileSizePx + halfMapTileSizePx,
+      asset
+    )
+    .setDepth(-1);
 }
 
 export function loadMap<SceneGroundType extends ImageAsset>(

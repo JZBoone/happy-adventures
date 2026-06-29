@@ -3,6 +3,7 @@ import { loadImages } from "../common/assets";
 import { ImageAsset, defaultImages } from "../types/image";
 import { PlayerStorageKey } from "../types/player";
 import { Scene } from "../types/scene";
+import { playerOptions } from "./players";
 
 export class PlayerSelection extends Phaser.Scene {
   constructor() {
@@ -34,21 +35,9 @@ export class PlayerSelection extends Phaser.Scene {
   }
 
   private makeOptions() {
-    const options: { image: ImageAsset; name: string }[] = [
-      { image: ImageAsset.Friend, name: "Cutie Pie" },
-      { image: ImageAsset.CuteSpider, name: "Schneider Spider" },
-      { image: ImageAsset.OompaBall, name: "Bob" },
-      { image: ImageAsset.ToddieTitan, name: "Toddie Titan" },
-      { image: ImageAsset.MrRainbow, name: "Mr. Rainbow" },
-      { image: ImageAsset.Snaggletooth, name: "Snaggletooth" },
-      { image: ImageAsset.Bamboo, name: "Bamboo" },
-      { image: ImageAsset.PooGuy, name: "Poo Guy" },
-      { image: ImageAsset.Warewolf, name: "Boonewolf" },
-      { image: ImageAsset.MrDung, name: "Mr. Dung" },
-    ];
     let row = 0;
     let position = 0;
-    for (const { image, name } of options) {
+    for (const { image, name } of playerOptions) {
       const imageY = 300 + row * 150;
       const offsetX = this.cameras.main.centerX + (450 - position * 300);
       const phaserImage = this.add.image(offsetX, imageY, image);

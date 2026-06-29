@@ -1,4 +1,5 @@
 import { readdirSync } from "fs";
+import { describe, expect, test } from "@jest/globals";
 import { assert } from "typia";
 import { mapCoordinates, worldPosition } from "../src/app/common/map";
 import {
@@ -101,9 +102,9 @@ type MapObjectsJson = {
 describe("map schema", () => {
   test("ground types are valid", () => {
     for (const level of levelDirectoryNames()) {
-      // eslint-disable-next-line @typescript-eslint/no-var-requires
+      // eslint-disable-next-line @typescript-eslint/no-require-imports
       const map = require(`../src/assets/map/${level}.json`);
-      // eslint-disable-next-line @typescript-eslint/no-var-requires
+      // eslint-disable-next-line @typescript-eslint/no-require-imports
       const { groundTypes } = require(`../src/app/${level}/${level}-assets`);
       for (const row of map) {
         for (const groundType of row) {
@@ -116,18 +117,18 @@ describe("map schema", () => {
   });
   test("objects schema is valid", () => {
     for (const level of levelDirectoryNames()) {
-      // eslint-disable-next-line @typescript-eslint/no-var-requires
+      // eslint-disable-next-line @typescript-eslint/no-require-imports
       const mapObjects = require(`../src/assets/map/${level}-objects.json`);
       assert<MapObjectsJson>(mapObjects);
     }
   });
   test("objects json agrees with map options", () => {
     for (const level of levelDirectoryNames()) {
-      // eslint-disable-next-line @typescript-eslint/no-var-requires
+      // eslint-disable-next-line @typescript-eslint/no-require-imports
       const mapObjects = require(`../src/assets/map/${level}-objects.json`);
-      // eslint-disable-next-line @typescript-eslint/no-var-requires
+      // eslint-disable-next-line @typescript-eslint/no-require-imports
       const { mapOptions } = require(`../src/app/${level}/${level}-assets`);
-      // eslint-disable-next-line @typescript-eslint/no-var-requires
+      // eslint-disable-next-line @typescript-eslint/no-require-imports
       const { assetOptions } = require(`../src/app/${level}/${level}-assets`);
       expect(mapObjects).toBeDefined();
       expect(mapOptions).toBeDefined();
