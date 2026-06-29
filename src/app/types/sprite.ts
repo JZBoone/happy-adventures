@@ -3,6 +3,7 @@ import { AudioAsset } from "./audio";
 export enum SpriteAsset {
   Castle = "castle",
   CandyCastle = "candy-castle",
+  Lever = "lever",
 }
 
 export enum CastleAnimation {
@@ -15,8 +16,13 @@ export enum CandyCastleAnimation {
   Close = "candy-castle.close",
 }
 
+export enum LeverAnimation {
+  Pull = "lever.pull",
+}
+
 export type CastleFrame = 0 | 1 | 2 | 3 | 4 | 5 | 6;
 export type CandyCastleFrame = 0 | 1 | 2 | 3 | 4 | 5;
+export type LeverFrame = 0 | 1 | 2 | 3 | 4;
 
 export type MiniPlaneFrame = 0 | 1 | 2 | 3;
 
@@ -97,6 +103,34 @@ export const SpriteAssets: Record<
       sprite.on("animationstart", (anim: { key: string }) => {
         if (anim.key === CandyCastleAnimation.Open) {
           scene.sound.play(AudioAsset.CastleOpen);
+        }
+      });
+    },
+  },
+  [SpriteAsset.Lever]: {
+    path: "assets/image/lever.png",
+    frameConfig: {
+      frameWidth: 40,
+      frameHeight: 60,
+    },
+    audioAssets: [AudioAsset.LeverPull],
+    anims: (scene, sprite) => {
+      if (!scene.anims.exists(LeverAnimation.Pull)) {
+        // The lever stays still on frame 0, then swings to the open
+        // position (frame 4) once and holds there (repeat: 0).
+        scene.anims.create({
+          key: LeverAnimation.Pull,
+          frames: scene.anims.generateFrameNumbers(SpriteAsset.Lever, {
+            start: 0 satisfies LeverFrame,
+            end: 4 satisfies LeverFrame,
+          }),
+          frameRate: 14,
+          repeat: 0,
+        });
+      }
+      sprite.on("animationstart", (anim: { key: string }) => {
+        if (anim.key === LeverAnimation.Pull) {
+          scene.sound.play(AudioAsset.LeverPull);
         }
       });
     },

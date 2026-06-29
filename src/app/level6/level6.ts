@@ -41,7 +41,7 @@ export class Level6 extends Level6MapAndAssets {
       this.didWin = true;
       this.playSound(AudioAsset.Tada);
       await this.friend.move(coordinates);
-      newPromiseLasting(this, 1_500, () => this.scene.start(Scene.Credits));
+      newPromiseLasting(this, 1_500, () => this.scene.start(Scene.Level7));
       return;
     }
     if (groundType === ImageAsset.BlackHole) {

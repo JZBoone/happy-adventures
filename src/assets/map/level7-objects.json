@@ -1,0 +1,46 @@
+{
+  "immovableImages": {
+    "cage": {
+      "coordinates": [16, 16],
+      "asset": "cage",
+      "width": 8,
+      "height": 5
+    },
+    "queen": {
+      "coordinates": [12, 7],
+      "asset": "queen",
+      "width": 1,
+      "height": 1
+    },
+    "spikyGuy": {
+      "coordinates": [12, 6],
+      "asset": "spiky-guy",
+      "width": 1,
+      "height": 1
+    },
+    "niceOldLady": {
+      "coordinates": [13, 5],
+      "asset": "nice-old-lady",
+      "width": 1,
+      "height": 1
+    },
+    "evilGuy": {
+      "coordinates": [13, 2],
+      "asset": "evil-guy",
+      "width": 1,
+      "height": 1
+    }
+  },
+  "immovableSprites": {
+    "lever": {
+      "coordinates": [12, 4],
+      "asset": "lever",
+      "width": 1,
+      "height": 1
+    }
+  },
+  "immovableImageGroups": {},
+  "movableSprites": {},
+  "movableImages": {},
+  "interactables": []
+}

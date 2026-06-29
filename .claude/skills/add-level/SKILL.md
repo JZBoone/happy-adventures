@@ -259,7 +259,23 @@ LevelN,
 withMapBuilder(LevelNMapAndAssets, Scene.LevelN, LevelN),
 ```
 
-## Step 7 — Wire the previous level's exit
+## Step 7 — Add the level to the dev-mode level picker
+
+The dev menu (`src/app/dev-menu/dev-menu.ts`, gated behind `DEV_MODE_ENABLED`) shows a
+"Jump to level" picker so you can start any level directly in dev mode. Add the new scene
+to its `LEVELS` array, in order, so the button appears:
+
+```ts
+const LEVELS: Scene[] = [
+  Scene.Level1,
+  // ...existing levels...
+  Scene.LevelN,
+];
+```
+
+The buttons are numbered by array position, so appending `Scene.LevelN` adds a button N.
+
+## Step 8 — Wire the previous level's exit
 
 In the previously-last level (found in Step 1, e.g. `src/app/level6/level6.ts`), change
 its completion transition from:
@@ -276,7 +292,7 @@ this.scene.start(Scene.LevelN)
 
 so the new level now sits between the old last level and the credits.
 
-## Step 8 — Add new assets (only if needed)
+## Step 9 — Add new assets (only if needed)
 
 Most levels need new art and/or sound. **Always reuse existing assets first** — there are
 ~60 images in `src/assets/image/` and ~20 sounds in `src/assets/audio/`. List them and
@@ -328,7 +344,7 @@ them drop it in:
 Then add the enum member to `src/app/types/audio.ts` and reference it in
 `assetOptions.audio`. Prefer reusing an existing sound.
 
-## Step 9 — Validate
+## Step 10 — Validate
 
 - `npm test` — `test/map.test.ts` auto-discovers every `level*` dir and checks that all
   map tiles are declared in `groundTypes` and that `levelN-objects.json` matches the
@@ -345,6 +361,7 @@ Then add the enum member to `src/app/types/audio.ts` and reference it in
 - [ ] `src/app/levelN/levelN.ts` created
 - [ ] `src/assets/map/levelN.json` + `levelN-objects.json` created
 - [ ] `LevelN` + `withMapBuilder(...)` registered in `src/app/game.ts`
+- [ ] `Scene.LevelN` added to the `LEVELS` array in `src/app/dev-menu/dev-menu.ts`
 - [ ] Previous last level rewired from `Scene.Credits` to `Scene.LevelN`
 - [ ] New assets imported (reuse first; `scripts/import-image.js` for images, drop-in for audio) + enums added
 - [ ] `npm test` and `npm run lint` pass; level plays through
