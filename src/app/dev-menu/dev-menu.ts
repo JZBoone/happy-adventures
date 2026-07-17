@@ -13,6 +13,7 @@ const LEVELS: Scene[] = [
   Scene.Level5,
   Scene.Level6,
   Scene.Level7,
+  Scene.Level8,
 ];
 
 /**

@@ -1,0 +1,58 @@
+{
+  "immovableImages": {
+    "dynamite": {
+      "coordinates": [
+        5,
+        27
+      ],
+      "asset": "bomb",
+      "width": 1,
+      "height": 2
+    }
+  },
+  "immovableSprites": {
+    "goblinCastle": {
+      "coordinates": [
+        4,
+        26
+      ],
+      "asset": "castle",
+      "width": 4,
+      "height": 3
+    },
+    "lever": {
+      "coordinates": [
+        14,
+        25
+      ],
+      "asset": "lever",
+      "width": 1,
+      "height": 1
+    }
+  },
+  "immovableImageGroups": {},
+  "movableSprites": {},
+  "movableImages": {
+    "swampMonster": {
+      "coordinates": [
+        9,
+        17
+      ],
+      "asset": "monster",
+      "width": 2,
+      "height": 2
+    }
+  },
+  "interactables": [
+    {
+      "coordinates": [
+        4,
+        4
+      ],
+      "asset": "living-computer",
+      "width": 1,
+      "height": 2,
+      "message": "BEEP BOOP! The lever hides in the fungus at the bottom right. Do NOT touch the swamp water... GULP!"
+    }
+  ]
+}
