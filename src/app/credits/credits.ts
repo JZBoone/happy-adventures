@@ -50,6 +50,7 @@ export class Credits extends Phaser.Scene {
       lineBreak,
       "Developers",
       "Zach Boone",
+      "Levi Boone",
     ];
     let text = "";
     textItems.forEach((textItem, i) => {
