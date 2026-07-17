@@ -1,25 +1,25 @@
 {
   "immovableImages": {
+    "goblinCastle": {
+      "coordinates": [
+        5,
+        26
+      ],
+      "asset": "swamp-monster-castle",
+      "width": 6,
+      "height": 5
+    },
     "dynamite": {
       "coordinates": [
         5,
         27
       ],
-      "asset": "bomb",
+      "asset": "tnt",
       "width": 1,
       "height": 2
     }
   },
   "immovableSprites": {
-    "goblinCastle": {
-      "coordinates": [
-        4,
-        26
-      ],
-      "asset": "castle",
-      "width": 4,
-      "height": 3
-    },
     "lever": {
       "coordinates": [
         14,

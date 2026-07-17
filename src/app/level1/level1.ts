@@ -82,7 +82,9 @@ export class Level1 extends Level1MapAndAssets {
     await this.friend.move(this.immovableSprites.castle.coordinates());
     await this.friend.disappear();
     this.playSound(AudioAsset.Tada);
-    await newPromiseLasting(this, 500, () => this.scene.start(Scene.Level2));
+    await newPromiseLasting(this, 500, () =>
+      this.scene.start(Scene.SwampMonster)
+    );
   }
 
   private isSand(groundType: GroundType): boolean {

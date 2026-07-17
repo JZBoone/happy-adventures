@@ -1,11 +1,14 @@
 import Phaser from "phaser";
 
-export function showLevelStartText(scene: Phaser.Scene, levelNumber: number) {
+export function showLevelStartText(
+  scene: Phaser.Scene,
+  level: number | string
+) {
   const levelText = scene.add
     .text(
       scene.cameras.main.centerX,
       scene.cameras.main.centerY,
-      `Level ${levelNumber}`,
+      typeof level === "number" ? `Level ${level}` : level,
       {
         font: "64px Arial",
       }

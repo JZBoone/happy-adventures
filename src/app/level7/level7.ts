@@ -191,7 +191,8 @@ export class Level7 extends Level7MapAndAssets {
     await this.vanquishEvilGuy();
     this.immovableImages.cage.phaserObject.setVisible(false);
     this.playSound(AudioAsset.Cheer);
-    await newPromiseLasting(this, 2_000, () => this.scene.start(Scene.Level8));
+    // This is the last level, so head to the credits.
+    await newPromiseLasting(this, 2_000, () => this.scene.start(Scene.Credits));
   }
 
   private findEvilGuy(): Interactable | undefined {

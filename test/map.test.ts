@@ -1,4 +1,4 @@
-import { readdirSync } from "fs";
+import { existsSync, readdirSync } from "fs";
 import { describe, expect, test } from "@jest/globals";
 import { assert } from "typia";
 import { mapCoordinates, worldPosition } from "../src/app/common/map";
@@ -70,10 +70,16 @@ describe("mapCoordinates()", () => {
   );
 });
 
+// A level is any directory with a matching `<name>-assets.ts` — levels may be
+// numbered (level1) or named (swamp-monster).
 function levelDirectoryNames() {
   const dirContents = readdirSync("./src/app", { withFileTypes: true });
   return dirContents
-    .filter((item) => item.isDirectory() && item.name.startsWith("level"))
+    .filter(
+      (item) =>
+        item.isDirectory() &&
+        existsSync(`./src/app/${item.name}/${item.name}-assets.ts`)
+    )
     .map(({ name }) => name);
 }
 

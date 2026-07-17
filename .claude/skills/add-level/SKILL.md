@@ -2,8 +2,8 @@
 name: add-level
 description: >-
   Add a new level to the happy-adventures Phaser game. Use when the user wants to
-  create a new level (e.g. "add level7", "create a new level", "scaffold the next
-  level"). FIRST interviews the player (an 8-year-old) in simple, playful language to
+  create a new level (e.g. "add a new level", "create a level called Candy Cave",
+  "scaffold the next level"). FIRST interviews the player (an 8-year-old) in simple, playful language to
   find out the story, goal, dangers, friends, look, and sounds, then scaffolds the
   level + assets TypeScript files, creates the map JSON, registers the scene, wires up
   the level flow from the previous level, and validates.
@@ -11,8 +11,11 @@ description: >-
 
 # Add a new level
 
-This skill adds **level N** (the next number after the current highest level) to the
-`happy-adventures` Phaser 3 + TypeScript game.
+This skill adds a new **named level** to the `happy-adventures` Phaser 3 + TypeScript
+game. Levels are named, not numbered: each level has a kebab-case name (e.g.
+`swamp-monster`) that is used everywhere — the `Scene` enum value, the directory, the
+file names, and the map JSON names. (Levels `level1`–`level7` predate this convention
+and keep their numbers.)
 
 There are **two phases**:
 1. **The interview** — talk with the player (an 8-year-old) to find out what her level
@@ -42,6 +45,8 @@ and the **sounds** — then quietly turn that into a build plan. Ask these one a
 your own kid-friendly words, using her earlier answers to make later questions specific.
 
 1. **Story / theme** — "What is your new level all about, doodoo head?"
+   Also find out **the level's name** ("What should we call your level?") — every level
+   gets a name that flashes on screen when it starts, like "Swamp Monster".
 2. **Place / look** — "Where does it happen? What does the ground look like?" (beach, space,
    candy land, jungle, lava…) → this becomes the **ground tiles**.
 3. **How you win** — "How do you finish the level? What do you have to do to win?"
@@ -75,38 +80,44 @@ interview drives the whole asset list.
 ## Background
 
 Each level is a self-contained Phaser scene composed from two mixins (`withMap`,
-`withAssets`). At runtime the map is **fetched** from `src/assets/map/levelN.json`
-(tile grid) and `src/assets/map/levelN-objects.json` (object placements), so those JSON
-files **must exist** for the level to load — even an empty starter version. Levels form a
-chain: each level's win condition calls `this.scene.start(...)` for the next scene, and
-the final level transitions to `Scene.Credits`.
+`withAssets`). At runtime the map is **fetched** from `src/assets/map/<level-name>.json`
+(tile grid) and `src/assets/map/<level-name>-objects.json` (object placements), so those
+JSON files **must exist** for the level to load — even an empty starter version. Levels
+form a chain: each level's win condition calls `this.scene.start(...)` for the next
+scene, and the final level transitions to `Scene.Credits`.
 
 Canonical examples to mirror:
 - `src/app/level1/level1.ts` + `level1-assets.ts` — simplest level (boat/castle).
-- `src/app/level6/level6.ts` + `level6-assets.ts` — current last level; camera + restart.
+- `src/app/swamp-monster/` — a **named** level; the naming pattern to follow.
 
-## Step 1 — Determine N and the current last level
+Throughout these steps:
+- `<level-name>` = the kebab-case name (e.g. `candy-cave`)
+- `<LevelName>` = the PascalCase name (e.g. `CandyCave`)
+- `"<Level Name>"` = the display name (e.g. `"Candy Cave"`)
 
-- List `src/app/level*/` directories; the highest existing number is `M`, so **N = M + 1**.
+## Step 1 — Determine the name and the current last level
+
+- Turn the level's name from the interview into kebab-case (e.g. "Candy Cave" →
+  `candy-cave`). It must not collide with an existing `src/app/` directory.
 - Find the **current last level**: the level whose completion logic calls
-  `this.scene.start(Scene.Credits)` (currently `src/app/level6/level6.ts`). You will
-  rewire this in Step 7.
+  `this.scene.start(Scene.Credits)`. You will rewire this in Step 8 (unless the user
+  wants the new level somewhere else in the sequence — then rewire that spot instead).
 
 ## Step 2 — Add the scene enum
 
-In `src/app/types/scene.ts`, add a member to the `Scene` enum, keeping it ordered just
-before `Credits`:
+In `src/app/types/scene.ts`, add a member to the `Scene` enum, keeping the enum ordered
+by play order (so a new last level goes just before `Credits`):
 
 ```ts
-LevelN = "levelN",
+<LevelName> = "<level-name>",
 ```
 
-(e.g. `Level7 = "level7"`)
+(e.g. `SwampMonster = "swamp-monster"`)
 
-## Step 3 — Create `src/app/levelN/levelN-assets.ts`
+## Step 3 — Create `src/app/<level-name>/<level-name>-assets.ts`
 
-Mirror `src/app/level6/level6-assets.ts`. Define the ground tiles, what to load, and the
-object collections:
+Mirror `src/app/swamp-monster/swamp-monster-assets.ts`. Define the ground tiles, what to
+load, and the object collections:
 
 ```ts
 import Phaser from "phaser";
@@ -132,7 +143,7 @@ export const assetOptions = {
 } as const;
 
 export const mapOptions = {
-  level: Scene.LevelN,
+  level: Scene.<LevelName>,
   groundTypes,
   immovableSprites: {},
   movableSprites: {},
@@ -140,7 +151,7 @@ export const mapOptions = {
   immovableImageGroups: {},
 } as const;
 
-export class LevelNMapAndAssets extends withMap(
+export class <LevelName>MapAndAssets extends withMap(
   withAssets(Phaser.Scene, assetOptions),
   mapOptions
 ) {}
@@ -152,9 +163,10 @@ Rules:
   loaded in `assetOptions`.
 - Leave unused object collections as `{}`.
 
-## Step 4 — Create `src/app/levelN/levelN.ts`
+## Step 4 — Create `src/app/<level-name>/<level-name>.ts`
 
-Mirror `src/app/level1/level1.ts` (simple) or `level6.ts` (camera/restart). Minimum shape:
+Mirror `src/app/swamp-monster/swamp-monster.ts` or `src/app/level1/level1.ts` (simple).
+Minimum shape:
 
 ```ts
 import { takeWhile } from "rxjs";
@@ -162,19 +174,19 @@ import { Scene } from "../types/scene";
 import { showLevelStartText, newPromiseLasting } from "../common/helpers";
 import { AudioAsset } from "../types/audio";
 import { Coordinates } from "../types/map";
-import { GroundType, LevelNMapAndAssets } from "./levelN-assets";
+import { GroundType, <LevelName>MapAndAssets } from "./<level-name>-assets";
 
-export class LevelN extends LevelNMapAndAssets {
+export class <LevelName> extends <LevelName>MapAndAssets {
   private levelCompleted = false;
 
   constructor() {
-    super({ key: Scene.LevelN });
+    super({ key: Scene.<LevelName> });
   }
 
   async create() {
     await super.create();
     this.levelCompleted = false;
-    showLevelStartText(this, N); // N as a number literal
+    showLevelStartText(this, "<Level Name>"); // the display name string
     this.createFriend();
     this.moves$
       .pipe(takeWhile(() => !this.levelCompleted))
@@ -192,7 +204,7 @@ export class LevelN extends LevelNMapAndAssets {
     this.levelCompleted = true;
     this.playSound(AudioAsset.Tada);
     // This is the new LAST level, so transition to Credits.
-    // If a later level is added afterwards, this becomes Scene.Level(N+1).
+    // If a later level is added afterwards, this becomes that level's Scene member.
     await newPromiseLasting(this, 500, () => this.scene.start(Scene.Credits));
   }
 }
@@ -210,10 +222,10 @@ Two approaches. **Default: the in-game editor.** Ask the user which they want if
 
 Scaffold minimal valid files so the level loads, then design visually:
 
-- `src/assets/map/levelN.json` — a small uniform grid (e.g. 12×12) where every cell is
-  `groundTypes[0]` (the string value, e.g. `"forest"`). Must be a JSON 2D array of
-  ground-type strings.
-- `src/assets/map/levelN-objects.json` — the empty skeleton:
+- `src/assets/map/<level-name>.json` — a small uniform grid (e.g. 12×12) where every
+  cell is `groundTypes[0]` (the string value, e.g. `"forest"`). Must be a JSON 2D array
+  of ground-type strings.
+- `src/assets/map/<level-name>-objects.json` — the empty skeleton:
 
 ```json
 {
@@ -227,58 +239,62 @@ Scaffold minimal valid files so the level loads, then design visually:
 ```
 
 Then tell the user to design the map:
-1. Run `npm start` and open `localhost:3000`; play to level N.
+1. Run `npm start` and open `localhost:3000`; play (or use the dev menu to jump) to the
+   new level.
 2. Press `e` to open the map builder. Hotkeys (see `README.md`):
    `arrows` move camera, `i`/`o` zoom, **right-click** changes a tile,
    **left-click+drag** paints/moves objects, `shift+t` taller, `shift+w` wider,
    **`s` saves**, `escape` exits.
 3. Saving POSTs to the local dev server (`/map/:level` in `src/server.js`), which
-   rewrites `levelN.json` and `levelN-objects.json` on disk.
+   rewrites `<level-name>.json` and `<level-name>-objects.json` on disk.
 
 ### Approach B — generate the JSON directly
 
-Write the full `levelN.json` grid and populate `levelN-objects.json` from the user's
-description. Tedious and error-prone for large maps — only do this when asked. Constraints:
-- Every tile string in `levelN.json` must be a value in `groundTypes`.
-- Every object's `asset` in `levelN-objects.json` must match an entry in `mapOptions` /
-  `assetOptions`, with `coordinates: [col, row]`.
+Write the full `<level-name>.json` grid and populate `<level-name>-objects.json` from
+the user's description. Tedious and error-prone for large maps — only do this when
+asked. Constraints:
+- Every tile string in `<level-name>.json` must be a value in `groundTypes`.
+- Every object's `asset` in `<level-name>-objects.json` must match an entry in
+  `mapOptions` / `assetOptions`, with `coordinates: [col, row]`.
 
 ## Step 6 — Register the level in `src/app/game.ts`
 
 Add imports near the other level imports:
 
 ```ts
-import { LevelN } from "./levelN/levelN";
-import { LevelNMapAndAssets } from "./levelN/levelN-assets";
+import { <LevelName> } from "./<level-name>/<level-name>";
+import { <LevelName>MapAndAssets } from "./<level-name>/<level-name>-assets";
 ```
 
-In the `scene:` array, **before `Credits`**, add both the level and its map builder:
+In the `scene:` array, at the level's position in **play order** (for a new last level,
+just before `Credits`), add both the level and its map builder:
 
 ```ts
-LevelN,
-withMapBuilder(LevelNMapAndAssets, Scene.LevelN, LevelN),
+<LevelName>,
+withMapBuilder(<LevelName>MapAndAssets, Scene.<LevelName>, <LevelName>),
 ```
 
 ## Step 7 — Add the level to the dev-mode level picker
 
 The dev menu (`src/app/dev-menu/dev-menu.ts`, gated behind `DEV_MODE_ENABLED`) shows a
 "Jump to level" picker so you can start any level directly in dev mode. Add the new scene
-to its `LEVELS` array, in order, so the button appears:
+to its `LEVELS` array, in **play order**, so the button appears:
 
 ```ts
 const LEVELS: Scene[] = [
   Scene.Level1,
-  // ...existing levels...
-  Scene.LevelN,
+  Scene.SwampMonster,
+  // ...remaining levels in play order...
+  Scene.<LevelName>,
 ];
 ```
 
-The buttons are numbered by array position, so appending `Scene.LevelN` adds a button N.
+Buttons label themselves automatically: numbered levels show their number, named levels
+show their name.
 
 ## Step 8 — Wire the previous level's exit
 
-In the previously-last level (found in Step 1, e.g. `src/app/level6/level6.ts`), change
-its completion transition from:
+In the previously-last level (found in Step 1), change its completion transition from:
 
 ```ts
 this.scene.start(Scene.Credits)
@@ -287,10 +303,12 @@ this.scene.start(Scene.Credits)
 to:
 
 ```ts
-this.scene.start(Scene.LevelN)
+this.scene.start(Scene.<LevelName>)
 ```
 
-so the new level now sits between the old last level and the credits.
+so the new level now sits between the old last level and the credits. (If the level is
+being inserted mid-sequence instead, change that level's predecessor to start
+`Scene.<LevelName>`, and have the new level's `completeLevel` start the old successor.)
 
 ## Step 9 — Add new assets (only if needed)
 
@@ -346,22 +364,23 @@ Then add the enum member to `src/app/types/audio.ts` and reference it in
 
 ## Step 10 — Validate
 
-- `npm test` — `test/map.test.ts` auto-discovers every `level*` dir and checks that all
-  map tiles are declared in `groundTypes` and that `levelN-objects.json` matches the
-  typed schema. The new level is covered automatically.
+- `npm test` — `test/map.test.ts` auto-discovers every level dir (any `src/app/`
+  directory with a matching `<name>-assets.ts`) and checks that all map tiles are
+  declared in `groundTypes` and that `<level-name>-objects.json` matches the typed
+  schema. The new level is covered automatically.
 - `npm run lint`.
-- `npm start`, play to level N: confirm it loads, the start text shows, and the win
-  condition transitions to the correct next scene.
+- `npm start`, play to the new level: confirm it loads, the start text shows its name,
+  and the win condition transitions to the correct next scene.
 
 ## Checklist
 
-- [ ] Interviewed the player (kid-friendly, one question at a time) and read the plan back to her
-- [ ] `Scene.LevelN` added to `src/app/types/scene.ts`
-- [ ] `src/app/levelN/levelN-assets.ts` created
-- [ ] `src/app/levelN/levelN.ts` created
-- [ ] `src/assets/map/levelN.json` + `levelN-objects.json` created
-- [ ] `LevelN` + `withMapBuilder(...)` registered in `src/app/game.ts`
-- [ ] `Scene.LevelN` added to the `LEVELS` array in `src/app/dev-menu/dev-menu.ts`
-- [ ] Previous last level rewired from `Scene.Credits` to `Scene.LevelN`
+- [ ] Interviewed the player (kid-friendly, one question at a time), got the level's name, and read the plan back to her
+- [ ] `Scene.<LevelName>` added to `src/app/types/scene.ts`
+- [ ] `src/app/<level-name>/<level-name>-assets.ts` created
+- [ ] `src/app/<level-name>/<level-name>.ts` created
+- [ ] `src/assets/map/<level-name>.json` + `<level-name>-objects.json` created
+- [ ] `<LevelName>` + `withMapBuilder(...)` registered in `src/app/game.ts`
+- [ ] `Scene.<LevelName>` added to the `LEVELS` array in `src/app/dev-menu/dev-menu.ts`
+- [ ] Previous last level rewired from `Scene.Credits` to `Scene.<LevelName>`
 - [ ] New assets imported (reuse first; `scripts/import-image.js` for images, drop-in for audio) + enums added
 - [ ] `npm test` and `npm run lint` pass; level plays through

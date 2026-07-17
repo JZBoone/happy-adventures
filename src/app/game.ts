@@ -18,8 +18,8 @@ import { Level6 } from "./level6/level6";
 import { Level6MapAndAssets } from "./level6/level6-assets";
 import { Level7 } from "./level7/level7";
 import { Level7MapAndAssets } from "./level7/level7-assets";
-import { Level8 } from "./level8/level8";
-import { Level8MapAndAssets } from "./level8/level8-assets";
+import { SwampMonster } from "./swamp-monster/swamp-monster";
+import { SwampMonsterMapAndAssets } from "./swamp-monster/swamp-monster-assets";
 import { Instructions } from "./instructions/instructions";
 import { DevMenu } from "./dev-menu/dev-menu";
 
@@ -38,6 +38,8 @@ export default new Phaser.Game({
     Instructions,
     Level1,
     withMapBuilder(Level1MapAndAssets, Scene.Level1, Level1),
+    SwampMonster,
+    withMapBuilder(SwampMonsterMapAndAssets, Scene.SwampMonster, SwampMonster),
     Level2,
     withMapBuilder(Level2MapAndAssets, Scene.Level2, Level2),
     Level3,
@@ -50,8 +52,6 @@ export default new Phaser.Game({
     withMapBuilder(Level6MapAndAssets, Scene.Level6, Level6),
     Level7,
     withMapBuilder(Level7MapAndAssets, Scene.Level7, Level7),
-    Level8,
-    withMapBuilder(Level8MapAndAssets, Scene.Level8, Level8),
     Credits,
     TheEnd,
   ],

@@ -15,14 +15,15 @@ export const groundTypes = [
 export type GroundType = (typeof groundTypes)[number];
 
 export const mapOptions = {
-  level: Scene.Level8,
+  level: Scene.SwampMonster,
   groundTypes,
   immovableSprites: {
-    goblinCastle: { asset: SpriteAsset.Castle },
     lever: { asset: SpriteAsset.Lever },
   },
   immovableImages: {
-    dynamite: { asset: ImageAsset.Bomb },
+    // Declared before the dynamite so the dynamite renders on top of it.
+    goblinCastle: { asset: ImageAsset.SwampMonsterCastle },
+    dynamite: { asset: ImageAsset.Tnt },
   },
   movableImages: {
     swampMonster: { asset: ImageAsset.Monster },
@@ -32,17 +33,18 @@ export const mapOptions = {
 export const assetOptions = {
   images: [
     ...groundTypes,
-    ImageAsset.Bomb,
+    ImageAsset.SwampMonsterCastle,
+    ImageAsset.Tnt,
     ImageAsset.Monster,
     // The living computer — a talking object (Interactable). Edit its message
     // in the map editor by holding shift and clicking it.
     ImageAsset.LivingComputer,
   ],
-  sprites: [SpriteAsset.Castle, SpriteAsset.Lever],
+  sprites: [SpriteAsset.Lever],
   audio: [AudioAsset.Chomp, AudioAsset.Explosion, AudioAsset.Cheer],
 } as const;
 
-export class Level8MapAndAssets extends withMap(
+export class SwampMonsterMapAndAssets extends withMap(
   withAssets(Phaser.Scene, assetOptions),
   mapOptions
 ) {}

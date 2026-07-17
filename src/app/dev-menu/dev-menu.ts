@@ -5,16 +5,28 @@ import { PlayerStorageKey } from "../types/player";
 import { Scene } from "../types/scene";
 import { playerOptions } from "../player-selection/players";
 
+// In play order. Named levels (the newer convention) show their name on the
+// button; numbered levels show their number.
 const LEVELS: Scene[] = [
   Scene.Level1,
+  Scene.SwampMonster,
   Scene.Level2,
   Scene.Level3,
   Scene.Level4,
   Scene.Level5,
   Scene.Level6,
   Scene.Level7,
-  Scene.Level8,
 ];
+
+function levelButtonLabel(level: Scene): string {
+  if (level.startsWith("level")) {
+    return level.slice("level".length);
+  }
+  return level
+    .split("-")
+    .map((word) => word[0].toUpperCase() + word.slice(1))
+    .join(" ");
+}
 
 /**
  * Dev-only entry scene (gated behind DEV_MODE_ENABLED in game.ts). Lets you
@@ -100,8 +112,13 @@ export class DevMenu extends Phaser.Scene {
         .rectangle(x, y, 90, 60, 0x4444aa)
         .setStrokeStyle(2, 0xffffff)
         .setInteractive({ useHandCursor: true });
+      const label = levelButtonLabel(level);
       this.add
-        .text(x, y, `${index + 1}`, { font: "32px Arial" })
+        .text(x, y, label, {
+          font: label.length > 2 ? "16px Arial" : "32px Arial",
+          align: "center",
+          wordWrap: { width: 85 },
+        })
         .setOrigin(0.5, 0.5);
       button.on("pointerdown", () => this.startLevel(level));
     });
